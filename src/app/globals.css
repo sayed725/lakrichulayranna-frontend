@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+/* ── Google Fonts ── */
+@import url("https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+/* ── Tailwind v4 theme ── */
+@theme inline {
+  /* Brand Colors */
+  --color-fire: #E85D24;
+  --color-fire-light: #F4845F;
+  --color-fire-dark: #C44A1A;
+  --color-cream: #FDF6EC;
+  --color-cream-dark: #F5E6D0;
+  --color-charcoal: #2C2421;
+  --color-charcoal-light: #3D3330;
+  --color-terracotta: #B85C38;
+  --color-terracotta-light: #D4754E;
+
+  /* Semantic Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: #6B5E57;
+  --color-muted-light: #A39890;
+  --color-border: #E8DDD5;
+  --color-border-dark: #3D3330;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+
+  /* Fonts */
+  --font-bengali: "Hind Siliguri", sans-serif;
+  --font-latin: "Inter", sans-serif;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-fade-in-up: fade-in-up 0.6s ease-out;
+  --animate-slide-in-right: slide-in-right 0.4s ease-out;
+  --animate-slide-in-left: slide-in-left 0.4s ease-out;
+  --animate-scale-in: scale-in 0.3s ease-out;
+  --animate-pulse-fire: pulse-fire 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-flame: flame 1.5s ease-in-out infinite alternate;
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-spin-slow: spin 3s linear infinite;
+}
+
+/* ── CSS Variables ── */
+:root {
+  --background: #FDF6EC;
+  --foreground: #2C2421;
+  --card-bg: #FFFFFF;
+  --card-border: #E8DDD5;
+  --nav-height: 4.5rem;
+  --drawer-width: 24rem;
+}
+
+[data-theme="dark"] {
+  --background: #1A1311;
+  --foreground: #FDF6EC;
+  --card-bg: #2C2421;
+  --card-border: #3D3330;
+}
+
+/* ── Keyframes ── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-fire {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(232, 93, 36, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(232, 93, 36, 0.6);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes flame {
+  0% {
+    transform: scaleY(1) rotate(-2deg);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scaleY(1.08) rotate(1deg);
+    filter: brightness(1.15);
+  }
+  100% {
+    transform: scaleY(1) rotate(-1deg);
+    filter: brightness(1.05);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ── Base Styles ── */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-latin);
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Bengali text class */
+.font-bengali {
+  font-family: var(--font-bengali);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #B85C38;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E85D24;
+}
+
+/* Shimmer skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--card-border) 25%,
+    var(--cream-dark, #F5E6D0) 50%,
+    var(--card-border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(253, 246, 236, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(232, 93, 36, 0.1);
+}
+
+[data-theme="dark"] .glass {
+  background: rgba(26, 19, 17, 0.85);
+  border-color: rgba(232, 93, 36, 0.15);
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(232, 93, 36, 0.2);
+  color: #2C2421;
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid #E85D24;
+  outline-offset: 2px;
+}
