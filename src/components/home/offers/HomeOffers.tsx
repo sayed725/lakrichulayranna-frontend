@@ -1,44 +1,66 @@
 "use client";
 
 import { Container } from "@/components/shared/container/Container";
+import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
 import { Tag, Copy, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-const OFFERS = [
-  {
-    id: 1,
-    title: "প্রথম অর্ডারে ছাড়!",
-    code: "WELCOME20",
-    discount: "২০%",
-    desc: "নতুন গ্রাহকদের জন্য প্রথম অর্ডারে ২০% ছাড়",
-    bg: "from-fire to-fire-dark",
-  },
-  {
-    id: 2,
-    title: "উইকেন্ড ধামাকা",
-    code: "WEEKEND50",
-    discount: "৫০৳",
-    desc: "৫০০৳ এর বেশি অর্ডারে ৫০৳ ছাড়",
-    bg: "from-terracotta to-terracotta-light",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/fetcher";
+import { API_ROUTES } from "@/lib/constants";
 
 export function HomeOffers() {
-  const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const copyToClipboard = (id: number, code: string) => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["coupons"],
+    queryFn: async () => {
+      const res = await api.get(`${API_ROUTES.COUPONS.BASE}?isActive=true`);
+      return res.data.data;
+    },
+  });
+
+  const coupons = Array.isArray(data) ? data.filter((c: any) => !c.isDeleted) : [];
+
+  // Map coupon data to display format
+  const offers = coupons.slice(0, 2).map((coupon: any) => ({
+    id: coupon.id,
+    title: coupon.title,
+    code: coupon.code,
+    discount: coupon.discountType === 'PERCENTAGE' 
+      ? `${coupon.discountValue}%` 
+      : `${coupon.discountValue}৳`,
+    desc: coupon.description || '',
+    bg: coupon.id === coupons[0]?.id ? "from-fire to-fire-dark" : "from-terracotta to-terracotta-light",
+  }));
+
+  // Only return null after loading if there's an error or no data
+  // if (!isLoading && (isError || offers.length === 0)) return null;
+
+  const copyToClipboard = (id: string, code: string) => {
     navigator.clipboard.writeText(code);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
-    <section className="py-20 bg-cream-dark">
+    <section className="py-10 bg-cream-dark">
       <Container>
-        <div className="grid md:grid-cols-2 gap-6">
-          {OFFERS.map((offer) => (
+        <SectionTitle
+          // title="Special Offers"
+          titleBn="বিশেষ অফার"
+          align="center"
+        />
+        <div className="grid md:grid-cols-2 gap-6 mt-10">
+          {isLoading || (isError && offers.length === 0)
+            ? Array.from({ length: 2 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="relative overflow-hidden rounded-2xl p-6 sm:p-8 bg-cream-dark/50 animate-pulse h-40"
+                />
+              ))
+            : offers.map((offer) => (
             <motion.div
               key={offer.id}
               whileHover={{ scale: 1.02 }}

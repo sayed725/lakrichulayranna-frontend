@@ -24,19 +24,27 @@ export function HomeReviews() {
 
   const reviews = Array.isArray(data) ? data : data?.reviews || [];
 
-  if (isLoading || reviews.length === 0) return null;
+  // Only return null after loading if there are no reviews
+  if (!isLoading && reviews.length === 0) return null;
 
   return (
     <section className="py-20 bg-white">
       <Container>
         <SectionTitle
-          title="Customer Testimonials"
+          // title="Customer Testimonials"
           titleBn="গ্রাহকদের মতামত"
           subtitle="যারা আমাদের খাবারের স্বাদ নিয়েছেন, তাদের অভিজ্ঞতা জানুন"
         />
 
         <div className="grid md:grid-cols-3 gap-6">
-          {reviews.slice(0, 3).map((review: any) => (
+          {isLoading
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-cream/30 p-6 rounded-2xl border border-border animate-pulse h-48"
+                />
+              ))
+            : reviews.slice(0, 3).map((review: any) => (
             <div
               key={review.id}
               className="bg-cream/30 p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow duration-300"
