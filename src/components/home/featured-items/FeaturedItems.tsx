@@ -28,45 +28,33 @@ export function FeaturedItems() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-10">
           <SectionTitle
-            title="Signature Dishes"
+            // title="Signature Dishes"
             titleBn="বিশেষ আইটেম"
             align="left"
             className="mb-0"
           />
           <Link
             href="/menu"
-            className="hidden sm:flex items-center gap-2 text-fire font-semibold font-bengali hover:text-fire-dark transition-colors group"
+            className="flex items-center gap-2 text-fire font-semibold font-bengali hover:text-fire-dark transition-colors group"
           >
             সব দেখুন
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        {/* Horizontal scroll on mobile, grid on desktop */}
-        <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
-          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto pb-8 sm:pb-0 snap-x snap-mandatory scrollbar-hide">
-            {isLoading
-              ? Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="min-w-[280px] sm:min-w-0 snap-center">
-                    <SkeletonCard />
-                  </div>
-                ))
-              : items.slice(0, 4).map((item: any) => (
-                  <div key={item.id} className="min-w-[280px] sm:min-w-0 snap-center">
-                    <ItemCard item={item} />
-                  </div>
-                ))}
-          </div>
-        </div>
-
-        <div className="mt-8 text-center sm:hidden">
-          <Link
-            href="/menu"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-fire text-fire rounded-xl font-semibold font-bengali w-full hover:bg-fire hover:text-white transition-colors"
-          >
-            সব দেখুন
-            <ArrowRight size={18} />
-          </Link>
+        {/* Grid layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:items-stretch">
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-full">
+                  <SkeletonCard />
+                </div>
+              ))
+            : items.slice(0, 4).map((item: any) => (
+                <div key={item.id} className="h-full">
+                  <ItemCard item={item} />
+                </div>
+              ))}
         </div>
       </div>
     </section>

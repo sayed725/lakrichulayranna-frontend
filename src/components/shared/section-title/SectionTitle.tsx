@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 
 interface SectionTitleProps {
-  title: string;
-  titleBn: string;
+  title?: string;
+  titleBn?: string;
   subtitle?: string;
   align?: "center" | "left";
   className?: string;

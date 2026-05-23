@@ -92,11 +92,11 @@ export function ItemCard({ item }: ItemCardProps) {
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-grow">
-        <h3 className="font-bold font-bengali text-lg text-charcoal mb-1 line-clamp-1 group-hover:text-fire transition-colors">
+        <h3 className="font-bold font-bengali text-lg text-charcoal mb-2 line-clamp-1 group-hover:text-fire transition-colors">
           {item.name}
         </h3>
         
-        <p className="text-muted text-sm font-bengali line-clamp-2 mb-4 flex-grow">
+        <p className="text-muted text-sm font-bengali line-clamp-2 h-10 mb-4">
           {item.description}
         </p>
         
