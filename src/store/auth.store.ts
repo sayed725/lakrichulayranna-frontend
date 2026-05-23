@@ -29,12 +29,29 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) => set({ user }),
 
-      setToken: (token) => set({ token }),
+      setToken: (token) => {
+        set({ token });
+        if (typeof window !== "undefined") {
+          if (token) {
+            document.cookie = `token=${token}; path=/; max-age=604800; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`;
+          } else {
+            document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+          }
+        }
+      },
 
-      setAuth: (user, token) => set({ user, token }),
+      setAuth: (user, token) => {
+        set({ user, token });
+        if (typeof window !== "undefined") {
+          document.cookie = `token=${token}; path=/; max-age=604800; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`;
+        }
+      },
 
       logout: () => {
         set({ user: null, token: null });
+        if (typeof window !== "undefined") {
+          document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        }
       },
 
       isAuthenticated: () => {

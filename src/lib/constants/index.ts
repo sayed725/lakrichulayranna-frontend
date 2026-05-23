@@ -66,6 +66,17 @@ export const API_ROUTES = {
   SETTINGS: {
     BASE: "/settings",
   },
+
+  // Admin – maps to the same backend routes; admin access is enforced server-side via middleware
+  ADMIN: {
+    ORDERS: "/orders",
+    ITEMS: "/items",
+    CATEGORIES: "/categories",
+    BANNERS: "/banners",
+    COUPONS: "/coupons",
+    REVIEWS: "/reviews",
+    USERS: "/users",
+  },
 } as const;
 
 // ═══════════════════════════════════════════════
