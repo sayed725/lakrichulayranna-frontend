@@ -73,7 +73,7 @@ export function HomeCategories() {
     }
   }, [categories]);
 
-  // if (!isLoading && categories.length === 0) return null;
+  if (!isLoading && categories.length === 0) return null;
 
   return (
     <section className="py-12 bg-cream">

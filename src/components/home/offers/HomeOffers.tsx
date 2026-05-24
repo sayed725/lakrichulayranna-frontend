@@ -36,7 +36,7 @@ export function HomeOffers() {
   }));
 
   // Only return null after loading if there's an error or no data
-  // if (!isLoading && (isError || offers.length === 0)) return null;
+  if (!isLoading && (isError || offers.length === 0)) return null;
 
   const copyToClipboard = (id: string, code: string) => {
     navigator.clipboard.writeText(code);
