@@ -16,7 +16,8 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  Mail
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { Logo } from "@/components/shared/logo/Logo";
@@ -31,6 +32,7 @@ const ADMIN_LINKS = [
   { name: "কুপন", href: "/dashboard/admin/coupons", icon: Ticket },
   { name: "রিভিউ", href: "/dashboard/admin/reviews", icon: Star },
   { name: "ব্যবহারকারী", href: "/dashboard/admin/users", icon: Users },
+  { name: "যোগাযোগ", href: "/dashboard/admin/contacts", icon: Mail },
   { name: "সেটিংস", href: "/dashboard/admin/settings", icon: Settings },
 ];
 

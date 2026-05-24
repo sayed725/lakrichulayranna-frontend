@@ -4,6 +4,10 @@ import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: {
@@ -50,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="bn" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="bn" data-scroll-behavior="smooth" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body className="font-bengali antialiased">
         <ThemeProvider>
           <NextTopLoader color="oklch(0.65 0.20 45)" showSpinner={false} />

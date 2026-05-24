@@ -24,7 +24,7 @@ export function FeaturedItems() {
   if (isError) return null; // Silently fail on home page, or show a fallback
 
   return (
-    <section className="py-20 bg-cream">
+    <section className="py-10 bg-cream">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-10">
           <SectionTitle

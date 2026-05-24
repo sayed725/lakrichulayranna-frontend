@@ -6,7 +6,7 @@ import { Container } from "@/components/shared/container/Container";
 import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
 import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
-import { formatRelativeDate } from "@/lib/utils";
+
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -26,7 +26,7 @@ export function HomeReviews() {
 
   const reviews = Array.isArray(data) ? data : data?.reviews || [];
 
-  console.log("reviews", reviews);
+  // console.log("reviews", reviews);
 
   // Only return null after loading if there are no reviews
   if (!isLoading && reviews.length === 0) return null;
@@ -36,7 +36,7 @@ export function HomeReviews() {
   const marqueeReviews = [...Array(duplicateCount)].flatMap(() => reviews.slice(0, 3));
 
   return (
-    <section className="py-20 bg-cream overflow-hidden">
+    <section className="py-10 bg-cream overflow-hidden">
       <Container>
         <SectionTitle
           titleBn="গ্রাহকদের মতামত"

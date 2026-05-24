@@ -67,6 +67,11 @@ export const API_ROUTES = {
     BASE: "/settings",
   },
 
+  // Contacts
+  CONTACTS: {
+    BASE: "/contacts",
+  },
+
   // Admin – maps to the same backend routes; admin access is enforced server-side via middleware
   ADMIN: {
     ORDERS: "/orders",
@@ -76,6 +81,7 @@ export const API_ROUTES = {
     COUPONS: "/coupons",
     REVIEWS: "/reviews",
     USERS: "/users",
+    CONTACTS: "/contacts",
   },
 } as const;
 
@@ -109,6 +115,7 @@ export const ADMIN_NAV_LINKS: NavLink[] = [
   { label: "Coupons", labelBn: "কুপন", href: "/dashboard/admin/coupons" },
   { label: "Banners", labelBn: "ব্যানার", href: "/dashboard/admin/banners" },
   { label: "Users", labelBn: "ব্যবহারকারী", href: "/dashboard/admin/users" },
+  { label: "Contacts", labelBn: "যোগাযোগ", href: "/dashboard/admin/contacts" },
   { label: "Settings", labelBn: "সেটিংস", href: "/dashboard/admin/settings" },
 ];
 

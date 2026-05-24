@@ -76,7 +76,7 @@ export function HomeCategories() {
   if (!isLoading && categories.length === 0) return null;
 
   return (
-    <section className="py-12 bg-cream">
+    <section className="py-10 bg-cream">
       <Container>
         <div className="flex items-end justify-between mb-8">
           <SectionTitle
