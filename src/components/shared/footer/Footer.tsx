@@ -15,8 +15,8 @@ const quickLinks = [
 
 const customerLinks = [
   { label: "আমার অর্ডার", href: "/dashboard/customer/orders" },
-  { label: "আমার প্রোফাইল", href: "/dashboard/customer/profile" },
   { label: "প্রাইভেসি পলিসি", href: "/privacy" },
+  { label: "শিপিং নীতিমালা", href: "/shipping" },
   { label: "শর্তাবলী", href: "/terms" },
 ];
 
