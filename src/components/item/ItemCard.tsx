@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Flame, Sparkles } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/store/cart.store";
 import { toast } from "sonner";
@@ -23,6 +23,8 @@ interface Item {
   imageUrl: string;
   category: Category;
   isAvailable: boolean;
+  isSpicy?: boolean;
+  isFeatured?: boolean;
 }
 
 interface ItemCardProps {
@@ -71,6 +73,11 @@ export function ItemCard({ item }: ItemCardProps) {
         
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
+          {item.isFeatured && (
+            <span className="bg-fire/90 text-white backdrop-blur-md border-none px-2 py-1 text-[10px] font-bold tracking-wider uppercase shadow-lg shadow-fire/20 rounded-lg flex items-center gap-1">
+              <Sparkles className="w-3 h-3" /> Best Seller
+            </span>
+          )}
           {hasDiscount && (
             <span className="bg-error text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg">
               -{discountPercentage}% ছাড়
@@ -79,6 +86,14 @@ export function ItemCard({ item }: ItemCardProps) {
           {!item.isAvailable && (
             <span className="bg-charcoal text-cream text-xs font-bold px-2 py-1 rounded-lg shadow-lg">
               স্টকে নেই
+            </span>
+          )}
+        </div>
+        
+        <div className="absolute top-3 right-3">
+          {item.isSpicy && (
+            <span className="bg-fire/90 text-white backdrop-blur-md border-none px-2 py-1 text-[10px] font-bold tracking-wider uppercase shadow-lg shadow-fire/20 rounded-lg flex items-center gap-1">
+              <Flame className="w-3 h-3" /> Spicy
             </span>
           )}
         </div>

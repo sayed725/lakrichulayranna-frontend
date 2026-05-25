@@ -19,7 +19,7 @@ export function SkeletonGrid({
   className,
 }: SkeletonGridProps) {
   return (
-    <div className={cn("grid gap-6", colClasses[columns], className)}>
+    <div className={cn("grid gap-3", colClasses[columns], className)}>
       {Array.from({ length: count }).map((_, i) => (
         <SkeletonCard key={i} />
       ))}
