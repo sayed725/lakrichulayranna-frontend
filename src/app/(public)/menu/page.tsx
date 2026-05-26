@@ -18,15 +18,29 @@ export default function MenuPage() {
   const urlCategoryName = searchParams.get("categoryName") || "all";
   const urlIsSpicy = searchParams.get("isSpicy") === "true";
   const urlIsFeatured = searchParams.get("isFeatured") === "true";
+  const urlPrice = searchParams.get("price");
+  let urlMinPrice = "";
+  let urlMaxPrice = "";
+  if (urlPrice) {
+    try {
+      const parsed = JSON.parse(urlPrice);
+      urlMinPrice = parsed.gte || "";
+      urlMaxPrice = parsed.lte || "";
+    } catch {
+      // Invalid JSON, ignore
+    }
+  }
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>(urlCategoryName);
   const [isSpicy, setIsSpicy] = useState<boolean>(urlIsSpicy);
   const [isFeatured, setIsFeatured] = useState<boolean>(urlIsFeatured);
+  const [minPrice, setMinPrice] = useState<string>(urlMinPrice);
+  const [maxPrice, setMaxPrice] = useState<string>(urlMaxPrice);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
   // Check if any filter is active
-  const hasActiveFilters = activeCategory !== "all" || isSpicy || isFeatured || searchTerm !== "";
+  const hasActiveFilters = activeCategory !== "all" || isSpicy || isFeatured || searchTerm !== "" || minPrice !== "" || maxPrice !== "";
 
   // Reset all filters
   const resetAllFilters = () => {
@@ -34,16 +48,24 @@ export default function MenuPage() {
     setActiveCategory("all");
     setIsSpicy(false);
     setIsFeatured(false);
-    updateFilters("all", false, false);
+    setMinPrice("");
+    setMaxPrice("");
+    updateFilters("all", false, false, "", "");
     setIsFilterDrawerOpen(false);
   };
 
   // Update URL when filters change
-  const updateFilters = (category: string, spicy: boolean, featured: boolean) => {
+  const updateFilters = (category: string, spicy: boolean, featured: boolean, min: string, max: string) => {
     const params = new URLSearchParams();
     if (category !== "all") params.set("categoryName", category);
     if (spicy) params.set("isSpicy", "true");
     if (featured) params.set("isFeatured", "true");
+    if (min || max) {
+      const priceObj: any = {};
+      if (min) priceObj.gte = min;
+      if (max) priceObj.lte = max;
+      params.set("price", JSON.stringify(priceObj));
+    }
     router.push(`/menu?${params.toString()}`);
   };
 
@@ -59,7 +81,7 @@ export default function MenuPage() {
 
   // Fetch items with filters
   const { data: itemsData, isLoading } = useQuery({
-    queryKey: ["items", activeCategory, isSpicy, isFeatured, debouncedSearch],
+    queryKey: ["items", activeCategory, isSpicy, isFeatured, debouncedSearch, minPrice, maxPrice],
     queryFn: async () => {
       let url = API_ROUTES.ITEMS.BASE;
       const params = new URLSearchParams();
@@ -67,6 +89,14 @@ export default function MenuPage() {
       if (isSpicy) params.append("isSpicy", "true");
       if (isFeatured) params.append("isFeatured", "true");
       if (debouncedSearch) params.append("searchTerm", debouncedSearch);
+      
+      // Price range filter
+      if (minPrice || maxPrice) {
+        const priceObj: any = {};
+        if (minPrice) priceObj.gte = minPrice;
+        if (maxPrice) priceObj.lte = maxPrice;
+        params.append("price", JSON.stringify(priceObj));
+      }
       
       const res = await api.get(`${url}?${params.toString()}`);
       return res.data.data;
@@ -120,6 +150,38 @@ export default function MenuPage() {
                 />
               </div>
 
+               {/* Price Range Filter */}
+              <div className="bg-white rounded-2xl border border-border p-4">
+                <div className="flex items-center gap-2 mb-4 text-charcoal font-bold font-bengali">
+                  <h3>মূল্য সীমা</h3>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-muted mb-1 block">সর্বনিম্ন</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                      onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
+                      className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
+                    />
+                  </div>
+                  <span className="text-muted">-</span>
+                  <div className="flex-1">
+                    <label className="text-xs text-muted mb-1 block">সর্বোচ্চ</label>
+                    <input
+                      type="number"
+                      placeholder="1000"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
+                      className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Categories */}
               <div className="bg-white rounded-2xl border border-border p-4">
                 <div className="flex items-center justify-between mb-4">
@@ -140,7 +202,7 @@ export default function MenuPage() {
                   <button
                     onClick={() => {
                       setActiveCategory("all");
-                      updateFilters("all", isSpicy, isFeatured);
+                      updateFilters("all", isSpicy, isFeatured, minPrice, maxPrice);
                     }}
                     className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
                       activeCategory === "all"
@@ -155,7 +217,7 @@ export default function MenuPage() {
                       key={cat.id}
                       onClick={() => {
                         setActiveCategory(cat.name);
-                        updateFilters(cat.name, isSpicy, isFeatured);
+                        updateFilters(cat.name, isSpicy, isFeatured, minPrice, maxPrice);
                       }}
                       className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
                         activeCategory === cat.name
@@ -169,6 +231,8 @@ export default function MenuPage() {
                 </div>
               </div>
 
+            
+
               {/* Spicy Filter */}
               <div className="bg-white rounded-2xl border border-border p-4">
                 <div className="flex items-center justify-between">
@@ -179,7 +243,7 @@ export default function MenuPage() {
                   <button
                     onClick={() => {
                       setIsSpicy(!isSpicy);
-                      updateFilters(activeCategory, !isSpicy, isFeatured);
+                      updateFilters(activeCategory, !isSpicy, isFeatured, minPrice, maxPrice);
                     }}
                     className={`relative w-12 h-6 rounded-full transition-colors ${
                       isSpicy ? "bg-fire" : "bg-charcoal/20"
@@ -204,7 +268,7 @@ export default function MenuPage() {
                   <button
                     onClick={() => {
                       setIsFeatured(!isFeatured);
-                      updateFilters(activeCategory, isSpicy, !isFeatured);
+                      updateFilters(activeCategory, isSpicy, !isFeatured, minPrice, maxPrice);
                     }}
                     className={`relative w-12 h-6 rounded-full transition-colors ${
                       isFeatured ? "bg-fire" : "bg-charcoal/20"
@@ -218,6 +282,8 @@ export default function MenuPage() {
                   </button>
                 </div>
               </div>
+
+             
             </div>
           </aside>
 
@@ -253,6 +319,38 @@ export default function MenuPage() {
                     />
                   </div>
 
+                   {/* Price Range Filter */}
+                  <div className="bg-white rounded-2xl border border-border p-4">
+                    <div className="flex items-center gap-2 mb-4 text-charcoal font-bold font-bengali">
+                      <h3>মূল্য সীমা</h3>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <label className="text-xs text-muted mb-1 block">সর্বনিম্ন</label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={minPrice}
+                          onChange={(e) => setMinPrice(e.target.value)}
+                          onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
+                          className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
+                        />
+                      </div>
+                      <span className="text-muted">-</span>
+                      <div className="flex-1">
+                        <label className="text-xs text-muted mb-1 block">সর্বোচ্চ</label>
+                        <input
+                          type="number"
+                          placeholder="1000"
+                          value={maxPrice}
+                          onChange={(e) => setMaxPrice(e.target.value)}
+                          onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
+                          className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Categories */}
                   <div className="bg-white rounded-2xl border border-border p-4">
                     <div className="flex items-center justify-between mb-4">
@@ -273,7 +371,7 @@ export default function MenuPage() {
                       <button
                         onClick={() => {
                           setActiveCategory("all");
-                          updateFilters("all", isSpicy, isFeatured);
+                          updateFilters("all", isSpicy, isFeatured, minPrice, maxPrice);
                         }}
                         className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
                           activeCategory === "all"
@@ -288,7 +386,7 @@ export default function MenuPage() {
                           key={cat.id}
                           onClick={() => {
                             setActiveCategory(cat.name);
-                            updateFilters(cat.name, isSpicy, isFeatured);
+                            updateFilters(cat.name, isSpicy, isFeatured, minPrice, maxPrice);
                           }}
                           className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
                             activeCategory === cat.name
@@ -302,6 +400,8 @@ export default function MenuPage() {
                     </div>
                   </div>
 
+                 
+
                   {/* Spicy Filter */}
                   <div className="bg-white rounded-2xl border border-border p-4">
                     <div className="flex items-center justify-between">
@@ -312,7 +412,7 @@ export default function MenuPage() {
                       <button
                         onClick={() => {
                           setIsSpicy(!isSpicy);
-                          updateFilters(activeCategory, !isSpicy, isFeatured);
+                          updateFilters(activeCategory, !isSpicy, isFeatured, minPrice, maxPrice);
                         }}
                         className={`relative w-12 h-6 rounded-full transition-colors ${
                           isSpicy ? "bg-fire" : "bg-charcoal/20"
@@ -337,7 +437,7 @@ export default function MenuPage() {
                       <button
                         onClick={() => {
                           setIsFeatured(!isFeatured);
-                          updateFilters(activeCategory, isSpicy, !isFeatured);
+                          updateFilters(activeCategory, isSpicy, !isFeatured, minPrice, maxPrice);
                         }}
                         className={`relative w-12 h-6 rounded-full transition-colors ${
                           isFeatured ? "bg-fire" : "bg-charcoal/20"
@@ -351,6 +451,8 @@ export default function MenuPage() {
                       </button>
                     </div>
                   </div>
+
+                  
                 </div>
               </div>
             </>
@@ -383,7 +485,9 @@ export default function MenuPage() {
                     setActiveCategory("all");
                     setIsSpicy(false);
                     setIsFeatured(false);
-                    updateFilters("all", false, false);
+                    setMinPrice("");
+                    setMaxPrice("");
+                    updateFilters("all", false, false, "", "");
                   }}
                   className="mt-6 px-6 py-2.5 bg-fire/10 text-fire rounded-xl font-semibold font-bengali hover:bg-fire hover:text-white transition-colors cursor-pointer"
                 >
