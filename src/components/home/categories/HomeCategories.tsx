@@ -133,7 +133,7 @@ export function HomeCategories() {
                     className="shrink-0 w-[45%] sm:w-[45%] md:w-[28%] lg:w-[19%] snap-center"
                   >
                     <Link
-                      href={`/categories/${category.slug}`}
+                      href={`/menu?category.name=${encodeURIComponent(category.name)}`}
                       prefetch={true}
                       className="block group relative overflow-hidden rounded-2xl h-36 sm:h-44 bg-cream-dark border border-border hover:shadow-xl hover:shadow-fire/10 transition-all"
                     >

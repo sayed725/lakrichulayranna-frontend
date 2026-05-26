@@ -196,15 +196,9 @@ export function Navbar() {
                   <div className="flex items-center gap-2">
                     <Link
                       href="/login"
-                      className="px-4 py-2 text-sm font-medium font-bengali text-charcoal hover:text-fire transition-colors rounded-xl hover:bg-fire/5"
+                      className="px-5 py-2.5 text-sm font-bold font-bengali text-white bg-fire hover:bg-fire-dark rounded-xl shadow-sm transition-colors"
                     >
-                      লগইন
-                    </Link>
-                    <Link
-                      href="/register"
-                      className="px-5 py-2 text-sm font-semibold font-bengali text-white bg-fire hover:bg-fire-dark rounded-xl transition-all duration-200 hover:shadow-md hover:shadow-fire/20 active:scale-95"
-                    >
-                      রেজিস্টার
+                      লগইন করুন
                     </Link>
                   </div>
                 )}

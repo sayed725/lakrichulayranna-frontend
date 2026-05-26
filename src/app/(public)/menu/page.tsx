@@ -15,7 +15,7 @@ import { API_ROUTES } from "@/lib/constants";
 export default function MenuPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const urlCategoryName = searchParams.get("categoryName") || "all";
+  const urlCategoryName = searchParams.get("category.name") || "all";
   const urlIsSpicy = searchParams.get("isSpicy") === "true";
   const urlIsFeatured = searchParams.get("isFeatured") === "true";
   const urlPrice = searchParams.get("price");
@@ -30,6 +30,7 @@ export default function MenuPage() {
       // Invalid JSON, ignore
     }
   }
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>(urlCategoryName);
   const [isSpicy, setIsSpicy] = useState<boolean>(urlIsSpicy);
@@ -57,7 +58,7 @@ export default function MenuPage() {
   // Update URL when filters change
   const updateFilters = (category: string, spicy: boolean, featured: boolean, min: string, max: string) => {
     const params = new URLSearchParams();
-    if (category !== "all") params.set("categoryName", category);
+    if (category !== "all") params.set("category.name", category);
     if (spicy) params.set("isSpicy", "true");
     if (featured) params.set("isFeatured", "true");
     if (min || max) {
@@ -85,7 +86,7 @@ export default function MenuPage() {
     queryFn: async () => {
       let url = API_ROUTES.ITEMS.BASE;
       const params = new URLSearchParams();
-      if (activeCategory !== "all") params.append("categoryName", activeCategory);
+      if (activeCategory !== "all") params.append("category.name", activeCategory);
       if (isSpicy) params.append("isSpicy", "true");
       if (isFeatured) params.append("isFeatured", "true");
       if (debouncedSearch) params.append("searchTerm", debouncedSearch);

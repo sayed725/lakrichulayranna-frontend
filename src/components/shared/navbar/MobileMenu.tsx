@@ -152,16 +152,9 @@ export function MobileMenu({ id }: { id?: string }) {
                     <Link
                       href="/login"
                       onClick={closeMenu}
-                      className="w-full text-center px-4 py-3.5 rounded-xl border-2 border-charcoal/15 text-charcoal font-semibold font-bengali hover:border-fire hover:text-fire transition-all"
+                      className="w-full text-center px-4 py-3.5 rounded-xl text-white font-bold font-bengali bg-fire hover:bg-fire-dark shadow-sm transition-colors"
                     >
-                      লগইন
-                    </Link>
-                    <Link
-                      href="/register"
-                      onClick={closeMenu}
-                      className="w-full text-center px-4 py-3.5 rounded-xl bg-fire text-white font-semibold font-bengali hover:bg-fire-dark transition-all hover:shadow-lg hover:shadow-fire/25 active:scale-[0.98]"
-                    >
-                      রেজিস্টার করুন
+                      লগইন করুন
                     </Link>
                   </div>
                 )}
