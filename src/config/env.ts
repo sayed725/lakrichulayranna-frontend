@@ -21,6 +21,7 @@ export const env = {
   APP_NAME: getEnvVar("NEXT_PUBLIC_APP_NAME"),
   IS_DEV: process.env.NODE_ENV === "development",
   IS_PROD: process.env.NODE_ENV === "production",
+  IMGBB_API_KEY: process.env.IMGBB_API_KEY || "",
 } as const;
 
 // Server-only env vars (only accessible in server components / middleware)

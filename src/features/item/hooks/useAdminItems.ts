@@ -4,14 +4,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
 import { toast } from "sonner";
+import { getItems, createItem, updateItem, deleteItem } from "@/services/item.service";
+import { GetItemsParams, CreateItemPayload, UpdateItemPayload } from "@/services/item.service";
 
-export const useAdminItems = () => {
+export const useAdminItems = (params?: GetItemsParams) => {
   return useQuery({
-    queryKey: ["admin", "items"],
-    queryFn: async () => {
-      const res = await api.get(API_ROUTES.ADMIN.ITEMS);
-      return res.data.data;
-    },
+    queryKey: ["admin", "items", params],
+    queryFn: () => getItems(params),
   });
 };
 
