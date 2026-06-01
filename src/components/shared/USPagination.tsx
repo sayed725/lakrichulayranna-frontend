@@ -62,7 +62,7 @@ export default function USPagination({
           <PaginationPrevious
             onClick={() => onPageChange(Math.max(1, page - 1))}
             className={
-              page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"
+              page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-primary/10"
             }
           />
         </PaginationItem>
@@ -77,7 +77,7 @@ export default function USPagination({
               <PaginationLink
                 isActive={page === p}
                 onClick={() => onPageChange(p as number)}
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-primary/10"
               >
                 {p}
               </PaginationLink>
@@ -91,7 +91,7 @@ export default function USPagination({
             className={
               page === totalPage
                 ? "pointer-events-none opacity-50"
-                : "cursor-pointer"
+                : "cursor-pointer hover:bg-primary/10"
             }
           />
         </PaginationItem>

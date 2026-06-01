@@ -8,6 +8,8 @@ export interface GetItemsParams {
   categoryId?: string;
   "category.name"?: string;
   isAvailable?: boolean;
+  isFeatured?: boolean;
+  isBestSelling?: boolean;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
@@ -28,6 +30,7 @@ export interface Item {
   deletedAt?: Date;
   isAvailable: boolean;
   isFeatured: boolean;
+  isBestSelling?: boolean;
   tags: string[];
   createdAt: Date;
   category?: {
@@ -39,6 +42,7 @@ export interface Item {
 
 export interface CreateItemPayload {
   name: string;
+  slug: string;
   description: string;
   price: number;
   discountPrice?: number;
@@ -47,6 +51,7 @@ export interface CreateItemPayload {
   categoryId: string;
   isAvailable?: boolean;
   isFeatured?: boolean;
+  isBestSelling?: boolean;
   isSpicy?: boolean;
   weight?: string;
   tags?: string[];

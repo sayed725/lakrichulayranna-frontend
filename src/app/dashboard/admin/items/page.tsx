@@ -52,10 +52,11 @@ export default function AdminItemsPage() {
     price: 0,
     categoryId: "",
     imageUrl: "",
-    semiTitle: "",
+    slug: "",
     images: [] as string[],
     isAvailable: true,
     isFeatured: false,
+    isBestSelling: false,
     isSpicy: false,
     description: "",
   });
@@ -75,7 +76,9 @@ export default function AdminItemsPage() {
       page,
       searchTerm: debouncedSearch,
       "category.name": categoryNameFilter === "all" ? undefined : categoryNameFilter,
-      isAvailable: isAvailableFilter === "all" ? undefined : isAvailableFilter === "active",
+      isBestSelling: isAvailableFilter === "bestSelling" ? true : undefined,
+      isFeatured: isAvailableFilter === "featured" ? true : undefined,
+      isAvailable: isAvailableFilter === "available" ? true : undefined,
       sortBy,
       sortOrder
     }),
@@ -124,10 +127,11 @@ export default function AdminItemsPage() {
       price: 0,
       categoryId: "",
       imageUrl: "",
-      semiTitle: "",
+      slug: "",
       images: [],
       isAvailable: true,
       isFeatured: false,
+      isBestSelling: false,
       isSpicy: false,
       description: "",
     });
@@ -159,10 +163,11 @@ export default function AdminItemsPage() {
       price: item.price || 0,
       categoryId: item.categoryId || "",
       imageUrl: item.imageUrl || "",
-      semiTitle: item.semiTitle || "",
+      slug: item.slug || "",
       images: Array.isArray(item.images) ? item.images : (item.images ? [item.images] : []),
       isAvailable: item.isAvailable,
       isFeatured: item.isFeatured,
+      isBestSelling: item.isBestSelling || false,
       isSpicy: item.isSpicy || false,
       description: item.description || "",
     });
@@ -202,14 +207,19 @@ export default function AdminItemsPage() {
           <p className="text-muted-foreground text-sm hidden md:block font-bengali">মেনুর সকল খাবার পরিচালনা করুন</p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={(val) => {
-          if (val) resetForm();
+          if (val) {
+            resetForm();
+            if (categories.length > 0) {
+              setFormData(prev => ({ ...prev, categoryId: categories[0].id }));
+            }
+          }
           setIsCreateOpen(val);
         }}>
           <Button className="bg-fire text-white font-semibold hover:bg-fire-dark" onClick={() => setIsCreateOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
             নতুন আইটেম
           </Button>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-3xl">
             <DialogHeader>
               <DialogTitle>নতুন আইটেম তৈরি করুন</DialogTitle>
             </DialogHeader>
@@ -248,6 +258,7 @@ export default function AdminItemsPage() {
         </div>
 
         <div className="flex items-center gap-2 w-auto">
+          
           {/* Mobile/Tablet Filter Drawer */}
           <div className="lg:hidden">
             <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
@@ -274,7 +285,9 @@ export default function AdminItemsPage() {
                     <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Category</h3>
                     <Select value={categoryNameFilter} onValueChange={(v) => { setCategoryNameFilter(v || "all"); setPage(1); }}>
                       <SelectTrigger className="w-full h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                        <SelectValue placeholder="All Categories" />
+                        <SelectValue placeholder="All Categories">
+                          {categoryNameFilter === "all" ? "All Categories" : categoryNameFilter}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent className="rounded-xl">
                         <SelectItem value="all">All Categories</SelectItem>
@@ -287,15 +300,21 @@ export default function AdminItemsPage() {
 
                   {/* Status Filter */}
                   <div className="space-y-3">
-                    <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Status</h3>
+                    <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Filter By</h3>
                     <Select value={isAvailableFilter} onValueChange={(v) => { setIsAvailableFilter(v || "all"); setPage(1); }}>
                       <SelectTrigger className="w-full h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                        <SelectValue placeholder="All Status" />
+                        <SelectValue placeholder="All Status">
+                          {isAvailableFilter === "all" ? "All Status" :
+                           isAvailableFilter === "bestSelling" ? "Best Selling" :
+                           isAvailableFilter === "featured" ? "Featured" :
+                           isAvailableFilter === "available" ? "Availability" : "Status"}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent className="rounded-xl">
                         <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
+                        <SelectItem value="bestSelling">Best Selling</SelectItem>
+                        <SelectItem value="featured">Featured</SelectItem>
+                        <SelectItem value="available">Availability</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -342,7 +361,9 @@ export default function AdminItemsPage() {
           <div className="hidden lg:flex flex-wrap gap-2 items-center">
             <Select value={categoryNameFilter} onValueChange={(v) => { setCategoryNameFilter(v || "all"); setPage(1); }}>
               <SelectTrigger className="w-[180px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                <SelectValue placeholder="Category" />
+                <SelectValue placeholder="Category">
+                  {categoryNameFilter === "all" ? "All Categories" : categoryNameFilter}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 <SelectItem value="all">All Categories</SelectItem>
@@ -354,12 +375,18 @@ export default function AdminItemsPage() {
 
             <Select value={isAvailableFilter} onValueChange={(v) => { setIsAvailableFilter(v || "all"); setPage(1); }}>
               <SelectTrigger className="w-[130px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Status">
+                  {isAvailableFilter === "all" ? "All Status" : 
+                   isAvailableFilter === "bestSelling" ? "Best Selling" :
+                   isAvailableFilter === "featured" ? "Featured" :
+                   isAvailableFilter === "available" ? "Availability" : "Status"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="bestSelling">Best Selling</SelectItem>
+                <SelectItem value="featured">Featured</SelectItem>
+                <SelectItem value="available">Availability</SelectItem>
               </SelectContent>
             </Select>
 
@@ -406,6 +433,7 @@ export default function AdminItemsPage() {
                 <th className="px-6 py-4">Name</th>
                 <th className="px-6 py-4">Category</th>
                 <th className="px-6 py-4 text-right">Price</th>
+                <th className="px-6 py-4 text-center">Best Selling</th>
                 <th className="px-6 py-4 text-center">Featured</th>
                 <th className="px-6 py-4 text-center">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
@@ -430,7 +458,20 @@ export default function AdminItemsPage() {
                   <td className="px-6 py-4 text-muted-foreground">{item.category?.name || "-"}</td>
                   <td className="px-6 py-4 text-right font-bold text-fire">{formatPrice(item.price)}</td>
                   <td className="px-6 py-4 text-center">
-                    <Switch 
+                    <Switch
+                      checked={item.isBestSelling}
+                      onCheckedChange={(checked) => {
+                        updateMutation.mutate({
+                          id: item.id,
+                          payload: { isBestSelling: checked }
+                        });
+                      }}
+                      disabled={updateMutation.isPending}
+                      className="data-checked:bg-purple-500"
+                    />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <Switch
                       checked={item.isFeatured}
                       onCheckedChange={(checked) => {
                         updateMutation.mutate({
@@ -506,8 +547,11 @@ export default function AdminItemsPage() {
         </div>
       )}
 
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-2xl">
+      <Dialog open={isEditOpen} onOpenChange={(val) => {
+        if (!val) resetForm();
+        setIsEditOpen(val);
+      }}>
+        <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>আইটেম এডিট করুন</DialogTitle>
           </DialogHeader>

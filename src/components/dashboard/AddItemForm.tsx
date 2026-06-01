@@ -1,19 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { ImageIcon, X } from "lucide-react";
+import { ImageUploadField } from '@/components/shared/form/image-upload-field'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import { Plus, X } from 'lucide-react'
 import { Category } from "@/services/category.service";
 
 interface AddItemFormProps {
@@ -35,211 +29,153 @@ export default function AddItemForm({
   buttonText,
   onCancel,
 }: AddItemFormProps) {
-  const [imageUploadLoading, setImageUploadLoading] = useState(false);
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setImageUploadLoading(true);
-    try {
-      const uploadFormData = new FormData();
-      uploadFormData.append("image", file);
-
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: uploadFormData,
-      });
-
-      const data = await response.json();
-
-      if (data.url) {
-        setFormData({
-          ...formData,
-          imageUrl: data.url,
-          images: [...formData.images, data.url],
-        });
-      }
-    } catch (error) {
-      console.error("Image upload failed:", error);
-    } finally {
-      setImageUploadLoading(false);
-    }
+  const addGalleryImage = () => {
+    setFormData({ ...formData, images: [...formData.images, ""] });
   };
 
-  const removeImage = (index: number) => {
-    const newImages = formData.images.filter((_: string, i: number) => i !== index);
-    setFormData({
-      ...formData,
-      images: newImages,
-      imageUrl: newImages[0] || "",
-    });
+  const removeGalleryImage = (index: number) => {
+    const newImages = [...formData.images];
+    newImages.splice(index, 1);
+    setFormData({ ...formData, images: newImages });
+  };
+
+  const updateGalleryImage = (index: number, val: string) => {
+    const newImages = [...formData.images];
+    newImages[index] = val;
+    setFormData({ ...formData, images: newImages });
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Item Name *</Label>
-          <Input
-            id="name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Enter item name"
-            required
-          />
+    <form onSubmit={onSubmit} className="space-y-6 max-h-[75vh] overflow-y-auto px-1 pr-3 scrollbar-hide">
+      <div className="grid grid-cols-2 gap-6">
+        {/* Core Info */}
+        <div className="space-y-2 col-span-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Product Name <span className="text-red-500">*</span></label>
+            <Input required placeholder="Crunchy Popcorn" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="rounded-xl border-slate-200 focus:border-orange-500" />
+        </div>
+
+        <div className="space-y-2 col-span-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Category <span className="text-red-500">*</span></label>
+            <Select value={formData.categoryId} onValueChange={(v) => setFormData({ ...formData, categoryId: v })}>
+                <SelectTrigger className="rounded-xl border-slate-200 w-full">
+                    <SelectValue placeholder="Select a category">
+                        {formData.categoryId && categories.find(c => c.id === formData.categoryId)?.name}
+                    </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                    {categories.map((c: any) => (
+                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="weight">Weight</Label>
-          <Input
-            id="weight"
-            value={formData.weight}
-            onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-            placeholder="e.g., 250g, 1pc"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="semiTitle">Semi Title</Label>
-        <Input
-          id="semiTitle"
-          value={formData.semiTitle}
-          onChange={(e) => setFormData({ ...formData, semiTitle: e.target.value })}
-          placeholder="Short subtitle or tagline"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="price">Price *</Label>
-          <Input
-            id="price"
-            type="number"
-            step="0.01"
-            value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
-            placeholder="0.00"
-            required
-          />
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Price (৳) <span className="text-red-500">*</span></label>
+            <Input type="number" step="0.01" required placeholder="99.00" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value === '' ? '' : parseFloat(e.target.value) })} className="rounded-xl border-slate-200" />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="category">Category *</Label>
-          <Select
-            value={formData.categoryId}
-            onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select category">
-                {formData.categoryId && categories.find(c => c.id === formData.categoryId)?.name}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Weight <span className="text-red-500">*</span></label>
+            <Input required placeholder="e.g. 500g" value={formData.weight} onChange={(e) => setFormData({ ...formData, weight: e.target.value })} className="rounded-xl border-slate-200" />
+        </div>
+
+        {/* Slug */}
+        <div className="space-y-2 col-span-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Slug</label>
+            <Textarea
+                placeholder="crunchy-popcorn"
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                rows={2}
+                className="rounded-xl border-slate-200 resize-none h-20"
+            />
+        </div>
+
+        {/* Description */}
+        <div className="space-y-2 col-span-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Full Description</label>
+            <Textarea 
+                placeholder="Detailed snack description..." 
+                value={formData.description} 
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={4}
+                className="rounded-xl border-slate-200"
+            />
+        </div>
+
+        {/* Main Image */}
+        <div className="col-span-2 space-y-4">
+            <div className="flex items-center gap-2 border-b pb-2">
+                <label className="text-sm font-bold uppercase tracking-wider text-slate-500">Primary Visuals</label>
+            </div>
+            <ImageUploadField
+                field={{
+                    name: "mainImage",
+                    state: { value: formData.imageUrl, meta: { isTouched: false, errors: [] } },
+                    handleChange: (val: string) => setFormData({ ...formData, imageUrl: val })
+                } as any}
+                label="Main Product Image"
+            />
+        </div>
+
+        {/* Gallery Images */}
+        <div className="col-span-2 space-y-4 pt-2">
+            <div className="flex items-center justify-between border-b pb-2">
+                <label className="text-sm font-bold uppercase tracking-wider text-slate-500">Gallery Images</label>
+                <Button type="button" variant="ghost" size="sm" onClick={addGalleryImage} className="h-8 text-primary hover:text-primary hover:bg-orange-50">
+                    <Plus className="w-4 h-4 mr-1" /> Add Image
+                </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-4">
+                {formData.images.map((img: string, index: number) => (
+                    <div key={index} className="flex gap-4 items-end bg-slate-50 dark:bg-slate-900/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                         <div className="flex-1">
+                            <ImageUploadField
+                                field={{
+                                    name: `image-${index}`,
+                                    state: { value: img, meta: { isTouched: false, errors: [] } },
+                                    handleChange: (val: string) => updateGalleryImage(index, val)
+                                } as any}
+                                label={`Gallery Image #${index + 1}`}
+                                noLabel
+                            />
+                         </div>
+                         <Button type="button" variant="outline" size="icon" onClick={() => removeGalleryImage(index)} className="shrink-0 text-destructive border-red-100 hover:bg-red-50 mb-1">
+                            <X className="w-4 h-4" />
+                         </Button>
+                    </div>
+                ))}
+            </div>
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description *</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder="Describe the item"
-          rows={4}
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Images</Label>
-        <div className="border-2 border-dashed border-border rounded-lg p-4">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            disabled={imageUploadLoading}
-            className="hidden"
-            id="image-upload"
-          />
-          <label
-            htmlFor="image-upload"
-            className="flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors p-4"
-          >
-            <ImageIcon className="w-8 h-8 text-muted-foreground mb-2" />
-            <span className="text-sm text-muted-foreground">
-              {imageUploadLoading ? "Uploading..." : "Click to upload image"}
-            </span>
-          </label>
-        </div>
-
-        {formData.images.length > 0 && (
-          <div className="grid grid-cols-4 gap-2 mt-2">
-            {formData.images.map((img: string, index: number) => (
-              <div key={index} className="relative group">
-                <img
-                  src={img}
-                  alt={`Upload ${index + 1}`}
-                  className="w-full h-20 object-cover rounded-md border"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
+      <div className="flex flex-wrap gap-6 py-6 border-t border-b bg-slate-50/50 dark:bg-slate-950/20 -mx-1 px-4 rounded-xl">
+          <div className="flex items-center space-x-3">
+              <Switch checked={formData.isAvailable} onCheckedChange={(c) => setFormData({ ...formData, isAvailable: c })} className="data-checked:bg-green-500" />
+              <label className="text-sm font-medium">Available for Order</label>
           </div>
-        )}
+          <div className="flex items-center space-x-3">
+              <Switch checked={formData.isFeatured} onCheckedChange={(c) => setFormData({ ...formData, isFeatured: c })} className="data-checked:bg-amber-500" />
+              <label className="text-sm font-medium">Feature on Homepage</label>
+          </div>
+          <div className="flex items-center space-x-3">
+              <Switch checked={formData.isBestSelling} onCheckedChange={(c) => setFormData({ ...formData, isBestSelling: c })} className="data-checked:bg-purple-500" />
+              <label className="text-sm font-medium text-purple-500 font-bold flex items-center gap-1">Best Selling 🔥</label>
+          </div>
+          <div className="flex items-center space-x-3">
+              <Switch checked={formData.isSpicy} onCheckedChange={(c) => setFormData({ ...formData, isSpicy: c })} className="data-checked:bg-red-500" />
+              <label className="text-sm font-medium  text-red-500 font-bold flex items-center gap-1">Spicy 🌶️</label>
+          </div>
       </div>
 
-      <div className="flex flex-wrap gap-6">
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="isActive"
-            checked={formData.isActive}
-            onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-          />
-          <Label htmlFor="isActive">Active</Label>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="isFeatured"
-            checked={formData.isFeatured}
-            onCheckedChange={(checked) => setFormData({ ...formData, isFeatured: checked })}
-          />
-          <Label htmlFor="isFeatured">Featured</Label>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="isSpicy"
-            checked={formData.isSpicy}
-            onCheckedChange={(checked) => setFormData({ ...formData, isSpicy: checked })}
-          />
-          <Label htmlFor="isSpicy">Spicy 🌶️</Label>
-        </div>
-      </div>
-
-      <div className="flex justify-end gap-3 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Saving..." : buttonText}
-        </Button>
+      <div className="pt-2 flex justify-end gap-3 mt-6 pb-2">
+          <Button type="button" variant="outline" onClick={onCancel} className="rounded-xl px-6 hover:bg-primary/10">Cancel</Button>
+          <Button type="submit" disabled={isPending} className="rounded-xl px-8 bg-fire text-white font-semibold hover:bg-fire-dark">
+              {isPending ? "Saving..." : buttonText}
+          </Button>
       </div>
     </form>
-  );
+  )
 }
