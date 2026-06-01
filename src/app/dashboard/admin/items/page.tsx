@@ -197,8 +197,6 @@ export default function AdminItemsPage() {
     return sortMap[`${sortBy}-${sortOrder}`] || "Sort By";
   };
 
-  if (itemsLoading) return <ItemsLoadingSkeleton />;
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-card p-4 rounded-xl border">
@@ -424,23 +422,26 @@ export default function AdminItemsPage() {
         </div>
       </div>
 
-      <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
-              <tr>
-                <th className="px-6 py-4 w-16">Image</th>
-                <th className="px-6 py-4">Name</th>
-                <th className="px-6 py-4">Category</th>
-                <th className="px-6 py-4 text-right">Price</th>
-                <th className="px-6 py-4 text-center">Best Selling</th>
-                <th className="px-6 py-4 text-center">Featured</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {items.map((item: any) => (
+      {itemsLoading ? (
+        <ItemsLoadingSkeleton />
+      ) : (
+        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
+                <tr>
+                  <th className="px-6 py-4 w-16">Image</th>
+                  <th className="px-6 py-4">Name</th>
+                  <th className="px-6 py-4">Category</th>
+                  <th className="px-6 py-4 text-right">Price</th>
+                  <th className="px-6 py-4 text-center">Best Selling</th>
+                  <th className="px-6 py-4 text-center">Featured</th>
+                  <th className="px-6 py-4 text-center">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {items.map((item: any) => (
                 <tr key={item.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
                   <td className="px-6 py-4">
                     {item.imageUrl || (item.images && item.images[0]) ? (
@@ -536,6 +537,7 @@ export default function AdminItemsPage() {
           </table>
         </div>
       </div>
+      )}
 
       {meta && meta.totalPage > 1 && (
         <div className="mt-4 bg-card border-border rounded-xl overflow-hidden shadow-sm">

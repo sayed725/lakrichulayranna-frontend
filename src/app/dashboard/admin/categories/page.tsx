@@ -93,7 +93,7 @@ export default function AdminCategoriesPage() {
     },
   });
 
-  if (categoriesLoading) return <CategoriesLoadingSkeleton />;
+  // if (categoriesLoading) return <CategoriesLoadingSkeleton />;
 
   const resetForm = () => {
     setFormData({
@@ -332,21 +332,24 @@ export default function AdminCategoriesPage() {
       </div>
 
       {/* Table */}
-      <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
-              <tr>
-                <th className="px-6 py-4 w-16">Image</th>
-                <th className="px-6 py-4">Name</th>
-                <th className="px-6 py-4">Items</th>
-                <th className="px-6 py-4 text-center">Featured</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {categories.map((category: Category) => (
+      {categoriesLoading ? (
+        <CategoriesLoadingSkeleton />
+      ) : (
+        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
+                <tr>
+                  <th className="px-6 py-4 w-16">Image</th>
+                  <th className="px-6 py-4">Name</th>
+                  <th className="px-6 py-4">Items</th>
+                  <th className="px-6 py-4 text-center">Featured</th>
+                  <th className="px-6 py-4 text-center">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {categories.map((category: Category) => (
                 <tr key={category.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
                   <td className="px-6 py-4">
                     {category.imageUrl ? (
@@ -427,6 +430,7 @@ export default function AdminCategoriesPage() {
           </table>
         </div>
       </div>
+      )}
 
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (

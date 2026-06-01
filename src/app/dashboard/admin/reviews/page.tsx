@@ -127,8 +127,6 @@ export default function AdminReviewsPage() {
     return "Sort By";
   };
 
-  if (reviewsLoading) return <ReviewsLoadingSkeleton />;
-
   const columns = [
     {
       header: "আইটেম ও গ্রাহক",
@@ -390,21 +388,24 @@ export default function AdminReviewsPage() {
       </div>
 
       {/* Table */}
-      <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
-              <tr>
-                <th className="px-6 py-4">Item & Customer</th>
-                <th className="px-6 py-4">Rating</th>
-                <th className="px-6 py-4">Comment</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-center">Featured</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {reviews.map((review: any) => (
+      {reviewsLoading ? (
+        <ReviewsLoadingSkeleton />
+      ) : (
+        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
+                <tr>
+                  <th className="px-6 py-4">Item & Customer</th>
+                  <th className="px-6 py-4">Rating</th>
+                  <th className="px-6 py-4">Comment</th>
+                  <th className="px-6 py-4 text-center">Status</th>
+                  <th className="px-6 py-4 text-center">Featured</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {reviews.map((review: any) => (
                 <tr key={review.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
                   <td className="px-6 py-4">
                     <div>
@@ -473,6 +474,7 @@ export default function AdminReviewsPage() {
           </table>
         </div>
       </div>
+      )}
 
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (
