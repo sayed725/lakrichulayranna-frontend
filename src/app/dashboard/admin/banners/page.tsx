@@ -42,10 +42,13 @@ export default function AdminBannersPage() {
   const [formData, setFormData] = useState({
     title: "",
     subtitle: "",
-    imageUrl: "",
-    link: "",
-    isActive: true,
+    badge: "",
+    image: "",
     order: 0,
+    banner: false,
+    isActive: true,
+    categoryId: "",
+    buttonText: "",
   });
 
   const { data: bannerResponse, isLoading: bannersLoading } = useQuery({
@@ -114,10 +117,13 @@ export default function AdminBannersPage() {
     setFormData({
       title: "",
       subtitle: "",
-      imageUrl: "",
-      link: "",
-      isActive: true,
+      badge: "",
+      image: "",
       order: 0,
+      banner: false,
+      isActive: true,
+      categoryId: "",
+      buttonText: "",
     });
   };
 
@@ -134,12 +140,15 @@ export default function AdminBannersPage() {
   const openEdit = (banner: Banner) => {
     setSelectedBanner(banner);
     setFormData({
-      title: banner.title,
+      title: banner.title || "",
       subtitle: banner.subtitle || "",
-      imageUrl: banner.imageUrl || "",
-      link: banner.link || "",
-      isActive: banner.isActive ?? true,
+      badge: banner.badge || "",
+      image: banner.image || "",
       order: banner.order || 0,
+      banner: banner.banner ?? false,
+      isActive: banner.isActive ?? true,
+      categoryId: banner.categoryId || "",
+      buttonText: banner.buttonText || "",
     });
     setIsEditOpen(true);
   };
@@ -333,6 +342,7 @@ export default function AdminBannersPage() {
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
                   <th className="px-6 py-4">Banner</th>
+                  <th className="px-6 py-4">Category</th>
                   <th className="px-6 py-4">Order</th>
                   <th className="px-6 py-4 text-center">Status</th>
                   <th className="px-6 py-4 text-right">Actions</th>
@@ -344,8 +354,8 @@ export default function AdminBannersPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
                       <div className="relative w-32 h-16 rounded-lg overflow-hidden border border-border bg-cream shrink-0">
-                        {banner.imageUrl ? (
-                          <Image src={banner.imageUrl} alt={banner.title || "Banner"} fill className="object-cover" />
+                        {banner.image ? (
+                          <Image src={banner.image} alt={banner.title || "Banner"} fill className="object-cover" />
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <ImageIcon className="w-4 h-4 text-muted-foreground" />
@@ -354,14 +364,26 @@ export default function AdminBannersPage() {
                       </div>
                       <div>
                         <div className="font-semibold">{banner.title || "Untitled Banner"}</div>
+                        {/* {banner.badge && (
+                          <span className="inline-block px-2 py-0.5 text-xs font-semibold bg-fire text-white rounded-full mb-1">
+                            {banner.badge}
+                          </span>
+                        )} */}
                         {banner.subtitle && (
                           <div className="text-xs text-muted-foreground line-clamp-1">{banner.subtitle}</div>
                         )}
-                        {banner.link && (
-                          <div className="text-xs text-muted-foreground truncate max-w-[200px]">{banner.link}</div>
-                        )}
+                        {/* {banner.buttonText && (
+                          <div className="text-xs text-muted-foreground">Button: {banner.buttonText}</div>
+                        )} */}
                       </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {banner.category ? (
+                      <span className="text-sm text-muted-foreground">{banner.category.name}</span>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">-</span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full">
@@ -479,10 +501,10 @@ export default function AdminBannersPage() {
           {selectedBanner && (
             <div className="space-y-4 mt-4">
               <div className="flex items-center gap-4 p-4 bg-cream/30 dark:bg-charcoal-light/20 rounded-lg">
-                {selectedBanner.imageUrl ? (
+                {selectedBanner.image ? (
                   <div className="w-48 h-24 rounded-lg overflow-hidden shrink-0">
                     <Image
-                      src={selectedBanner.imageUrl}
+                      src={selectedBanner.image}
                       alt={selectedBanner.title}
                       width={192}
                       height={96}
@@ -495,7 +517,12 @@ export default function AdminBannersPage() {
                   </div>
                 )}
                 <div>
-                  <h3 className="text-xl font-bold text-charcoal font-bengali">{selectedBanner.title}</h3>
+                  <h3 className="text-xl font-bold text-charcoal font-bengali">{selectedBanner.title || "Untitled Banner"}</h3>
+                  {selectedBanner.badge && (
+                    <span className="inline-block px-2 py-0.5 text-xs font-semibold bg-fire text-white rounded-full mt-1">
+                      {selectedBanner.badge}
+                    </span>
+                  )}
                   <div className="flex items-center gap-2 mt-2">
                     <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full text-sm">
                       Order: {selectedBanner.order}
@@ -511,10 +538,17 @@ export default function AdminBannersPage() {
                 </div>
               )}
 
-              {selectedBanner.link && (
+              {selectedBanner.buttonText && (
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Link</label>
-                  <p className="text-charcoal font-mono text-sm break-all">{selectedBanner.link}</p>
+                  <label className="text-sm font-semibold text-muted-foreground">Button Text</label>
+                  <p className="text-charcoal">{selectedBanner.buttonText}</p>
+                </div>
+              )}
+
+              {selectedBanner.category && (
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-muted-foreground">Category</label>
+                  <p className="text-charcoal">{selectedBanner.category.name}</p>
                 </div>
               )}
 
@@ -522,6 +556,10 @@ export default function AdminBannersPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-muted-foreground">Status</label>
                   <p className="text-charcoal">{selectedBanner.isActive ? "Active" : "Inactive"}</p>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-muted-foreground">Banner Type</label>
+                  <p className="text-charcoal">{selectedBanner.banner ? "Banner" : "Regular"}</p>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-muted-foreground">Order</label>

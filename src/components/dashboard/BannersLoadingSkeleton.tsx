@@ -6,6 +6,7 @@ export default function BannersLoadingSkeleton() {
           <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
             <tr>
               <th className="px-6 py-4">Banner</th>
+              <th className="px-6 py-4">Category</th>
               <th className="px-6 py-4">Order</th>
               <th className="px-6 py-4 text-center">Status</th>
               <th className="px-6 py-4 text-right">Actions</th>
@@ -22,6 +23,9 @@ export default function BannersLoadingSkeleton() {
                       <div className="h-4 w-24 bg-muted animate-pulse rounded" />
                     </div>
                   </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="h-5 w-20 bg-muted animate-pulse rounded" />
                 </td>
                 <td className="px-6 py-4">
                   <div className="h-5 w-8 bg-muted animate-pulse rounded" />

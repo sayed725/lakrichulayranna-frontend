@@ -6,29 +6,44 @@ export interface GetBannersParams {
   page?: number;
   searchTerm?: string;
   isActive?: boolean;
+  banner?: boolean;
+  categoryId?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
 
 export interface Banner {
   id: string;
-  title: string;
+  title?: string;
   subtitle?: string;
-  imageUrl: string;
-  link?: string;
-  isActive: boolean;
-  order: number;
+  badge?: string;
+  image?: string;
+  order?: number;
+  banner?: boolean;
+  isActive?: boolean;
+  categoryId?: string;
+  buttonText?: string;
+  category?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
   createdAt: Date;
   updatedAt: Date;
+  isDeleted?: boolean;
+  deletedAt?: Date;
 }
 
 export interface CreateBannerPayload {
-  title: string;
+  title?: string;
   subtitle?: string;
-  imageUrl: string;
-  link?: string;
-  isActive?: boolean;
+  badge?: string;
+  image?: string;
   order?: number;
+  banner?: boolean;
+  isActive?: boolean;
+  categoryId?: string;
+  buttonText?: string;
 }
 
 export interface UpdateBannerPayload extends Partial<CreateBannerPayload> {}
