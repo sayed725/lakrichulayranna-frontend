@@ -11,21 +11,28 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface Banner {
   id: number | string;
-  title: string;
-  subtitle: string;
-  badge: string;
-  image: string;
+  title?: string;
+  subtitle?: string;
+  badge?: string;
+  image?: string;
   categoryId?: string;
   order?: number;
-  banner?: any;
+  banner?: boolean;
+  isActive?: boolean;
+  buttonText?: string;
+  isDeleted?: boolean;
+  deletedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const fallbackBanner: Banner[] = [
   {
     id: 1,
     title: "আগুনের আঁচে রান্না ভালোবাসায় পরিবেশন",
-    subtitle: "Authentic wood-fire cooking, served with love. Experience the traditional flavors of Bengal delivered straight to your door.",
-    badge: "১০০% খাঁটি দেশীয় স্বাদ",
+    subtitle: "লাকড়ির চুলায় রান্না করা প্রতিটি খাবারে থাকছে গ্রামের ঐতিহ্যবাহী স্বাদ",
+    badge: "খাঁটি দেশীয় স্বাদ",
+    buttonText: "মেনু দেখুন", 
     image: "/lakri_chulay_ranna_cover_photo.jpg",
   }
 ];
@@ -40,7 +47,9 @@ export default function HeroSlider({ initialSlides = [] }: HeroSliderProps) {
     queryFn: () => getBanners({ isActive: true }),
   });
 
-  const fetchedBanners = bannerResponse?.data?.filter((b: any) => b.banner).sort((a: any, b: any) => (a.order || 0) - (b.order || 0)) || [];
+  
+  // console.log(bannerResponse)
+  const fetchedBanners = bannerResponse?.data?.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)) || [];
 
   const slides = fetchedBanners.length > 0 ? fetchedBanners : (initialSlides.length > 0 ? initialSlides : fallbackBanner);
   const [current, setCurrent] = useState(0);
@@ -98,53 +107,61 @@ export default function HeroSlider({ initialSlides = [] }: HeroSliderProps) {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="space-y-4 sm:space-y-6"
             >
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-medium tracking-wide text-orange-200 uppercase shadow-lg shadow-black/20"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-fire opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-fire"></span>
-                </span>
-                {slides[current].badge}
-              </motion.div>
+              {slides[current].badge && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-medium tracking-wide text-orange-200 uppercase shadow-lg shadow-black/20"
+                >
+                  {/* <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-fire opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-fire"></span>
+                  </span> */}
+                  {slides[current].badge}
+                </motion.div>
+              )}
 
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent hover:from-amber-600 hover:to-orange-700 transition-all"
-              >
-                {slides[current].title}
-              </motion.h1>
+              {slides[current].title && (
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight bg-gradient-to-r from-amber-600 to-orange-700 bg-clip-text text-transparent hover:from-amber-600 hover:to-orange-700 transition-all"
+                >
+                  {slides[current].title}
+                </motion.h1>
+              )}
 
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                className="text-base sm:text-lg lg:text-xl text-gray-300 font-medium leading-relaxed max-w-xs sm:max-w-xl"
-              >
-                {slides[current].subtitle}
-              </motion.p>
+              {slides[current].subtitle && (
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                  className="text-base sm:text-lg lg:text-xl text-gray-300 font-medium leading-relaxed max-w-xs sm:max-w-xl"
+                >
+                  {slides[current].subtitle}
+                </motion.p>
+              )}
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.7 }}
-                className="pt-2 sm:pt-4"
-              >
-                <Link href={slides[current].categoryId ? `/menu?category=${slides[current].categoryId}` : "/menu"}>
-                  <Button
-                    size="default"
-                    className="bg-fire text-white font-semibold font-bengali text-base rounded-xl hover:bg-fire-dark transition-all duration-300 hover:shadow-xl hover:shadow-fire/30 active:scale-95 px-6 py-3 h-auto"
-                  >
-                    <Utensils size={18} className="mr-2 group-hover:rotate-12 transition-transform" />
-                    অর্ডার করুন
-                  </Button>
-                </Link>
-              </motion.div>
+              {slides[current].buttonText && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.7 }}
+                  className="pt-2 sm:pt-4"
+                >
+                  <Link href={slides[current].categoryId ? `/menu?category=${slides[current].categoryId}` : "/menu"}>
+                    <Button
+                      size="default"
+                      className="bg-fire text-white font-semibold font-bengali text-base rounded-xl hover:bg-fire-dark transition-all duration-300 hover:shadow-xl hover:shadow-fire/30 active:scale-95 px-6 py-3 h-auto"
+                    >
+                      <Utensils size={18} className="mr-2 group-hover:rotate-12 transition-transform" />
+                      {slides[current].buttonText}
+                    </Button>
+                  </Link>
+                </motion.div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
