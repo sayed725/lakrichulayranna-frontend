@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Star, CheckCircle, Trash2, Search, Filter, RefreshCw, XCircle, Eye } from "lucide-react";
+import { Star, CheckCircle, Trash2, Search, Filter, RefreshCw, XCircle, Eye, MoreVertical } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription, SheetClose } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import api from "@/lib/fetcher";
@@ -441,25 +447,25 @@ export default function AdminReviewsPage() {
                     />
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="order-border hover:bg-blue-50"
-                        onClick={() => handleViewReview(review)}
-                      >
-                        <Eye size={18} />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="text-destructive border-border hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-destructive"
-                        onClick={() => handleDelete(review.id)}
-                        disabled={deleteMutation.isPending}
-                      >
-                        <Trash2 size={18} />
-                      </Button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
+                        <MoreVertical size={18} className="text-muted-foreground" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleViewReview(review)}>
+                          <Eye size={16} className="mr-2" />
+                          View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(review.id)}
+                          className="text-destructive focus:text-destructive"
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 size={16} className="mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}

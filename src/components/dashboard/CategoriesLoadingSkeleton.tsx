@@ -35,7 +35,7 @@ export default function CategoriesLoadingSkeleton() {
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2">
                     <div className="h-8 w-8 bg-muted animate-pulse rounded" />
-                    <div className="h-8 w-8 bg-muted animate-pulse rounded" />
+                    {/* <div className="h-8 w-8 bg-muted animate-pulse rounded" /> */}
                   </div>
                 </td>
               </tr>

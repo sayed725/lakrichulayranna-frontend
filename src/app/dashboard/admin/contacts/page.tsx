@@ -2,12 +2,18 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Mail, Phone, MessageSquare, CheckCircle, Clock, Search, Filter, RefreshCw, Eye, Trash2, XCircle } from "lucide-react";
+import { Mail, Phone, MessageSquare, CheckCircle, Clock, Search, Filter, RefreshCw, Eye, Trash2, XCircle, MoreVertical } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import api from "@/lib/fetcher";
@@ -251,23 +257,25 @@ export default function AdminContactsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleViewContact(contact)}
-                          className="p-2 border-border hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                          title="View Contact"
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(contact.id)}
-                          className="p-2 text-error hover:bg-error/10 rounded-lg transition-colors cursor-pointer"
-                          title="Delete"
-                          disabled={deleteMutation.isPending}
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
+                          <MoreVertical size={18} className="text-muted-foreground" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleViewContact(contact)}>
+                            <Eye size={16} className="mr-2" />
+                            View
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(contact.id)}
+                            className="text-destructive focus:text-destructive"
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 size={16} className="mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}

@@ -2,13 +2,20 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Plus, Pencil, Trash2, Search, RefreshCw, Filter, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, RefreshCw, Filter, ImageIcon, Eye, MoreVertical } from "lucide-react";
+import { format } from "date-fns";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription, SheetClose } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -32,6 +39,7 @@ export default function AdminCategoriesPage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -125,6 +133,11 @@ export default function AdminCategoriesPage() {
       isFeatured: category.isFeatured ?? false,
     });
     setIsEditOpen(true);
+  };
+
+  const handleViewCategory = (category: Category) => {
+    setSelectedCategory(category);
+    setIsViewDialogOpen(true);
   };
 
   const resetFilters = () => {
@@ -398,31 +411,41 @@ export default function AdminCategoriesPage() {
                     />
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" className="hover:bg-primary/10" size="icon" onClick={() => openEdit(category)}>
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="text-destructive border-border hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-destructive"
-                        onClick={() => {
-                          toast.error("Confirm Deletion", {
-                            description: `Are you sure you want to delete ${category.name}?`,
-                            action: {
-                              label: "Delete",
-                              onClick: () => deleteMutation.mutate(category.id)
-                            },
-                            cancel: {
-                              label: "Cancel",
-                              onClick: () => { }
-                            }
-                          });
-                        }}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
+                        <MoreVertical size={18} className="text-muted-foreground" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleViewCategory(category)}>
+                          <Eye size={16} className="mr-2" />
+                          View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openEdit(category)}>
+                          <Pencil size={16} className="mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            toast.error("Confirm Deletion", {
+                              description: `Are you sure you want to delete ${category.name}?`,
+                              action: {
+                                label: "Delete",
+                                onClick: () => deleteMutation.mutate(category.id)
+                              },
+                              cancel: {
+                                label: "Cancel",
+                                onClick: () => { }
+                              }
+                            });
+                          }}
+                          className="text-destructive focus:text-destructive"
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 size={16} className="mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}
@@ -472,6 +495,68 @@ export default function AdminCategoriesPage() {
             buttonText="Update Category"
             onCancel={() => { resetForm(); setIsEditOpen(false); }}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* View Dialog */}
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-bengali">ক্যাটাগরি বিস্তারিত দেখুন</DialogTitle>
+            <DialogDescription>সম্পূর্ণ ক্যাটাগরির বিস্তারিত তথ্য</DialogDescription>
+          </DialogHeader>
+          {selectedCategory && (
+            <div className="space-y-4 mt-4">
+              <div className="flex items-center gap-4 p-4 bg-cream/30 dark:bg-charcoal-light/20 rounded-lg">
+                {selectedCategory.imageUrl ? (
+                  <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
+                    <Image
+                      src={selectedCategory.imageUrl}
+                      alt={selectedCategory.name}
+                      width={80}
+                      height={80}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-lg bg-cream dark:bg-charcoal-light flex items-center justify-center shrink-0">
+                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-xl font-bold text-charcoal font-bengali">{selectedCategory.name}</h3>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full text-sm">
+                      {selectedCategory._count?.items || 0} Items
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedCategory.description && (
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-muted-foreground">Description</label>
+                  <p className="text-charcoal font-bengali">{selectedCategory.description}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-muted-foreground">Status</label>
+                  <p className="text-charcoal">{selectedCategory.isActive ? "Active" : "Inactive"}</p>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-muted-foreground">Featured</label>
+                  <p className="text-charcoal">{selectedCategory.isFeatured ? "Yes" : "No"}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-muted-foreground">Created At</label>
+                <p className="text-charcoal">{format(new Date(selectedCategory.createdAt), "dd MMM, yyyy 'at' HH:mm")}</p>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
