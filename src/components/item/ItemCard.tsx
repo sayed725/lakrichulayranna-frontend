@@ -25,6 +25,7 @@ interface Item {
   isAvailable: boolean;
   isSpicy?: boolean;
   isFeatured?: boolean;
+  weight?: string;
 }
 
 interface ItemCardProps {
@@ -107,14 +108,21 @@ export function ItemCard({ item }: ItemCardProps) {
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-grow">
-        <h3 className="font-bold font-bengali text-lg text-charcoal mb-2 line-clamp-1 group-hover:text-fire transition-colors">
-          {item.name}
-        </h3>
-        
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <h3 className="font-bold font-bengali text-lg text-charcoal line-clamp-1 group-hover:text-fire transition-colors flex-1">
+            {item.name}
+          </h3>
+          {item.weight && (
+            <p className="text-sm text-fire font-semibold shrink-0">
+              {item.weight}
+            </p>
+          )}
+        </div>
+
         <p className="text-muted text-sm font-bengali line-clamp-2 h-10 mb-4">
           {item.description}
         </p>
-        
+
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
           <div className="flex flex-col">
             <span className="font-bold text-lg text-fire">

@@ -58,7 +58,7 @@ function CategorySection({ category, isLoading }: { category: any; isLoading: bo
             className="mb-0"
           />
           <Link
-            href={`/menu?category=${encodeURIComponent(category.name)}`}
+            href={`/menu?category.name=${encodeURIComponent(category.name)}`}
             className="flex items-center gap-1 sm:gap-2 text-fire font-semibold font-bengali hover:text-fire-dark transition-colors group"
           >
             সব<span className="hidden sm:block"> দেখুন</span>

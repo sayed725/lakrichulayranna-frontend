@@ -171,7 +171,7 @@ export function CartDrawer() {
                     <button
                       onClick={handleApplyCoupon}
                       disabled={couponLoading || !couponCode.trim()}
-                      className="px-4 py-2.5 rounded-xl bg-charcoal text-cream text-sm font-semibold hover:bg-charcoal-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="px-4 py-2.5 rounded-xl bg-fire text-white text-sm font-semibold hover:bg-fire-dark transition-all hover:shadow-lg hover:shadow-fire/25 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:active:scale-100 cursor-pointer"
                     >
                       {couponLoading ? "..." : "প্রয়োগ"}
                     </button>
