@@ -11,22 +11,47 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 export function HomeReviews() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["home-reviews"],
     queryFn: async () => {
-      try {
-        const res = await api.get(`${API_ROUTES.REVIEWS.BASE}?limit=6&sort=desc&isApproved=true&isDeleted=false&isFeatured=true`);
-        return res.data.data;
-      } catch (error) {
-        console.warn("Failed to fetch reviews:", error);
-        return [];
-      }
+      const res = await api.get(`${API_ROUTES.REVIEWS.BASE}?limit=6&sort=desc&isApproved=true&isDeleted=false&isFeatured=true`);
+      return res.data.data;
     },
   });
 
   const reviews = Array.isArray(data) ? data : data?.reviews || [];
 
+  // Check for 429 rate limit error - check both response.status and statusCode
+  const isRateLimited = error && (
+    (error as any)?.response?.status === 429 ||
+    (error as any)?.statusCode === 429
+  );
+
   // console.log("reviews", reviews);
+
+  // Show error message for rate limiting
+  if (isRateLimited) {
+    return (
+      <section className="py-10 bg-cream">
+        <Container>
+          <SectionTitle
+            titleBn="গ্রাহকদের মতামত"
+            subtitle="যারা আমাদের খাবারের স্বাদ নিয়েছেন, তাদের অভিজ্ঞতা জানুন"
+          />
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <p className="text-fire font-semibold font-bengali text-lg">
+                অতিরিক্ত অনুরোধের কারণে রিভিউ লোড করা যাচ্ছে না
+              </p>
+              <p className="text-muted text-sm mt-2">
+                অনুগ্রহ করে ১৫ মিনিট পর আবার চেষ্টা করুন
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+    );
+  }
 
   // Only return null after loading if there are no reviews
   if (!isLoading && reviews.length === 0) return null;
