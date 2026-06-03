@@ -6,42 +6,47 @@ import { ArrowRight } from "lucide-react";
 import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
 import { ItemCard } from "@/components/item/ItemCard";
 import { SkeletonCard } from "@/components/loaders/SkeletonCard";
-import { getCategories } from "@/services/category.service";
-import { getItems } from "@/services/item.service";
+import { getHomeCategories } from "@/services/category.service";
 
 export function FeaturedCategoriesWithItems() {
-  const { data: categories, isLoading: categoriesLoading } = useQuery({
-    queryKey: ["featured-categories"],
-    queryFn: () => getCategories({ isFeatured: true, isActive: true }),
+  const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
+    queryKey: ["home-categories"],
+    queryFn: () => getHomeCategories({ includeItems: 'true', itemsLimit: '4' }),
   });
 
-  const featuredCategories = Array.isArray(categories?.data) 
-    ? categories.data 
-    : categories?.categories || [];
+  const featuredCategories = Array.isArray(categoriesData?.data)
+    ? categoriesData.data
+    : categoriesData?.categories || [];
+
+  // console.log('categoriesData:', categoriesData);
+  // console.log('featuredCategories:', featuredCategories);
 
   if (!categoriesLoading && featuredCategories.length === 0) return null;
 
   return (
     <>
       {featuredCategories.map((category: any) => (
-        <CategorySection key={category.id} category={category} />
+        <CategorySection key={category.id} category={category} isLoading={categoriesLoading} />
       ))}
     </>
   );
 }
 
-function CategorySection({ category }: { category: any }) {
-  const { data: itemsData, isLoading: itemsLoading } = useQuery({
-    queryKey: ["category-items", category.id],
-    queryFn: () => getItems({ categoryId: category.id, isAvailable: true, limit: 4 }),
-    enabled: !!category.id,
-  });
+function CategorySection({ category, isLoading }: { category: any; isLoading: boolean }) {
+  const items = Array.isArray(category.items)
+    ? category.items.map((item: any) => ({
+        ...item,
+        category: {
+          id: category.id,
+          name: category.name,
+          slug: category.slug,
+        },
+      }))
+    : [];
 
-  const items = Array.isArray(itemsData?.data) 
-    ? itemsData.data 
-    : itemsData?.items || [];
+  // console.log('Category:', category.name, 'Items:', items);
 
-  if (!itemsLoading && items.length === 0) return null;
+  if (items.length === 0) return null;
 
   return (
     <section className="py-10 bg-cream">
@@ -63,13 +68,13 @@ function CategorySection({ category }: { category: any }) {
 
         {/* Grid layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:items-stretch">
-          {itemsLoading
+          {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="h-full">
                   <SkeletonCard />
                 </div>
               ))
-            : items.slice(0, 4).map((item: any) => (
+            : items.map((item: any) => (
                 <div key={item.id} className="h-full">
                   <ItemCard item={item} />
                 </div>

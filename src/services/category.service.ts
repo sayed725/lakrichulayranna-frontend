@@ -23,6 +23,30 @@ export interface Category {
   _count?: {
     items: number;
   };
+  items?: Item[];
+}
+
+export interface Item {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  discountPrice?: number;
+  imageUrl: string;
+  images: string[];
+  categoryId: string;
+  isSpicy?: boolean;
+  weight?: string;
+  isDeleted?: boolean;
+  deletedAt?: Date;
+  isAvailable: boolean;
+  isFeatured: boolean;
+  isBestSelling?: boolean;
+  isCategoryFeatured?: boolean;
+  isNew?: boolean;
+  tags: string[];
+  createdAt: Date;
 }
 
 export interface CreateCategoryPayload {
@@ -37,6 +61,11 @@ export interface UpdateCategoryPayload extends Partial<CreateCategoryPayload> {}
 
 export const getCategories = async (params?: GetCategoriesParams) => {
   const response = await api.get(API_ROUTES.ADMIN.CATEGORIES, { params });
+  return response.data;
+};
+
+export const getHomeCategories = async (params?: { includeItems?: string; itemsLimit?: string }) => {
+  const response = await api.get(API_ROUTES.CATEGORIES.HOME, { params });
   return response.data;
 };
 

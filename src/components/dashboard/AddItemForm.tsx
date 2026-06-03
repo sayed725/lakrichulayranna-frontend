@@ -165,6 +165,14 @@ export default function AddItemForm({
               <label className="text-sm font-medium text-purple-500 font-bold flex items-center gap-1">Best Selling 🔥</label>
           </div>
           <div className="flex items-center space-x-3">
+              <Switch checked={formData.isCategoryFeatured} onCheckedChange={(c) => setFormData({ ...formData, isCategoryFeatured: c })} className="data-checked:bg-orange-500" />
+              <label className="text-sm font-medium text-orange-500 font-bold flex items-center gap-1">Category Featured ⭐</label>
+          </div>
+          <div className="flex items-center space-x-3">
+              <Switch checked={formData.isNew} onCheckedChange={(c) => setFormData({ ...formData, isNew: c })} className="data-checked:bg-blue-500" />
+              <label className="text-sm font-medium text-blue-500 font-bold flex items-center gap-1">New ✨</label>
+          </div>
+          <div className="flex items-center space-x-3">
               <Switch checked={formData.isSpicy} onCheckedChange={(c) => setFormData({ ...formData, isSpicy: c })} className="data-checked:bg-red-500" />
               <label className="text-sm font-medium  text-red-500 font-bold flex items-center gap-1">Spicy 🌶️</label>
           </div>

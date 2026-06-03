@@ -23,6 +23,7 @@ export const API_ROUTES = {
   // Categories
   CATEGORIES: {
     BASE: "/categories",
+    HOME: "/categories/home",
     BY_ID: (id: string) => `/categories/${id}`,
     BY_SLUG: (slug: string) => `/categories/slug/${slug}`,
   },

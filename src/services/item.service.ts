@@ -10,6 +10,8 @@ export interface GetItemsParams {
   isAvailable?: boolean;
   isFeatured?: boolean;
   isBestSelling?: boolean;
+  isCategoryFeatured?: boolean;
+  isNew?: boolean;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
@@ -31,6 +33,8 @@ export interface Item {
   isAvailable: boolean;
   isFeatured: boolean;
   isBestSelling?: boolean;
+  isCategoryFeatured?: boolean;
+  isNew?: boolean;
   tags: string[];
   createdAt: Date;
   category?: {
@@ -52,6 +56,8 @@ export interface CreateItemPayload {
   isAvailable?: boolean;
   isFeatured?: boolean;
   isBestSelling?: boolean;
+  isCategoryFeatured?: boolean;
+  isNew?: boolean;
   isSpicy?: boolean;
   weight?: string;
   tags?: string[];

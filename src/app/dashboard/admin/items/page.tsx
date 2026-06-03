@@ -67,6 +67,8 @@ export default function AdminItemsPage() {
     isAvailable: true,
     isFeatured: false,
     isBestSelling: false,
+    isCategoryFeatured: false,
+    isNew: false,
     isSpicy: false,
     description: "",
   });
@@ -88,6 +90,8 @@ export default function AdminItemsPage() {
       "category.name": categoryNameFilter === "all" ? undefined : categoryNameFilter,
       isBestSelling: isAvailableFilter === "bestSelling" ? true : undefined,
       isFeatured: isAvailableFilter === "featured" ? true : undefined,
+      isCategoryFeatured: isAvailableFilter === "categoryFeatured" ? true : undefined,
+      isNew: isAvailableFilter === "new" ? true : undefined,
       isAvailable: isAvailableFilter === "available" ? true : undefined,
       sortBy,
       sortOrder
@@ -142,6 +146,8 @@ export default function AdminItemsPage() {
       isAvailable: true,
       isFeatured: false,
       isBestSelling: false,
+      isCategoryFeatured: false,
+      isNew: false,
       isSpicy: false,
       description: "",
     });
@@ -178,6 +184,8 @@ export default function AdminItemsPage() {
       isAvailable: item.isAvailable,
       isFeatured: item.isFeatured,
       isBestSelling: item.isBestSelling || false,
+      isCategoryFeatured: item.isCategoryFeatured || false,
+      isNew: item.isNew || false,
       isSpicy: item.isSpicy || false,
       description: item.description || "",
     });
@@ -320,6 +328,8 @@ export default function AdminItemsPage() {
                           {isAvailableFilter === "all" ? "All Status" :
                            isAvailableFilter === "bestSelling" ? "Best Selling" :
                            isAvailableFilter === "featured" ? "Featured" :
+                           isAvailableFilter === "categoryFeatured" ? "Category Featured" :
+                           isAvailableFilter === "new" ? "New" :
                            isAvailableFilter === "available" ? "Availability" : "Status"}
                         </SelectValue>
                       </SelectTrigger>
@@ -327,6 +337,8 @@ export default function AdminItemsPage() {
                         <SelectItem value="all">All Status</SelectItem>
                         <SelectItem value="bestSelling">Best Selling</SelectItem>
                         <SelectItem value="featured">Featured</SelectItem>
+                        <SelectItem value="categoryFeatured">Category Featured</SelectItem>
+                        <SelectItem value="new">New</SelectItem>
                         <SelectItem value="available">Availability</SelectItem>
                       </SelectContent>
                     </Select>
@@ -392,6 +404,8 @@ export default function AdminItemsPage() {
                   {isAvailableFilter === "all" ? "All Status" : 
                    isAvailableFilter === "bestSelling" ? "Best Selling" :
                    isAvailableFilter === "featured" ? "Featured" :
+                   isAvailableFilter === "categoryFeatured" ? "Cat. Featured" :
+                   isAvailableFilter === "new" ? "New" :
                    isAvailableFilter === "available" ? "Availability" : "Status"}
                 </SelectValue>
               </SelectTrigger>
@@ -399,6 +413,8 @@ export default function AdminItemsPage() {
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="bestSelling">Best Selling</SelectItem>
                 <SelectItem value="featured">Featured</SelectItem>
+                <SelectItem value="categoryFeatured">Cat. Featured</SelectItem>
+                <SelectItem value="new">New</SelectItem>
                 <SelectItem value="available">Availability</SelectItem>
               </SelectContent>
             </Select>
@@ -451,6 +467,8 @@ export default function AdminItemsPage() {
                   <th className="px-6 py-4 text-right">Price</th>
                   <th className="px-6 py-4 text-center">Best Selling</th>
                   <th className="px-6 py-4 text-center">Featured</th>
+                  <th className="px-6 py-4 text-center">Cat. Featured</th>
+                  <th className="px-6 py-4 text-center">New</th>
                   <th className="px-6 py-4 text-center">Status</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
@@ -497,6 +515,32 @@ export default function AdminItemsPage() {
                       }}
                       disabled={updateMutation.isPending}
                       className="data-checked:bg-amber-500"
+                    />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <Switch
+                      checked={item.isCategoryFeatured}
+                      onCheckedChange={(checked) => {
+                        updateMutation.mutate({
+                          id: item.id,
+                          payload: { isCategoryFeatured: checked }
+                        });
+                      }}
+                      disabled={updateMutation.isPending}
+                      className="data-checked:bg-orange-500"
+                    />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <Switch
+                      checked={item.isNew}
+                      onCheckedChange={(checked) => {
+                        updateMutation.mutate({
+                          id: item.id,
+                          payload: { isNew: checked }
+                        });
+                      }}
+                      disabled={updateMutation.isPending}
+                      className="data-checked:bg-blue-500"
                     />
                   </td>
                   <td className="px-6 py-4 text-center">
