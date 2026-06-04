@@ -46,6 +46,7 @@ export function ItemCard({ item }: ItemCardProps) {
       discountPrice: item.discountPrice ?? undefined,
       imageUrl: item.imageUrl,
       slug: item.slug,
+      weight: item.weight,
     });
     
     toast.success(`${item.name} কার্টে যোগ করা হয়েছে!`);

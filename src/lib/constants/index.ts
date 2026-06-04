@@ -40,6 +40,7 @@ export const API_ROUTES = {
   ORDERS: {
     BASE: "/orders",
     BY_ID: (id: string) => `/orders/${id}`,
+    BY_ORDER_NUMBER: (orderNumber: string) => `/orders/number/${orderNumber}`,
     MY_ORDERS: "/orders/my-orders",
     INVOICE: (id: string) => `/orders/${id}/invoice`,
   },

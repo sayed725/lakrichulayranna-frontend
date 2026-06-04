@@ -24,3 +24,14 @@ export const useCustomerOrder = (id: string) => {
     enabled: !!id,
   });
 };
+
+export const usePublicOrder = (orderNumber: string) => {
+  return useQuery({
+    queryKey: ["public", "order", orderNumber],
+    queryFn: async () => {
+      const res = await api.get(API_ROUTES.ORDERS.BY_ORDER_NUMBER(orderNumber));
+      return res.data.data;
+    },
+    enabled: !!orderNumber,
+  });
+};

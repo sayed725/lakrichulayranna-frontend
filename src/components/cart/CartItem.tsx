@@ -73,7 +73,7 @@ export function CartItem({ item }: CartItemProps) {
             </span>
             <button
               onClick={() => removeItem(item.id)}
-              className="p-1.5 rounded-lg hover:bg-error/10 text-muted hover:text-error transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+              className="p-1.5 rounded-lg hover:bg-error/10 text-muted hover:text-error transition-colors cursor-pointer"
               aria-label="Remove item"
             >
               <Trash2 size={14} />

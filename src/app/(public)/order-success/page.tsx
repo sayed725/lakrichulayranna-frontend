@@ -5,10 +5,25 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { CheckCircle2, ShoppingBag, FileText } from "lucide-react";
 import { Container } from "@/components/shared/container/Container";
+import { useEffect, useState } from "react";
 
 export default function OrderSuccessPage() {
   const searchParams = useSearchParams();
-  const orderNumber = searchParams.get("orderNumber");
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Get orderNumber from URL params first
+    const urlOrderNumber = searchParams.get("orderNumber");
+    if (urlOrderNumber) {
+      setOrderNumber(urlOrderNumber);
+    } else {
+      // Fallback to localStorage
+      const storedOrderNumber = localStorage.getItem("lastOrderNumber");
+      if (storedOrderNumber) {
+        setOrderNumber(storedOrderNumber);
+      }
+    }
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-cream py-20 flex items-center justify-center px-4">
@@ -55,13 +70,15 @@ export default function OrderSuccessPage() {
             )}
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/dashboard/customer/orders"
-                className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-charcoal text-white font-semibold font-bengali rounded-xl hover:bg-charcoal-light transition-all active:scale-95"
-              >
-                <FileText size={18} />
-                অর্ডার ট্র্যাক করুন
-              </Link>
+              {orderNumber && (
+                <Link
+                  href={`/order/${orderNumber}`}
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-charcoal text-white font-semibold font-bengali rounded-xl hover:bg-charcoal-light transition-all active:scale-95"
+                >
+                  <FileText size={18} />
+                  অর্ডার ট্র্যাক করুন
+                </Link>
+              )}
               <Link
                 href="/menu"
                 className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-fire/10 text-fire border border-transparent hover:border-fire/20 font-semibold font-bengali rounded-xl transition-all active:scale-95"

@@ -73,6 +73,9 @@ export function Navbar() {
     } else {
       navLinks.push({ label: "My Order", labelBn: "আমার অর্ডার", href: "/dashboard/customer/orders" });
     }
+  } else {
+    // Guest users - add link to view their orders from localStorage
+    navLinks.push({ label: "My Order", labelBn: "আমার অর্ডার", href: "/my-orders" });
   }
 
   return (

@@ -18,8 +18,12 @@ import { usePlaceOrder } from "@/features/order/hooks/usePlaceOrder";
 import { formatPrice } from "@/lib/utils";
 
 const checkoutSchema = z.object({
-  fullName: z.string().min(3, "কমপক্ষে ৩ অক্ষরের নাম প্রয়োজন"),
-  phone: z.string().regex(/^(01)[3-9][0-9]{8}$/, "সঠিক বাংলাদেশী মোবাইল নম্বর দিন"),
+  customerName: z.string().min(3, "কমপক্ষে ৩ অক্ষরের নাম প্রয়োজন"),
+  customerPhone: z.string().regex(/^(01)[3-9][0-9]{8}$/, "সঠিক বাংলাদেশী মোবাইল নম্বর দিন"),
+  customerEmail: z.string().email().optional().or(z.literal("")),
+  deliveryArea: z.enum(["inside_dhaka", "outside_dhaka"], {
+    message: "ডেলিভারি এলাকা নির্বাচন করুন",
+  }),
   address: z.string().min(10, "বিস্তারিত ঠিকানা দিন"),
   notes: z.string().optional(),
 });
@@ -33,19 +37,26 @@ export default function CheckoutPage() {
   const { user } = useAuthStore();
   const { coupon, discount } = useCouponStore();
   const placeOrder = usePlaceOrder();
+  const [selectedCity, setSelectedCity] = useState("ঢাকা");
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      fullName: user?.name || "",
-      phone: user?.phone || "",
-      address: user?.address || "",
+      customerName: user?.name || "",
+      customerPhone: user?.phone || "",
+      customerEmail: user?.email || "",
+      deliveryArea: "inside_dhaka",
+      address: "",
+      notes: "",
     },
   });
+
+  const deliveryAreaValue = watch("deliveryArea");
 
   useEffect(() => {
     setMounted(true);
@@ -54,28 +65,65 @@ export default function CheckoutPage() {
     }
   }, [items.length, router]);
 
+  // Update delivery charge when delivery area changes
+  useEffect(() => {
+    if (deliveryAreaValue) {
+      setSelectedCity(deliveryAreaValue === "inside_dhaka" ? "dhaka" : "other");
+    }
+  }, [deliveryAreaValue]);
+
   if (!mounted || items.length === 0) return null;
 
   const currentSubtotal = subtotal();
-  const deliveryFee = 60; // Fixed for now, could be dynamic
+
+  // Calculate delivery charge based on delivery area
+  const calculateDeliveryCharge = (deliveryArea: string, items: typeof cartItems) => {
+    let totalWeight = 0;
+
+    for (const item of items) {
+      const weightValue = item.weight ? parseInt(item.weight.replace(/\D/g, '')) || 0 : 0;
+      totalWeight += weightValue * item.quantity;
+    }
+
+    const isInsideDhaka = deliveryArea === "dhaka";
+    let calculatedDeliveryCharge = isInsideDhaka ? 100 : 150;
+
+    if (totalWeight > 1000) {
+      const extraWeight = Math.min(totalWeight - 1000, 4000);
+      const extraCharge = Math.ceil(extraWeight / 1000) * 10;
+      calculatedDeliveryCharge += extraCharge;
+    }
+
+    return calculatedDeliveryCharge;
+  };
+
+  const cartItems = items;
+  const deliveryFee = calculateDeliveryCharge(selectedCity, cartItems);
   const total = currentSubtotal - discount + deliveryFee;
 
   const onSubmit = (data: CheckoutFormValues) => {
-    const orderData = {
+    const orderData: any = {
       items: items.map(item => ({
         itemId: item.id,
         quantity: item.quantity
       })),
       couponCode: coupon?.code,
+      paymentMethod: "COD",
       deliveryAddress: {
-        fullName: data.fullName,
-        phone: data.phone,
-        address: data.address,
+        area: data.deliveryArea === "inside_dhaka" ? "Dhaka" : "Outside Dhaka",
+        city: data.deliveryArea === "inside_dhaka" ? "dhaka" : "other",
+        street: data.address,
+        country: "Bangladesh",
       },
+      isInsideDhaka: data.deliveryArea === "inside_dhaka",
+      customerName: data.customerName,
+      customerPhone: data.customerPhone,
+      customerEmail: data.customerEmail || undefined,
+      deliveryCharge: deliveryFee,
       notes: data.notes,
-      paymentMethod: "COD", // Hardcoded for now per requirements
     };
-    
+
+    // userId will be extracted from JWT token by backend
     placeOrder.mutate(orderData);
   };
 
@@ -96,7 +144,7 @@ export default function CheckoutPage() {
               <h2 className="text-xl font-bold font-bengali text-charcoal mb-6 border-b border-border pb-4">
                 ডেলিভারি তথ্য
               </h2>
-              
+
               <div className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="relative">
@@ -104,8 +152,8 @@ export default function CheckoutPage() {
                     <FormInput
                       label="সম্পূর্ণ নাম *"
                       placeholder="আপনার নাম লিখুন"
-                      {...register("fullName")}
-                      error={errors.fullName?.message}
+                      {...register("customerName")}
+                      error={errors.customerName?.message}
                     />
                   </div>
                   <div className="relative">
@@ -113,10 +161,35 @@ export default function CheckoutPage() {
                     <FormInput
                       label="মোবাইল নম্বর *"
                       placeholder="01XXXXXXXXX"
-                      {...register("phone")}
-                      error={errors.phone?.message}
+                      {...register("customerPhone")}
+                      error={errors.customerPhone?.message}
                     />
                   </div>
+                </div>
+
+                <div className="relative">
+                  <FormInput
+                    label="ইমেইল (ঐচ্ছিক)"
+                    placeholder="আপনার ইমেইল লিখুন"
+                    {...register("customerEmail")}
+                    error={errors.customerEmail?.message}
+                  />
+                </div>
+
+                <div className="relative">
+                  <label className="block text-sm font-semibold text-charcoal mb-2 font-bengali">
+                    ডেলিভারি এলাকা *
+                  </label>
+                  <select
+                    {...register("deliveryArea")}
+                    className="w-full px-4 py-3 rounded-xl border border-border bg-cream/50 text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all cursor-pointer"
+                  >
+                    <option value="inside_dhaka">ঢাকার ভিতরে (১০০ টাকা)</option>
+                    <option value="outside_dhaka">ঢাকার বাহিরে (১৫০ টাকা)</option>
+                  </select>
+                  {errors.deliveryArea && (
+                    <p className="text-error text-xs mt-1 font-bengali">{errors.deliveryArea.message}</p>
+                  )}
                 </div>
 
                 <div className="relative">
@@ -158,25 +231,25 @@ export default function CheckoutPage() {
 
         {/* Right: Summary */}
         <div className="lg:col-span-5">
-          <div className="bg-charcoal text-cream p-6 sm:p-8 rounded-2xl sticky top-[calc(var(--nav-height)+2rem)]">
-            <h2 className="text-xl font-bold font-bengali mb-6 border-b border-white/10 pb-4">
+          <div className="bg-white text-charcoal p-6 sm:p-8 rounded-2xl border border-border sticky top-[calc(var(--nav-height)+2rem)]">
+            <h2 className="text-xl font-bold font-bengali mb-6 border-b border-border pb-4">
               অর্ডারের সারসংক্ষেপ
             </h2>
-            
+
             <div className="space-y-4 mb-6 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-4 items-center">
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-white/10">
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-cream">
                     <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                     <span className="absolute -top-2 -right-2 w-5 h-5 bg-fire text-white text-xs font-bold rounded-full flex items-center justify-center">
                       {item.quantity}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bengali font-semibold text-sm line-clamp-2">
+                    <h4 className="font-bengali font-semibold text-sm line-clamp-2 text-charcoal">
                       {item.name}
                     </h4>
-                    <p className="text-fire-light font-bold mt-1">
+                    <p className="text-fire font-bold mt-1">
                       {formatPrice((item.discountPrice ?? item.price) * item.quantity)}
                     </p>
                   </div>
@@ -184,10 +257,10 @@ export default function CheckoutPage() {
               ))}
             </div>
 
-            <div className="space-y-3 font-bengali pt-4 border-t border-white/10 mb-6">
-              <div className="flex justify-between text-cream/70">
+            <div className="space-y-3 font-bengali pt-4 border-t border-border mb-6">
+              <div className="flex justify-between text-muted">
                 <span>সাবটোটাল</span>
-                <span className="font-semibold text-cream">{formatPrice(currentSubtotal)}</span>
+                <span className="font-semibold text-charcoal">{formatPrice(currentSubtotal)}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-success">
@@ -195,13 +268,13 @@ export default function CheckoutPage() {
                   <span className="font-semibold">-{formatPrice(discount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-cream/70">
+              <div className="flex justify-between text-muted">
                 <span>ডেলিভারি চার্জ</span>
-                <span className="font-semibold text-cream">{formatPrice(deliveryFee)}</span>
+                <span className="font-semibold text-charcoal">{formatPrice(deliveryFee)}</span>
               </div>
-              
-              <div className="pt-4 border-t border-white/10 flex justify-between items-end">
-                <span className="text-lg font-bold">সর্বমোট</span>
+
+              <div className="pt-4 border-t border-border flex justify-between items-end">
+                <span className="text-lg font-bold text-charcoal">সর্বমোট</span>
                 <span className="text-3xl font-bold text-fire">{formatPrice(total)}</span>
               </div>
             </div>
