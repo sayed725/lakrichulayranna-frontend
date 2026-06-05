@@ -168,7 +168,7 @@ export default function CustomerProfilePage() {
             <button
               type="submit"
               disabled={isUpdatingPassword}
-              className="flex items-center gap-2 px-8 py-3.5 bg-charcoal text-white rounded-xl font-bold font-bengali hover:bg-charcoal-light transition-all disabled:opacity-50 cursor-pointer shadow-sm active:scale-95"
+              className="flex items-center gap-2 px-8 py-3.5 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all disabled:opacity-50 cursor-pointer shadow-sm active:scale-95 "
             >
               <Lock size={20} />
               {isUpdatingPassword ? "আপডেট হচ্ছে..." : "আপডেট করুন"}

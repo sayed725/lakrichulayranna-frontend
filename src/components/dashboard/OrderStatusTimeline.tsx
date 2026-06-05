@@ -27,7 +27,7 @@ export function OrderStatusTimeline({ status }: TimelineProps) {
 
   return (
     <div className="relative">
-      <div className="absolute top-1/2 left-0 w-full h-1 bg-cream-dark -translate-y-1/2 z-0 hidden sm:block" />
+      <div className="absolute top-1/3 left-0 w-full h-1 bg-cream-dark -translate-y-1/2 z-0 hidden sm:block" />
       <div 
         className="absolute top-1/2 left-0 h-1 bg-fire -translate-y-1/2 z-0 transition-all duration-500 hidden sm:block" 
         style={{ width: `${(activeIndex / (STATUS_STEPS.length - 1)) * 100}%` }}

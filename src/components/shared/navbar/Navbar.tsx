@@ -84,8 +84,8 @@ export function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-40 transition-all duration-300",
           scrolled
-            ? "bg-cream/50 backdrop-blur-sm"
-            : "bg-cream/50 backdrop-blur-sm"
+            ? "bg-cream backdrop-blur-sm"
+            : "bg-cream backdrop-blur-sm"
         )}
       >
         <Container>

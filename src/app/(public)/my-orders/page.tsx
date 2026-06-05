@@ -22,7 +22,7 @@ export default function GuestOrdersPage() {
   if (orderNumbers.length === 0) {
     return (
       <div className="min-h-screen bg-cream-dark/20 py-12 px-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold font-bengali text-charcoal mb-1">
               আমার অর্ডারসমূহ
@@ -50,7 +50,7 @@ export default function GuestOrdersPage() {
 
   return (
     <div className="min-h-screen bg-cream-dark/20 py-12 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold font-bengali text-charcoal mb-1">
             আমার অর্ডারসমূহ

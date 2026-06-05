@@ -73,7 +73,7 @@ export default function OrderSuccessPage() {
               {orderNumber && (
                 <Link
                   href={`/order/${orderNumber}`}
-                  className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-charcoal text-white font-semibold font-bengali rounded-xl hover:bg-charcoal-light transition-all active:scale-95"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-fire text-white font-semibold font-bengali rounded-xl hover:bg-fire-dark transition-all hover:shadow-lg hover:shadow-fire/25 active:scale-95"
                 >
                   <FileText size={18} />
                   অর্ডার ট্র্যাক করুন
