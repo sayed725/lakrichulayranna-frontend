@@ -450,11 +450,13 @@ export default function AdminBannersPage() {
 
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (
-        <USPagination
-          page={page}
-          totalPage={meta.totalPages}
-          onPageChange={setPage}
-        />
+        <div className="flex justify-center flex-wrap mt-4">
+          <USPagination
+            page={page}
+            totalPage={meta.totalPages}
+            onPageChange={setPage}
+          />
+        </div>
       )}
 
       {/* Create Dialog */}

@@ -609,7 +609,7 @@ export default function AdminItemsPage() {
       )}
 
       {meta && meta.totalPage > 1 && (
-        <div className="mt-4 bg-card border-border rounded-xl overflow-hidden shadow-sm">
+        <div className="flex justify-center flex-wrap mt-4">
           <USPagination 
             page={page} 
             totalPage={meta.totalPage} 

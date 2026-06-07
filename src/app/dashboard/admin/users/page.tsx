@@ -436,7 +436,7 @@ export default function AdminUsersPage() {
 
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (
-        <div className="mt-4 bg-card border-border rounded-xl overflow-hidden shadow-sm">
+        <div className="flex justify-center flex-wrap mt-4">
           <USPagination 
             page={page} 
             totalPage={meta.totalPages} 

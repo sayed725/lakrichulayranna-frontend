@@ -9,8 +9,11 @@ import { useAdminItems } from "@/features/item/hooks/useAdminItems";
 import { formatPrice } from "@/lib/utils";
 
 export default function AdminDashboardPage() {
-  const { data: orders, isLoading: ordersLoading } = useAdminOrders();
-  const { data: items } = useAdminItems();
+  const { data: ordersResponse, isLoading: ordersLoading } = useAdminOrders();
+  const { data: itemsResponse } = useAdminItems();
+
+  const orders = ordersResponse?.data || [];
+  const items = itemsResponse?.data || [];
 
   const totalOrders = orders?.length || 0;
   const pendingOrders = orders?.filter((o: any) => o.status === "PENDING")?.length || 0;

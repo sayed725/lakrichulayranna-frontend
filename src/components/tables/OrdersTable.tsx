@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { Eye } from "lucide-react";
+import { Eye, Edit, Trash2 } from "lucide-react";
 import { DataTable } from "@/components/dashboard/DataTable";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { formatPrice } from "@/lib/utils";
@@ -11,13 +11,23 @@ interface OrdersTableProps {
   orders: any[];
   isLoading: boolean;
   onViewOrder?: (order: any) => void;
+  onEditOrder?: (order: any) => void;
+  onDeleteOrder?: (order: any) => void;
+  onChangeStatus?: (order: any, status: string) => void;
 }
 
-export function OrdersTable({ orders, isLoading, onViewOrder }: OrdersTableProps) {
+export function OrdersTable({ orders, isLoading, onViewOrder, onEditOrder, onDeleteOrder, onChangeStatus }: OrdersTableProps) {
   const updateStatus = useUpdateOrderStatus();
 
   const handleStatusChange = (orderId: string, status: string) => {
-    updateStatus.mutate({ orderId, status });
+    if (onChangeStatus) {
+      const order = orders.find((o: any) => o.id === orderId);
+      if (order) {
+        onChangeStatus(order, status);
+      }
+    } else {
+      updateStatus.mutate({ orderId, status });
+    }
   };
 
   const columns = [
@@ -72,16 +82,38 @@ export function OrdersTable({ orders, isLoading, onViewOrder }: OrdersTableProps
     {
       header: "অ্যাকশন",
       accessor: (row: any) => (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onViewOrder?.(row);
-          }}
-          className="p-2 text-charcoal hover:text-fire hover:bg-fire/10 rounded-lg transition-colors cursor-pointer"
-          title="বিস্তারিত দেখুন"
-        >
-          <Eye size={18} />
-        </button>
+        <div className="flex items-center gap-2 justify-end">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewOrder?.(row);
+            }}
+            className="p-2 text-charcoal hover:text-fire hover:bg-fire/10 rounded-lg transition-colors cursor-pointer"
+            title="বিস্তারিত দেখুন"
+          >
+            <Eye size={18} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditOrder?.(row);
+            }}
+            className="p-2 text-charcoal hover:text-fire hover:bg-fire/10 rounded-lg transition-colors cursor-pointer"
+            title="সম্পাদনা করুন"
+          >
+            <Edit size={18} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteOrder?.(row);
+            }}
+            className="p-2 text-charcoal hover:text-error hover:bg-error/10 rounded-lg transition-colors cursor-pointer"
+            title="মুছে ফেলুন"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
       ),
       className: "text-right",
     },
