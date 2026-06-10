@@ -31,7 +31,12 @@ export const useAdminOrders = (params?: {
       queryParams.append("page", page.toString());
       queryParams.append("limit", limit.toString());
       
-      if (searchTerm) queryParams.append("search", searchTerm);
+      if (searchTerm) {
+        // Remove # prefix if user copies it from the order number display
+        const cleanSearchTerm = searchTerm.startsWith('#') ? searchTerm.slice(1) : searchTerm;
+        queryParams.append("search", cleanSearchTerm);
+        console.log('Search term sent to backend:', cleanSearchTerm);
+      }
       if (status && status !== "all" && status !== "ALL") queryParams.append("status", status);
       if (paymentMethod && paymentMethod !== "all") queryParams.append("paymentMethod", paymentMethod);
       if (sortBy) queryParams.append("sortBy", sortBy);

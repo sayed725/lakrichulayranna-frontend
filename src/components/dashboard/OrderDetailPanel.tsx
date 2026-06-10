@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Download, MapPin, Phone, User, FileText } from "lucide-react";
+import { X, MapPin, Phone, User, FileText } from "lucide-react";
 import Image from "next/image";
 import { format } from "date-fns";
 import { formatPrice } from "@/lib/utils";
@@ -14,22 +14,6 @@ interface OrderDetailPanelProps {
 }
 
 export function OrderDetailPanel({ order, isOpen, onClose }: OrderDetailPanelProps) {
-  const handleDownloadInvoice = async (url: string, orderNumber: string) => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const objectUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = objectUrl;
-      link.download = `Invoice-${orderNumber}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(objectUrl);
-    } catch (error) {
-      console.error("Failed to download invoice", error);
-    }
-  };
 
   if (!isOpen || !order) return null;
 
@@ -50,15 +34,6 @@ export function OrderDetailPanel({ order, isOpen, onClose }: OrderDetailPanelPro
             <p className="text-sm text-muted font-mono mt-1">#{order.orderNumber}</p>
           </div>
           <div className="flex items-center gap-4">
-            {order.invoicePdf && (
-              <button 
-                onClick={() => handleDownloadInvoice(order.invoicePdf, order.orderNumber)}
-                className="flex items-center gap-2 px-4 py-2 bg-fire/10 text-fire font-semibold font-bengali rounded-lg hover:bg-fire/20 transition-colors cursor-pointer"
-              >
-                <Download size={18} />
-                ইনভয়েস
-              </button>
-            )}
             <button 
               onClick={onClose}
               className="p-2 hover:bg-cream-dark rounded-full transition-colors text-charcoal"

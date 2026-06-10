@@ -3,9 +3,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, RefreshCw, XCircle, Filter, Download, Eye, Trash2, Edit2, MoreVertical } from "lucide-react";
+import { Plus, Search, RefreshCw, XCircle, Filter, Download, Eye, Trash2, Edit2, MoreVertical, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { formatPrice } from "@/lib/utils";
+import { generateInvoicePDF } from "@/lib/generateInvoicePDF";
 import {
   Select,
   SelectContent,
@@ -67,6 +68,7 @@ export default function AdminOrdersPage() {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState("");
+  const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
@@ -138,6 +140,15 @@ export default function AdminOrdersPage() {
       return;
     }
     statusMutation.mutate({ orderId, status: newStatus });
+  };
+
+  const handleCopyOrderNumber = (orderNumber: string, orderId: string) => {
+    navigator.clipboard.writeText(orderNumber);
+    setCopiedOrderId(orderId);
+    toast.success("Order number copied!", {
+      description: `Order #${orderNumber} copied to clipboard`,
+    });
+    setTimeout(() => setCopiedOrderId(null), 2000);
   };
 
   return (
@@ -364,7 +375,20 @@ export default function AdminOrdersPage() {
                 {orders.map((order: any) => (
                   <tr key={order.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-mono font-bold text-charcoal">#{order.orderNumber}</div>
+                      <div className="flex items-center gap-2">
+                        <div className="font-mono font-bold text-charcoal">#{order.orderNumber}</div>
+                        <button
+                          onClick={() => handleCopyOrderNumber(order.orderNumber, order.id)}
+                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50"
+                          title="Copy order number"
+                        >
+                          {copiedOrderId === order.id ? (
+                            <Check className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
                       <div className="text-xs text-muted-foreground">
                         {format(new Date(order.createdAt), "dd MMM, yyyy 'at' HH:mm")}
                       </div>
@@ -401,17 +425,15 @@ export default function AdminOrdersPage() {
                       </Select>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      {order.invoicePdf && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-success hover:text-success hover:bg-success/10 rounded-full"
-                          onClick={() => window.open(order.invoicePdf, '_blank')}
-                          title="Download Invoice"
-                        >
-                          <Download className="w-5 h-5" />
-                        </Button>
-                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-success hover:text-success hover:bg-success/10 rounded-full"
+                        onClick={async () => await generateInvoicePDF(order)}
+                        title="Download Invoice"
+                      >
+                        <Download className="w-5 h-5" />
+                      </Button>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <DropdownMenu>
@@ -426,6 +448,10 @@ export default function AdminOrdersPage() {
                           <DropdownMenuItem onClick={() => openEdit(order)} disabled={order.status === "DELIVERED"}>
                             <Edit2 size={16} className="mr-2" />
                             Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={async () => await generateInvoicePDF(order)}>
+                            <Download size={16} className="mr-2" />
+                            Download Invoice
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {

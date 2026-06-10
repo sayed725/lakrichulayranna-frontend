@@ -6,6 +6,7 @@ import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { OrderStatusTimeline } from "@/components/dashboard/OrderStatusTimeline";
+import { generateInvoicePDF } from "@/lib/generateInvoicePDF";
 
 interface ViewOrderModalProps {
   isOpen: boolean;
@@ -15,23 +16,6 @@ interface ViewOrderModalProps {
 
 export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) {
   if (!isOpen || !order) return null;
-
-  const handleDownloadInvoice = async (url: string, orderNumber: string) => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const objectUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = objectUrl;
-      link.download = `Invoice-${orderNumber}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(objectUrl);
-    } catch (error) {
-      console.error("Failed to download invoice", error);
-    }
-  };
 
   const parsedAddress = typeof order.deliveryAddress === 'string' 
     ? JSON.parse(order.deliveryAddress) 
@@ -109,16 +93,14 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
                   <StatusBadge status={order.status} />
                 </div>
               </div>
-              
-              {order.invoicePdf && (
-                <button 
-                  onClick={() => handleDownloadInvoice(order.invoicePdf, order.orderNumber)}
-                  className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-fire/10 text-fire font-bold font-bengali rounded-xl hover:bg-fire hover:text-white transition-all cursor-pointer"
-                >
-                  <Download size={18} />
-                  ইনভয়েস ডাউনলোড
-                </button>
-              )}
+
+              <button
+                onClick={async () => await generateInvoicePDF(order)}
+                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-fire/10 text-fire font-bold font-bengali rounded-xl hover:bg-fire hover:text-white transition-all cursor-pointer"
+              >
+                <Download size={18} />
+                ইনভয়েস ডাউনলোড
+              </button>
             </div>
           </div>
 
