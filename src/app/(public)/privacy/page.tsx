@@ -201,7 +201,7 @@ export default function PrivacyPage() {
               </div>
             </div>
             <p className="mt-12 text-sm text-muted italic font-bengali">
-              সর্বশেষ আপডেট: ২৪ মে, ২০২৬
+              সর্বশেষ আপডেট: ২৩ জুলাই , ২০২৬
             </p>
           </section>
         </div>
