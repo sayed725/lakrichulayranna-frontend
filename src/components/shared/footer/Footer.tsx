@@ -108,7 +108,7 @@ export function Footer() {
                   className="flex items-center gap-3 text-sm text-cream/60 hover:text-fire transition-colors"
                 >
                   <Phone size={16} className="text-fire shrink-0" />
-                  <span>+880 1700-000000</span>
+                  <span>+880 01627142598</span>
                 </a>
               </li>
               <li>
@@ -117,13 +117,13 @@ export function Footer() {
                   className="flex items-center gap-3 text-sm text-cream/60 hover:text-fire transition-colors"
                 >
                   <Mail size={16} className="text-fire shrink-0" />
-                  <span>info@lakrichulayranna.com</span>
+                  <span>abusayedkhan.pro@gmail.com</span>
                 </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-cream/60">
                 <Clock size={16} className="text-fire mt-0.5 shrink-0" />
                 <span className="font-bengali">
-                  সকাল ১০টা — রাত ১০টা<br />
+                  সকাল ৯টা — রাত ১০টা<br />
                   (প্রতিদিন)
                 </span>
               </li>
