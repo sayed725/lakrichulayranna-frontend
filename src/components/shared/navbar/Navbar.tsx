@@ -1,236 +1,628 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore, useRef } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ShoppingBag, Menu, X, User, LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Logo } from "@/components/shared/logo/Logo";
 import { Container } from "@/components/shared/container/Container";
-import { MobileMenu } from "@/components/shared/navbar/MobileMenu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetDescription,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Menu,
+  LogOut,
+  LayoutDashboard,
+  Truck,
+  Home,
+  Package,
+  ChevronRight,
+  X,
+  ShoppingBag,
+  BookOpen,
+  ClipboardListIcon,
+  Flame,
+  Candy,
+  Pizza,
+  Coffee,
+  ChevronDown,
+  Utensils,
+} from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { useCartStore } from "@/store/cart.store";
 import { useUIStore } from "@/store/ui.store";
-import { NAV_LINKS } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { getCategories, Category } from "@/services/category.service";
+import Image from "next/image";
+
+interface NavSubItem {
+  title: string;
+  href: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  image?: string;
+}
+
+interface NavItem {
+  title: string;
+  titleBn: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  subItems?: NavSubItem[];
+}
 
 const subscribeToHydration = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const mounted = useSyncExternalStore(
     subscribeToHydration,
     getClientSnapshot,
     getServerSnapshot
   );
-  const pathname = usePathname();
+
   const { user, isAuthenticated, logout } = useAuthStore();
   const cartItemCount = useCartStore((s) =>
     s.items.reduce((sum, item) => sum + item.quantity, 0)
   );
-  const { toggleCart, isMobileMenuOpen, toggleMenu, closeMenu } = useUIStore();
+  const { toggleCart } = useUIStore();
+
+  const cartCount = mounted ? cartItemCount : 0;
+  const isLoggedIn = mounted ? isAuthenticated() : false;
+  const userRole = isLoggedIn && user ? user.role : null;
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    closeMenu();
-  }, [pathname, closeMenu]);
+  // Fetch categories for mega menu
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories", "featured", "active"],
+    queryFn: () => getCategories({ limit: 6, sortOrder: "asc", isActive: true, isFeatured: true }),
+  });
 
-  // Click outside to close dropdown
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
-    if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownOpen]);
+  const categories: NavSubItem[] = categoriesData?.data 
+    ? (categoriesData.data as Category[]).map((cat) => {
+        const lowerName = cat.name.toLowerCase();
+        let Icon = Package;
+        if (lowerName.includes('spic') || lowerName.includes('hot') || lowerName.includes('ঝাল')) Icon = Flame;
+        else if (lowerName.includes('sweet') || lowerName.includes('dessert') || lowerName.includes('মিষ্টি')) Icon = Candy;
+        else if (lowerName.includes('drink') || lowerName.includes('beverage') || lowerName.includes('চা') || lowerName.includes('কফি')) Icon = Coffee;
+        else if (lowerName.includes('pizza') || lowerName.includes('combo') || lowerName.includes('খিচুড়ি')) Icon = Pizza;
+        
+        return {
+          title: cat.name,
+          href: `/menu?category.name=${encodeURIComponent(cat.name)}`,
+          description: cat.description || `${cat.name} এর চমৎকার স্বাদ নিন`,
+          icon: Icon,
+          image: cat.imageUrl
+        };
+      })
+    : [];
 
-  const cartCount = mounted ? cartItemCount : 0;
-  const isLoggedIn = mounted ? isAuthenticated() : false;
+  const menuItems: NavItem[] = [
+    { title: "Home", titleBn: "হোম", href: "/", icon: Home },
+    { 
+      title: "Menu", 
+      titleBn: "মেনু",
+      href: "/menu", 
+      icon: Utensils,
+      subItems: categories.length > 0 ? categories : undefined
+    },
+    { title: "About", titleBn: "আমাদের সম্পর্কে", href: "/about", icon: BookOpen },
+    { title: "Contact", titleBn: "যোগাযোগ", href: "/contact", icon: ClipboardListIcon },
+  ];
 
-  // Dynamic links based on login role
-  const navLinks = [...NAV_LINKS];
-  if (isLoggedIn && user) {
-    if (user.role === "ADMIN") {
-      navLinks.push({ label: "Dashboard", labelBn: "ড্যাশবোর্ড", href: "/dashboard/admin" });
-    } else {
-      navLinks.push({ label: "My Order", labelBn: "আমার অর্ডার", href: "/dashboard/customer/orders" });
-    }
-  } else {
-    // Guest users - add link to view their orders from localStorage
-    navLinks.push({ label: "My Order", labelBn: "আমার অর্ডার", href: "/my-orders" });
-  }
+  const userInitial =
+    user?.name?.charAt(0)?.toUpperCase() ||
+    user?.email?.charAt(0)?.toUpperCase() ||
+    "?";
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
+
+  const closeMobileMenu = () => setIsOpen(false);
+
+  const dashboardHref = userRole === "ADMIN" ? "/dashboard/admin" : "/dashboard/customer/orders";
 
   return (
-    <>
-      <header
-        className={cn(
-          "fixed top-0 left-0 right-0 z-40 transition-all duration-300",
-          scrolled
-            ? "bg-cream backdrop-blur-sm"
-            : "bg-cream backdrop-blur-sm"
-        )}
-      >
-        <Container>
-          <nav aria-label="মূল নেভিগেশন" className="flex items-center justify-between h-[var(--nav-height)]">
-            {/* Logo */}
-            <Logo size="sm" />
+    <nav
+      className={cn(
+        "sticky top-0 z-40 w-full transition-all duration-500 border-b",
+        isScrolled
+          ? "bg-cream/90 backdrop-blur-xl border-border/80 shadow-md shadow-charcoal/[0.03] py-2 lg:py-2"
+          : "bg-cream/40 backdrop-blur-md border-transparent py-3.5 lg:py-3.5"
+      )}
+    >
+      {/* Subtle ambient gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-fire/[0.03] via-transparent to-terracotta/[0.03] pointer-events-none" />
 
-            {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center gap-1">
-              {navLinks.map((link) => {
-                const isActive = pathname === link.href;
+      <Container className="relative z-10">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Logo size="sm" />
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-6 lg:gap-8 flex-1 justify-center">
+            {menuItems.map((item) => {
+              const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/");
+              
+              if (item.subItems) {
                 return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn(
-                      "relative px-4 py-2 text-sm font-medium font-bengali rounded-lg transition-all duration-200",
-                      isActive
-                        ? "text-fire"
-                        : "text-charcoal hover:text-fire hover:bg-fire/5"
-                    )}
-                  >
-                    {link.labelBn}
-                    {isActive && (
-                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full bg-fire" />
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Right side: Cart + Auth */}
-            <div className="flex items-center gap-2">
-              {/* Cart Button */}
-              <button
-                onClick={toggleCart}
-                className="relative p-2.5 rounded-xl hover:bg-fire/5 transition-colors duration-200 group cursor-pointer"
-                aria-label="Open cart"
-              >
-                <ShoppingBag
-                  size={22}
-                  className="text-charcoal group-hover:text-fire transition-colors"
-                />
-                {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 flex items-center justify-center text-[11px] font-bold text-white bg-fire rounded-full ring-2 ring-cream animate-scale-in">
-                    {cartCount > 99 ? "99+" : cartCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Desktop Auth Buttons */}
-              <div className="hidden md:flex items-center gap-2 ml-1 relative" ref={dropdownRef}>
-                {isLoggedIn && user ? (
-                  <div className="relative">
-                    <button
-                      onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className="flex items-center justify-center w-10 h-10 rounded-full border border-border hover:border-fire transition-all duration-200 cursor-pointer overflow-hidden shadow-sm hover:shadow-fire/10 focus:outline-none"
-                      aria-label="Toggle user menu"
-                      aria-expanded={dropdownOpen}
+                  <div key={item.title} className="relative group/navItem flex items-center h-full py-2">
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "relative flex items-center gap-1 text-sm font-medium font-bengali transition-colors hover:text-fire",
+                        isActive
+                          ? "text-fire font-bold"
+                          : "text-charcoal/90 hover:text-fire",
+                        "after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-fire after:transition-all after:duration-300 hover:after:w-full",
+                        isActive && "after:w-full"
+                      )}
                     >
-                      <img
-                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=E85D24&color=fff&bold=true`}
-                        alt={user.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
+                      {item.titleBn}
+                      {/* <ChevronDown className="w-3.5 h-3.5 transition-transform duration-300 group-hover/navItem:rotate-180 text-charcoal/50 group-hover/navItem:text-fire" /> */}
+                    </Link>
 
-                    {dropdownOpen && (
-                      <div className="absolute right-0 top-full mt-2 w-64 bg-cream border border-border rounded-2xl shadow-xl py-3 z-50 animate-scale-in">
-                        {/* Name and Email */}
-                        <div className="px-4 pb-3 border-b border-border">
-                          <p className="font-semibold text-charcoal font-bengali text-sm truncate">
-                            {user.name}
-                          </p>
-                          <p className="text-xs text-muted truncate mt-0.5">
-                            {user.email}
-                          </p>
-                        </div>
-
-                        {/* Dropdown Options */}
-                        <div className="p-1.5 space-y-0.5">
-                          <Link
-                            href={
-                              user.role === "ADMIN"
-                                ? "/dashboard/admin"
-                                : "/dashboard/customer"
-                            }
-                            onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-medium font-bengali text-charcoal hover:bg-fire/5 hover:text-fire transition-all duration-150"
-                          >
-                            <User size={16} />
-                            <span>ড্যাশবোর্ড</span>
-                          </Link>
-                          
-                          <button
-                            onClick={() => {
-                              setDropdownOpen(false);
-                              logout();
-                              window.location.href = "/";
-                            }}
-                            className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium font-bengali text-error hover:bg-error/5 transition-all duration-150 cursor-pointer"
-                          >
-                            <LogOut size={16} />
-                            <span>লগআউট</span>
-                          </button>
+                    {/* Mega Menu Dropdown */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 translate-y-2 pointer-events-none group-hover/navItem:opacity-100 group-hover/navItem:translate-y-0 group-hover/navItem:pointer-events-auto transition-all duration-300 z-50">
+                      <div className="w-[700px] rounded-2xl border border-border bg-cream/95 backdrop-blur-xl shadow-xl overflow-hidden flex flex-col">
+                        <div className="grid grid-cols-3 gap-2 p-4">
+                          {item.subItems.map((sub) => {
+                            const SubIcon = sub.icon;
+                            return (
+                              <Link
+                                key={sub.title}
+                                href={sub.href}
+                                className="flex items-start gap-3 p-3 rounded-xl hover:bg-fire/5 transition-colors group/sub"
+                              >
+                                <div className="relative shrink-0 w-12 h-12 rounded-lg overflow-hidden border border-border">
+                                  {sub.image ? (
+                                    <Image 
+                                      src={sub.image} 
+                                      alt={sub.title} 
+                                      fill 
+                                      sizes="48px"
+                                      className="object-cover group-hover/sub:scale-110 transition-transform duration-500" 
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-fire/10 flex items-center justify-center text-fire">
+                                      <SubIcon className="w-5 h-5" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="font-bold text-sm text-charcoal font-bengali group-hover/sub:text-fire transition-colors truncate">{sub.title}</p>
+                                  <p className="text-xs text-charcoal/60 font-bengali mt-0.5 line-clamp-1">{sub.description}</p>
+                                </div>
+                              </Link>
+                            )
+                          })}
                         </div>
                       </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={item.href} className="flex items-center h-full py-2">
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "relative text-sm font-medium font-bengali transition-colors hover:text-fire",
+                      isActive
+                        ? "text-fire font-bold"
+                        : "text-charcoal/90 hover:text-fire",
+                      "after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-fire after:transition-all after:duration-300 hover:after:w-full",
+                      isActive && "after:w-full"
                     )}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href="/login"
-                      className="px-5 py-2.5 text-sm font-bold font-bengali text-white bg-fire hover:bg-fire-dark rounded-xl shadow-sm transition-colors"
-                    >
-                      লগইন করুন
-                    </Link>
-                  </div>
-                )}
+                  >
+                    {item.titleBn}
+                  </Link>
+                </div>
+              );
+            })}
+            
+            {/* Dynamic Dashboard/My Orders Link on desktop nav */}
+            {isLoggedIn && (
+              <div className="flex items-center h-full py-2">
+                <Link
+                  href={dashboardHref}
+                  className={cn(
+                    "relative text-sm font-medium font-bengali transition-colors hover:text-fire",
+                    pathname.startsWith(dashboardHref)
+                      ? "text-fire font-bold"
+                      : "text-charcoal/90 hover:text-fire",
+                    "after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-fire after:transition-all after:duration-300 hover:after:w-full",
+                    pathname.startsWith(dashboardHref) && "after:w-full"
+                  )}
+                >
+                  {userRole === "ADMIN" ? "ড্যাশবোর্ড" : "আমার অর্ডার"}
+                </Link>
               </div>
+            )}
+          </div>
 
-              {/* Mobile Menu Button */}
-              <button
-                onClick={toggleMenu}
-                className="md:hidden p-2.5 rounded-xl hover:bg-fire/5 transition-colors cursor-pointer"
-                aria-label={isMobileMenuOpen ? "মেনু বন্ধ করুন" : "মেনু খুলুন"}
-                aria-expanded={isMobileMenuOpen}
-                aria-controls="mobile-menu"
-              >
-                {isMobileMenuOpen ? (
-                  <X size={22} className="text-charcoal" />
-                ) : (
-                  <Menu size={22} className="text-charcoal" />
-                )}
-              </button>
-            </div>
-          </nav>
-        </Container>
-      </header>
+          {/* Desktop Right Side */}
+          <div className="hidden md:flex items-center gap-3">
+            {/* Cart Button */}
+            <button
+              onClick={toggleCart}
+              className="relative p-2.5 rounded-xl hover:bg-fire/5 transition-colors duration-200 group cursor-pointer"
+              aria-label="Open cart"
+            >
+              <ShoppingBag
+                size={22}
+                className="text-charcoal group-hover:text-fire transition-colors"
+              />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 flex items-center justify-center text-[11px] font-bold text-white bg-fire rounded-full ring-2 ring-cream animate-scale-in">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
+            </button>
 
-      {/* Mobile Menu */}
-      <MobileMenu id="mobile-menu" />
+            {!mounted ? (
+              <div className="h-10 w-10 bg-cream-dark rounded-full animate-pulse" />
+            ) : isLoggedIn && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      className="relative h-10 w-10 rounded-full p-0 ring-2 ring-fire hover:ring-fire-dark transition-all duration-300"
+                    />
+                  }
+                >
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage 
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=E85D24&color=fff&bold=true`}
+                      alt={user.name} 
+                      className="object-cover" 
+                    />
+                    <AvatarFallback className="bg-gradient-to-br from-fire to-terracotta text-white font-bold text-sm">
+                      {userInitial}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-60 mt-2 rounded-2xl border border-border bg-cream p-2 shadow-xl"
+                >
+                  <DropdownMenuLabel className="font-normal px-3 py-3 border-b border-border mb-1">
+                    <p className="font-bold text-sm text-charcoal truncate">{user.name}</p>
+                    <p className="text-xs text-muted truncate mt-0.5">{user.email}</p>
+                  </DropdownMenuLabel>
 
-      {/* Spacer for fixed navbar */}
-      <div className="h-[var(--nav-height)]" />
-    </>
+                  <DropdownMenuItem
+                    render={<Link href={dashboardHref} className="flex items-center w-full font-bengali" />}
+                    className="cursor-pointer rounded-xl px-3 py-2.5 focus:bg-fire/5 focus:text-fire"
+                  >
+                    {userRole === "ADMIN" ? (
+                      <><LayoutDashboard className="mr-2.5 h-4 w-4 text-fire" /> অ্যাডমিন ড্যাশবোর্ড</>
+                    ) : (
+                      <><Truck className="mr-2.5 h-4 w-4 text-fire" /> অর্ডার ট্র্যাক করুন</>
+                    )}
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator className="my-1" />
+                  <DropdownMenuItem
+                    className="text-error focus:bg-error/5 cursor-pointer rounded-xl px-3 py-2.5 font-bengali"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2.5 h-4 w-4" />
+                    লগআউট
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button nativeButton={false} render={<Link href="/login" />} className="bg-gradient-to-r from-fire to-terracotta hover:from-fire-dark hover:to-terracotta-dark text-white rounded-xl shadow-lg hover:shadow-fire/25 transition-all duration-300 font-bold text-sm px-6 h-10 hover:scale-105 border-0 font-bengali">
+                লগইন
+              </Button>
+            )}
+          </div>
+
+          {/* Mobile Menu Trigger */}
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Cart Icon in mobile navbar */}
+            <button
+              onClick={toggleCart}
+              className="relative p-2.5 rounded-xl hover:bg-fire/5 transition-colors duration-200 group cursor-pointer"
+              aria-label="Open cart"
+            >
+              <ShoppingBag
+                size={22}
+                className="text-charcoal group-hover:text-fire transition-colors"
+              />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 flex items-center justify-center text-[11px] font-bold text-white bg-fire rounded-full ring-2 ring-cream animate-scale-in">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
+            </button>
+
+            {mounted && (
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-xl border border-border bg-cream/60 hover:bg-fire/5 hover:border-fire/30 transition-all duration-300"
+                  >
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                } />
+                <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col bg-cream border-l border-border" showCloseButton={false}>
+                  <SheetHeader className="p-4 border-b border-border flex flex-row items-center justify-between space-y-0">
+                    <SheetTitle className="sr-only">মোবাইল নেভিগেশন মেনু</SheetTitle>
+                    <SheetDescription className="sr-only">ন্যাভিগেশন লিংক এবং অ্যাকাউন্ট সেটিংস অ্যাক্সেস করুন।</SheetDescription>
+                    <Logo size="sm" />
+                    <SheetClose className="rounded-xl p-2 hover:bg-fire/5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fire border border-transparent hover:border-fire/10">
+                      <X className="h-5 w-5 text-charcoal/60 hover:text-fire" />
+                      <span className="sr-only">বন্ধ করুন</span>
+                    </SheetClose>
+                  </SheetHeader>
+
+                  <div className="flex flex-col flex-1 overflow-hidden p-4">
+                    <Tabs defaultValue="menu" className="w-full flex flex-col flex-1 min-h-0">
+                      <TabsList className="flex w-full bg-cream-dark/30 mb-5 shrink-0 h-12 rounded-xl p-1">
+                        <TabsTrigger value="menu" className="flex-1 h-full text-sm font-bold font-bengali rounded-lg text-charcoal/60 data-[state=active]:bg-cream data-[state=active]:text-fire data-[state=active]:shadow-sm transition-all duration-300">মেনু</TabsTrigger>
+                        <TabsTrigger value="categories" className="flex-1 h-full text-sm font-bold font-bengali rounded-lg text-charcoal/60 data-[state=active]:bg-cream data-[state=active]:text-fire data-[state=active]:shadow-sm transition-all duration-300">ক্যাটাগরি</TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="menu" className="flex-1 mt-0 focus-visible:outline-none focus-visible:ring-0 overflow-y-auto pr-1">
+                        <div className="space-y-1">
+                          {menuItems.map((item) => {
+                            const IconComp = item.icon;
+                            const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/");
+                            const hasSubItems = !!item.subItems;
+                            const isExpanded = expandedMenu === item.title;
+
+                            return (
+                              <div key={item.href} className="flex flex-col">
+                                <div className="flex items-center w-full group">
+                                  <Link
+                                    href={item.href}
+                                    onClick={closeMobileMenu}
+                                    className={cn(
+                                      "relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 flex-1",
+                                      isActive
+                                        ? "text-fire font-bold bg-fire/5"
+                                        : "text-charcoal hover:bg-fire/5 hover:text-fire"
+                                    )}
+                                  >
+                                    <IconComp className={cn(
+                                      "h-5 w-5 transition-colors",
+                                      isActive ? "text-fire" : "text-charcoal/50 group-hover:text-fire"
+                                    )} />
+                                    <span className="text-base font-medium font-bengali">{item.titleBn}</span>
+                                  </Link>
+                                  
+                                  {hasSubItems && (
+                                    <button 
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        setExpandedMenu(isExpanded ? null : item.title);
+                                      }}
+                                      className="p-3 rounded-xl text-charcoal/50 hover:text-fire hover:bg-fire/5 transition-all flex-shrink-0"
+                                    >
+                                      <ChevronDown className={cn("h-5 w-5 transition-transform duration-300", isExpanded && "rotate-180")} />
+                                    </button>
+                                  )}
+                                  {!hasSubItems && (
+                                    <div className="p-3 pointer-events-none flex-shrink-0">
+                                      <ChevronRight className="h-4 w-4 text-charcoal/30 group-hover:text-fire transition-colors" />
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Sub-items accordion */}
+                                {item.subItems && (
+                                  <div 
+                                    className={cn(
+                                      "overflow-hidden transition-all duration-300 ease-in-out pr-2",
+                                      isExpanded ? "max-h-96 opacity-100 mt-1 mb-2" : "max-h-0 opacity-0 m-0"
+                                    )}
+                                  >
+                                    <div className="flex flex-col gap-1 border-l-2 border-border ml-8 pl-4 py-2">
+                                      {item.subItems.map(sub => {
+                                        const SubIcon = sub.icon;
+                                        const isSubActive = pathname === sub.href;
+                                        return (
+                                          <Link
+                                            key={sub.title}
+                                            href={sub.href}
+                                            onClick={closeMobileMenu}
+                                            className={cn(
+                                              "flex items-center gap-3 py-2 px-3 rounded-xl transition-colors",
+                                              isSubActive 
+                                                ? "bg-fire/5 text-fire font-bold" 
+                                                : "text-charcoal/80 hover:bg-fire/5 hover:text-fire"
+                                            )}
+                                          >
+                                            <div className="relative shrink-0 w-8 h-8 rounded-lg overflow-hidden border border-border">
+                                              {sub.image ? (
+                                                <Image 
+                                                  src={sub.image} 
+                                                  alt={sub.title} 
+                                                  fill 
+                                                  sizes="32px"
+                                                  className="object-cover" 
+                                                />
+                                              ) : (
+                                                <div className="w-full h-full bg-fire/10 flex items-center justify-center text-fire">
+                                                  <SubIcon className="w-4 h-4" />
+                                                </div>
+                                              )}
+                                            </div>
+                                            <span className="text-sm font-bengali">{sub.title}</span>
+                                          </Link>
+                                        )
+                                      })}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+
+                          {isLoggedIn && (
+                            <Link
+                              href={dashboardHref}
+                              onClick={closeMobileMenu}
+                              className={cn(
+                                "relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
+                                pathname.startsWith(dashboardHref)
+                                  ? "text-fire font-bold bg-fire/5"
+                                  : "text-charcoal hover:bg-fire/5 hover:text-fire"
+                              )}
+                            >
+                              <LayoutDashboard className={cn(
+                                "h-5 w-5 transition-colors",
+                                pathname.startsWith(dashboardHref) ? "text-fire" : "text-charcoal/50 group-hover:text-fire"
+                              )} />
+                              <span className="text-base font-medium font-bengali">
+                                {userRole === "ADMIN" ? "ড্যাশবোর্ড" : "আমার অর্ডার"}
+                              </span>
+                              <ChevronRight className="h-4 w-4 ml-auto text-charcoal/30 group-hover:text-fire transition-colors" />
+                            </Link>
+                          )}
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="categories" className="flex-1 mt-0 focus-visible:outline-none focus-visible:ring-0 overflow-y-auto pr-1">
+                        <div className="space-y-1">
+                          {categories.map((cat) => {
+                            const SubIcon = cat.icon;
+                            return (
+                              <Link
+                                key={cat.title}
+                                href={cat.href}
+                                onClick={closeMobileMenu}
+                                className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-fire/5 group"
+                              >
+                                <div className="relative shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-border">
+                                  {cat.image ? (
+                                    <Image 
+                                      src={cat.image} 
+                                      alt={cat.title} 
+                                      fill 
+                                      sizes="40px"
+                                      className="object-cover group-hover:scale-110 transition-transform duration-500" 
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-fire/10 flex items-center justify-center text-fire">
+                                      <SubIcon className="w-5 h-5 group-hover:scale-110 transition-transform duration-500" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="text-base font-medium font-bengali text-charcoal group-hover:text-fire transition-colors">{cat.title}</span>
+                                  {cat.description && (
+                                    <span className="text-xs text-charcoal/60 font-bengali truncate">{cat.description}</span>
+                                  )}
+                                </div>
+                              </Link>
+                            )
+                          })}
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+
+                    {/* Divider + Account Section */}
+                    <div className="mt-auto border-t border-border pt-4 space-y-3 shrink-0">
+                      {isLoggedIn && user ? (
+                        <>
+                          {/* User Profile Card */}
+                          <div className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-fire/5 to-terracotta/5 border border-border">
+                            <Avatar className="h-11 w-11 ring-2 ring-fire/20">
+                              <AvatarImage 
+                                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=E85D24&color=fff&bold=true`}
+                                alt={user.name} 
+                                className="object-cover" 
+                              />
+                              <AvatarFallback className="bg-gradient-to-br from-fire to-terracotta text-white font-bold">
+                                {userInitial}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                              <p className="font-bold text-sm leading-none truncate text-charcoal">{user.name}</p>
+                              <p className="text-xs text-muted mt-1 truncate">{user.email}</p>
+                            </div>
+                          </div>
+
+                          {/* Dashboard Link */}
+                          <Link
+                            href={dashboardHref}
+                            onClick={closeMobileMenu}
+                            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-cream-dark/30 hover:bg-cream-dark/50 transition-colors"
+                          >
+                            {userRole === "ADMIN"
+                              ? <LayoutDashboard className="h-5 w-5 text-fire" />
+                              : <Truck className="h-5 w-5 text-fire" />}
+                            <span className="text-sm font-semibold font-bengali text-charcoal">
+                              {userRole === "ADMIN" ? "অ্যাডমিন ড্যাশবোর্ড" : "আমার অর্ডার ট্র্যাক করুন"}
+                            </span>
+                            <ChevronRight className="h-4 w-4 ml-auto text-charcoal/45" />
+                          </Link>
+
+                          {/* Logout */}
+                          <button
+                            onClick={() => {
+                              handleLogout();
+                              closeMobileMenu();
+                            }}
+                            className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl text-error hover:bg-error/5 transition-colors"
+                          >
+                            <LogOut className="h-5 w-5" />
+                            <span className="text-sm font-semibold font-bengali">লগআউট করুন</span>
+                          </button>
+                        </>
+                      ) : (
+                         <Button nativeButton={false} render={<Link href="/login" onClick={closeMobileMenu} />} className="w-full h-12 bg-gradient-to-r from-fire to-terracotta hover:from-fire-dark hover:to-terracotta-dark text-white rounded-xl shadow-lg hover:shadow-fire/25 transition-all duration-300 font-bold text-base border-0 font-bengali">
+                           লগইন করুন
+                         </Button>
+                      )}
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            )}
+          </div>
+        </div>
+      </Container>
+    </nav>
   );
 }
