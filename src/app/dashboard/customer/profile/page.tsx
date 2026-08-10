@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Save, Lock, User, Phone, MapPin } from "lucide-react";
+import { Save, Lock, User, Phone, MapPin, Eye, EyeOff } from "lucide-react";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuthStore } from "@/store/auth.store";
 import { toast } from "sonner";
+import { useUpdateProfile, useChangePassword } from "@/features/user/hooks/useUpdateProfile";
 
 const profileSchema = z.object({
   name: z.string().min(3, "নাম কমপক্ষে ৩ অক্ষরের হতে হবে"),
@@ -30,12 +31,17 @@ type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 export default function CustomerProfilePage() {
   const { user } = useAuthStore();
-  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const updateProfile = useUpdateProfile();
+  const changePassword = useChangePassword();
+  
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register: registerProfile,
     handleSubmit: handleProfileSubmit,
+    reset: resetProfile,
     formState: { errors: profileErrors },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -45,6 +51,16 @@ export default function CustomerProfilePage() {
       address: user?.address || "",
     },
   });
+
+  useEffect(() => {
+    if (user) {
+      resetProfile({
+        name: user.name || "",
+        phone: user.phone || "",
+        address: user.address || "",
+      });
+    }
+  }, [user, resetProfile]);
 
   const {
     register: registerPassword,
@@ -56,22 +72,15 @@ export default function CustomerProfilePage() {
   });
 
   const onProfileSubmit = (data: ProfileFormValues) => {
-    setIsUpdatingProfile(true);
-    // Mock API call
-    setTimeout(() => {
-      setIsUpdatingProfile(false);
-      toast.success("প্রোফাইল আপডেট করা হয়েছে!");
-    }, 1000);
+    updateProfile.mutate(data);
   };
 
   const onPasswordSubmit = (data: PasswordFormValues) => {
-    setIsUpdatingPassword(true);
-    // Mock API call
-    setTimeout(() => {
-      setIsUpdatingPassword(false);
-      toast.success("পাসওয়ার্ড পরিবর্তন করা হয়েছে!");
-      resetPassword();
-    }, 1000);
+    changePassword.mutate(data, {
+      onSuccess: () => {
+        resetPassword();
+      },
+    });
   };
 
   return (
@@ -124,11 +133,11 @@ export default function CustomerProfilePage() {
           <div className="flex justify-end pt-4">
             <button
               type="submit"
-              disabled={isUpdatingProfile}
+              disabled={updateProfile.isPending}
               className="flex items-center gap-2 px-8 py-3.5 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all disabled:opacity-50 cursor-pointer shadow-sm active:scale-95"
             >
               <Save size={20} />
-              {isUpdatingProfile ? "সেভ হচ্ছে..." : "সেভ করুন"}
+              {updateProfile.isPending ? "সেভ হচ্ছে..." : "সেভ করুন"}
             </button>
           </div>
         </form>
@@ -142,36 +151,63 @@ export default function CustomerProfilePage() {
         </div>
         
         <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="p-6 sm:p-8 space-y-6">
-          <FormInput
-            type="password"
-            label="বর্তমান পাসওয়ার্ড"
-            {...registerPassword("currentPassword")}
-            error={passwordErrors.currentPassword?.message}
-          />
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              className="absolute right-4 top-10 text-muted-light hover:text-fire transition-colors focus:outline-none z-10"
+            >
+              {showCurrentPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+            </button>
+            <FormInput
+              type={showCurrentPassword ? "text" : "password"}
+              label="বর্তমান পাসওয়ার্ড"
+              {...registerPassword("currentPassword")}
+              error={passwordErrors.currentPassword?.message}
+            />
+          </div>
           
           <div className="grid sm:grid-cols-2 gap-6">
-            <FormInput
-              type="password"
-              label="নতুন পাসওয়ার্ড"
-              {...registerPassword("newPassword")}
-              error={passwordErrors.newPassword?.message}
-            />
-            <FormInput
-              type="password"
-              label="পাসওয়ার্ড নিশ্চিত করুন"
-              {...registerPassword("confirmPassword")}
-              error={passwordErrors.confirmPassword?.message}
-            />
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="absolute right-4 top-10 text-muted-light hover:text-fire transition-colors focus:outline-none z-10"
+              >
+                {showNewPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
+              <FormInput
+                type={showNewPassword ? "text" : "password"}
+                label="নতুন পাসওয়ার্ড"
+                {...registerPassword("newPassword")}
+                error={passwordErrors.newPassword?.message}
+              />
+            </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-4 top-10 text-muted-light hover:text-fire transition-colors focus:outline-none z-10"
+              >
+                {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
+              <FormInput
+                type={showConfirmPassword ? "text" : "password"}
+                label="পাসওয়ার্ড নিশ্চিত করুন"
+                {...registerPassword("confirmPassword")}
+                error={passwordErrors.confirmPassword?.message}
+              />
+            </div>
           </div>
 
           <div className="flex justify-end pt-4">
             <button
               type="submit"
-              disabled={isUpdatingPassword}
+              disabled={changePassword.isPending}
               className="flex items-center gap-2 px-8 py-3.5 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all disabled:opacity-50 cursor-pointer shadow-sm active:scale-95 "
             >
               <Lock size={20} />
-              {isUpdatingPassword ? "আপডেট হচ্ছে..." : "আপডেট করুন"}
+              {changePassword.isPending ? "আপডেট হচ্ছে..." : "আপডেট করুন"}
             </button>
           </div>
         </form>
