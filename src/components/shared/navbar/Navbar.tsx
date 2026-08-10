@@ -430,7 +430,7 @@ export function Navbar() {
                                     <span className="text-base font-medium font-bengali">{item.titleBn}</span>
                                   </Link>
                                   
-                                  {hasSubItems && (
+                                  {/* {hasSubItems && (
                                     <button 
                                       onClick={(e) => {
                                         e.preventDefault();
@@ -445,7 +445,7 @@ export function Navbar() {
                                     <div className="p-3 pointer-events-none flex-shrink-0">
                                       <ChevronRight className="h-4 w-4 text-charcoal/30 group-hover:text-fire transition-colors" />
                                     </div>
-                                  )}
+                                  )} */}
                                 </div>
 
                                 {/* Sub-items accordion */}
@@ -516,7 +516,6 @@ export function Navbar() {
                               <span className="text-base font-medium font-bengali">
                                 {userRole === "ADMIN" ? "ড্যাশবোর্ড" : "আমার অর্ডার"}
                               </span>
-                              <ChevronRight className="h-4 w-4 ml-auto text-charcoal/30 group-hover:text-fire transition-colors" />
                             </Link>
                           )}
                         </div>

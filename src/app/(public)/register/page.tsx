@@ -1,10 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Mail, Phone, Lock, ArrowRight } from "lucide-react";
+import { User, Mail, Phone, Eye, EyeOff, ArrowRight } from "lucide-react";
 
 import { Container } from "@/components/shared/container/Container";
 import { FormInput } from "@/components/forms/FormInput";
@@ -25,6 +26,8 @@ const registerSchema = z.object({
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const registerUser = useRegister();
 
   const {
@@ -90,10 +93,16 @@ export default function RegisterPage() {
             </div>
 
             <div className="relative">
-              <Lock size={18} className="absolute right-4 top-10 text-muted-light" />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-10 text-muted-light hover:text-fire transition-colors focus:outline-none z-10"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
               <FormInput
                 label="পাসওয়ার্ড *"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 {...register("password")}
                 error={errors.password?.message}
@@ -101,10 +110,16 @@ export default function RegisterPage() {
             </div>
 
             <div className="relative">
-              <Lock size={18} className="absolute right-4 top-10 text-muted-light" />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-4 top-10 text-muted-light hover:text-fire transition-colors focus:outline-none z-10"
+              >
+                {showConfirmPassword ?  <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
               <FormInput
                 label="পাসওয়ার্ড নিশ্চিত করুন *"
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="••••••••"
                 {...register("confirmPassword")}
                 error={errors.confirmPassword?.message}

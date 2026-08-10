@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Eye, EyeOff, ArrowRight } from "lucide-react";
 
 import { Container } from "@/components/shared/container/Container";
 import { FormInput } from "@/components/forms/FormInput";
@@ -20,6 +21,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || undefined;
   const login = useLogin(callbackUrl);
@@ -68,10 +70,16 @@ export default function LoginPage() {
             </div>
 
             <div className="relative">
-              <Lock size={18} className="absolute right-4 top-10 text-muted-light" />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-10 text-muted-light hover:text-fire transition-colors focus:outline-none z-10"
+              >
+                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
               <FormInput
                 label="পাসওয়ার্ড"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 {...register("password")}
                 error={errors.password?.message}
