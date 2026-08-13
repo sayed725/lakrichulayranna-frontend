@@ -69,6 +69,7 @@ export default function AdminOrdersPage() {
   const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
+  const [copiedTextId, setCopiedTextId] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
@@ -149,6 +150,16 @@ export default function AdminOrdersPage() {
       description: `Order #${orderNumber} copied to clipboard`,
     });
     setTimeout(() => setCopiedOrderId(null), 2000);
+  };
+
+  const handleCopyText = (text: string, id: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    const key = `${id}-${type}`;
+    setCopiedTextId(key);
+    toast.success(`${type} copied!`, {
+      description: `${text} copied to clipboard`,
+    });
+    setTimeout(() => setCopiedTextId(null), 2000);
   };
 
   return (
@@ -363,6 +374,7 @@ export default function AdminOrdersPage() {
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
                   <th className="px-6 py-4">Order Number</th>
+                  <th className="px-6 py-4">Order From</th>
                   <th className="px-6 py-4">Customer</th>
                   <th className="px-6 py-4 text-right">Total</th>
                   <th className="px-6 py-4 text-center">Payment</th>
@@ -393,9 +405,81 @@ export default function AdminOrdersPage() {
                         {format(new Date(order.createdAt), "dd MMM, yyyy 'at' HH:mm")}
                       </div>
                     </td>
+                    
+                    {/* Order From */}
                     <td className="px-6 py-4">
-                      <div className="font-medium text-charcoal">{ order.customerName || "Guest"}</div>
-                      <div className="text-xs text-muted-foreground font-latin">{order.deliveryAddress?.phone || order.customerPhone}</div>
+                      {order.user ? (
+                        <>
+                          <div className="flex items-center gap-1 group/accname">
+                            <span className="font-medium text-charcoal">{order.user.name}</span>
+                            <button
+                              onClick={() => handleCopyText(order.user.name, order.id, "Account Name")}
+                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/accname:opacity-100 focus:opacity-100"
+                              title="Copy account name"
+                            >
+                              {copiedTextId === `${order.id}-Account Name` ? (
+                                <Check className="w-3 h-3 text-green-600" />
+                              ) : (
+                                <Copy className="w-3 h-3" />
+                              )}
+                            </button>
+                          </div>
+                          <div className="flex items-center gap-1 group/accphone text-xs text-muted-foreground font-latin mt-0.5">
+                            <span>{order.user.phone || "No phone"}</span>
+                            {order.user.phone && (
+                              <button
+                                onClick={() => handleCopyText(order.user.phone, order.id, "Account Phone")}
+                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/accphone:opacity-100 focus:opacity-100"
+                                title="Copy account phone"
+                              >
+                                {copiedTextId === `${order.id}-Account Phone` ? (
+                                  <Check className="w-3 h-3 text-green-600" />
+                                ) : (
+                                  <Copy className="w-3 h-3" />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <span className="text-xs font-bold text-muted-foreground bg-cream-dark/30 px-2 py-1 rounded-full uppercase">Guest</span>
+                      )}
+                    </td>
+
+                    {/* Customer */}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1 group/name">
+                        <span className="font-medium text-charcoal">{order.customerName || "Guest"}</span>
+                        {order.customerName && (
+                          <button
+                            onClick={() => handleCopyText(order.customerName, order.id, "Customer Name")}
+                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/name:opacity-100 focus:opacity-100"
+                            title="Copy customer name"
+                          >
+                            {copiedTextId === `${order.id}-Customer Name` ? (
+                              <Check className="w-3 h-3 text-green-600" />
+                            ) : (
+                              <Copy className="w-3 h-3" />
+                            )}
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 group/phone text-xs text-muted-foreground font-latin mt-0.5">
+                        <span>{order.deliveryAddress?.phone || order.customerPhone || "N/A"}</span>
+                        {(order.deliveryAddress?.phone || order.customerPhone) && (
+                          <button
+                            onClick={() => handleCopyText(order.deliveryAddress?.phone || order.customerPhone || "", order.id, "Customer Phone")}
+                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/phone:opacity-100 focus:opacity-100"
+                            title="Copy customer phone"
+                          >
+                            {copiedTextId === `${order.id}-Customer Phone` ? (
+                              <Check className="w-3 h-3 text-green-600" />
+                            ) : (
+                              <Copy className="w-3 h-3" />
+                            )}
+                          </button>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-right font-bold text-fire">
                       {formatPrice(order.total)}

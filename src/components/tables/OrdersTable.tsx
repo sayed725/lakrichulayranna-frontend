@@ -41,8 +41,8 @@ export function OrdersTable({ orders, isLoading, onViewOrder, onEditOrder, onDel
       header: "গ্রাহক",
       accessor: (row: any) => (
         <div>
-          <p className="font-bold">{row.user?.name || "অতিথি"}</p>
-          <p className="text-xs text-muted font-latin">{row.deliveryAddress?.phone}</p>
+          <p className="font-bold">{ row.customerName || "অতিথি"}</p>
+          <p className="text-xs text-muted font-latin">{ row.deliveryAddress?.phone || row.customerPhone || "N/A"}</p>
         </div>
       ),
     },
@@ -63,59 +63,8 @@ export function OrdersTable({ orders, isLoading, onViewOrder, onEditOrder, onDel
     {
       header: "স্ট্যাটাস",
       accessor: (row: any) => (
-        <select
-          value={row.status}
-          onChange={(e) => handleStatusChange(row.id, e.target.value)}
-          disabled={updateStatus.isPending}
-          onClick={(e) => e.stopPropagation()}
-          className="text-xs font-semibold px-2 py-1 rounded-lg border border-border bg-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-fire"
-        >
-          <option value="PENDING">অপেক্ষমাণ</option>
-          <option value="CONFIRMED">নিশ্চিতকৃত</option>
-          <option value="PREPARING">প্রস্তুত হচ্ছে</option>
-          <option value="READY">ডেলিভারির জন্য প্রস্তুত</option>
-          <option value="DELIVERED">ডেলিভারি সম্পন্ন</option>
-          <option value="CANCELLED">বাতিলকৃত</option>
-        </select>
+        <StatusBadge status={row.status} />
       ),
-    },
-    {
-      header: "অ্যাকশন",
-      accessor: (row: any) => (
-        <div className="flex items-center gap-2 justify-end">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onViewOrder?.(row);
-            }}
-            className="p-2 text-charcoal hover:text-fire hover:bg-fire/10 rounded-lg transition-colors cursor-pointer"
-            title="বিস্তারিত দেখুন"
-          >
-            <Eye size={18} />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditOrder?.(row);
-            }}
-            className="p-2 text-charcoal hover:text-fire hover:bg-fire/10 rounded-lg transition-colors cursor-pointer"
-            title="সম্পাদনা করুন"
-          >
-            <Edit size={18} />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteOrder?.(row);
-            }}
-            className="p-2 text-charcoal hover:text-error hover:bg-error/10 rounded-lg transition-colors cursor-pointer"
-            title="মুছে ফেলুন"
-          >
-            <Trash2 size={18} />
-          </button>
-        </div>
-      ),
-      className: "text-right",
     },
   ];
 
