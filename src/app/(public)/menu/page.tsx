@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search, SlidersHorizontal, PackageX, Flame, Sparkles, X, Filter } from "lucide-react";
@@ -39,6 +39,15 @@ export default function MenuPage() {
   const [maxPrice, setMaxPrice] = useState<string>(urlMaxPrice);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 500);
+
+  // Sync state with URL params on changes (e.g. when clicking navbar categories while on this page)
+  useEffect(() => {
+    setActiveCategory(urlCategoryName);
+    setIsSpicy(urlIsSpicy);
+    setIsFeatured(urlIsFeatured);
+    setMinPrice(urlMinPrice);
+    setMaxPrice(urlMaxPrice);
+  }, [urlCategoryName, urlIsSpicy, urlIsFeatured, urlMinPrice, urlMaxPrice]);
 
   // Check if any filter is active
   const hasActiveFilters = activeCategory !== "all" || isSpicy || isFeatured || searchTerm !== "" || minPrice !== "" || maxPrice !== "";

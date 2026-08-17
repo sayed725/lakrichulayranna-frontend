@@ -31,12 +31,7 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-1">
             <div className="mb-4">
-              <Link href="/" className="inline-block">
-                <span className="text-2xl font-bold font-bengali">
-                  <span className="text-cream">লাকড়ি চুলায়</span>{" "}
-                  <span className="text-fire">রান্না</span>
-                </span>
-              </Link>
+              <Logo variant="light" />
             </div>
             <p className="text-cream/60 text-sm font-bengali leading-relaxed mb-6">
               কাঠের চুলায় রান্না করা খাঁটি বাংলা খাবারের অনলাইন অর্ডার।
