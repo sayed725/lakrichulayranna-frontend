@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Minus, Plus, ShoppingBag, ArrowLeft, Package, Flame, Sparkles, Weight, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Container } from "@/components/shared/container/Container";
 import { ItemCard } from "@/components/item/ItemCard";
-import { PageLoader } from "@/components/loaders/PageLoader";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCartStore } from "@/store/cart.store";
 import { formatPrice } from "@/lib/utils";
 import api from "@/lib/fetcher";
@@ -69,7 +69,45 @@ export default function ItemDetailPage() {
 
   const reviews = reviewsResponse || [];
 
-  if (isLoading) return <PageLoader />;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <Container className="pt-8 pb-20">
+          {/* Breadcrumb Skeleton */}
+          <div className="w-32 h-5 mb-10">
+            <Skeleton className="w-full h-full rounded-lg" />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            {/* Left: Image Gallery Skeleton */}
+            <div className="space-y-4 lg:sticky lg:top-24">
+              <Skeleton className="aspect-square w-full rounded-3xl" />
+              <div className="flex gap-4">
+                <Skeleton className="w-20 h-20 rounded-xl" />
+                <Skeleton className="w-20 h-20 rounded-xl" />
+                <Skeleton className="w-20 h-20 rounded-xl" />
+              </div>
+            </div>
+
+            {/* Right: Info Skeleton */}
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <Skeleton className="h-6 w-24 rounded-lg" />
+                <Skeleton className="h-10 w-3/4 rounded-xl" />
+                <Skeleton className="h-6 w-1/3 rounded-lg" />
+              </div>
+              <Skeleton className="h-8 w-32 rounded-xl" />
+              <Skeleton className="h-24 w-full rounded-2xl" />
+              <div className="flex gap-4">
+                <Skeleton className="h-12 w-28 rounded-xl" />
+                <Skeleton className="h-12 w-48 rounded-xl" />
+              </div>
+            </div>
+          </div>
+        </Container>
+      </div>
+    );
+  }
 
   if (isError || !itemData) {
     return (
@@ -132,7 +170,7 @@ export default function ItemDetailPage() {
 
   return (
     <div className="min-h-screen bg-cream">
-      <Container className="w-11/12 pt-8 pb-20">
+      <Container className="pt-8 pb-20">
         {/* Breadcrumb */}
         <Link href="/menu" className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-fire mb-10 transition-colors group">
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Navbar } from "@/components/shared/navbar/Navbar";
 import { Footer } from "@/components/shared/footer/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import WhatsAppButton from "@/components/shared/WhatsAppButton";
 
 export const metadata: Metadata = {
   title: "হোম | লাকড়ি চুলায় রান্না",
@@ -23,6 +24,7 @@ export default function PublicLayout({
       <Navbar />
       <CartDrawer />
       <main id="main-content" className="flex-1">{children}</main>
+      <WhatsAppButton />
       <Footer />
     </div>
   );

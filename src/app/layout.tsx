@@ -78,6 +78,8 @@ export default function RootLayout({
                   toast: "rounded-xl shadow-lg",
                   success: "border-l-4 border-l-[#22C55E]",
                   error: "border-l-4 border-l-[#EF4444]",
+                  info: "border-l-4 border-l-[#3B82F6]",
+                  warning: "border-l-4 border-l-[#F59E0B]",
                 },
               }}
             />
