@@ -60,7 +60,7 @@ export function ItemCard({ item }: ItemCardProps) {
 
   return (
     <Link 
-      href={`/menu/${item.slug}`}
+      href={`/products/${item.slug}`}
       className="group flex flex-col bg-white rounded-2xl border border-border overflow-hidden hover:shadow-xl hover:shadow-fire/10 hover:border-fire/20 transition-all duration-300 transform hover:-translate-y-1"
     >
       {/* Image Container */}

@@ -44,13 +44,16 @@ import {
   Coffee,
   ChevronDown,
   Utensils,
+  Store,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { useCartStore } from "@/store/cart.store";
 import { useUIStore } from "@/store/ui.store";
 import { useQuery } from "@tanstack/react-query";
-import { getCategories, Category } from "@/services/category.service";
+import { Category } from "@/services/category.service";
 import Image from "next/image";
+import api from "@/lib/fetcher";
+import { API_ROUTES } from "@/lib/constants";
 
 interface NavSubItem {
   title: string;
@@ -103,39 +106,54 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fetch categories for mega menu
+  // Fetch categories for mega menu matching the menu page query
   const { data: categoriesData } = useQuery({
-    queryKey: ["categories", "featured", "active"],
-    queryFn: () => getCategories({ limit: 6, sortOrder: "asc", isActive: true, isFeatured: true }),
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const res = await api.get(API_ROUTES.CATEGORIES.BASE);
+      return res.data.data;
+    },
   });
 
-  const categories: NavSubItem[] = categoriesData?.data 
-    ? (categoriesData.data as Category[]).map((cat) => {
-        const lowerName = cat.name.toLowerCase();
-        let Icon = Package;
-        if (lowerName.includes('spic') || lowerName.includes('hot') || lowerName.includes('ঝাল')) Icon = Flame;
-        else if (lowerName.includes('sweet') || lowerName.includes('dessert') || lowerName.includes('মিষ্টি')) Icon = Candy;
-        else if (lowerName.includes('drink') || lowerName.includes('beverage') || lowerName.includes('চা') || lowerName.includes('কফি')) Icon = Coffee;
-        else if (lowerName.includes('pizza') || lowerName.includes('combo') || lowerName.includes('খিচুড়ি')) Icon = Pizza;
-        
-        return {
-          title: cat.name,
-          href: `/menu?category.name=${encodeURIComponent(cat.name)}`,
-          description: cat.description || `${cat.name} এর চমৎকার স্বাদ নিন`,
-          icon: Icon,
-          image: cat.imageUrl
-        };
-      })
-    : [];
+  const rawCategories = Array.isArray(categoriesData) 
+    ? (categoriesData as Category[])
+    : (categoriesData as any)?.categories || [];
+
+  const categories: NavSubItem[] = rawCategories.map((cat: Category) => {
+    const lowerName = cat.name.toLowerCase();
+    let Icon = Package;
+    if (lowerName.includes('spic') || lowerName.includes('hot') || lowerName.includes('ঝাল')) Icon = Flame;
+    else if (lowerName.includes('sweet') || lowerName.includes('dessert') || lowerName.includes('মিষ্টি')) Icon = Candy;
+    else if (lowerName.includes('drink') || lowerName.includes('beverage') || lowerName.includes('চা') || lowerName.includes('কফি')) Icon = Coffee;
+    else if (lowerName.includes('pizza') || lowerName.includes('combo') || lowerName.includes('খিচুড়ি')) Icon = Pizza;
+    
+    return {
+      title: cat.name,
+      href: `/products?category.name=${encodeURIComponent(cat.name)}`,
+      description: cat.description || `${cat.name} এর চমৎকার স্বাদ নিন`,
+      icon: Icon,
+      image: cat.imageUrl
+    };
+  });
 
   const menuItems: NavItem[] = [
     { title: "Home", titleBn: "হোম", href: "/", icon: Home },
     { 
-      title: "Menu", 
-      titleBn: "মেনু",
-      href: "/menu", 
-      icon: Utensils,
+      title: "Products", 
+      titleBn: "পণ্য সমূহ",
+      href: "/products", 
+      icon: Store,
       subItems: categories.length > 0 ? categories : undefined
+    },
+    { 
+      title: "My Orders", 
+      titleBn: isLoggedIn && userRole === "ADMIN" ? "ড্যাশবোর্ড" : "আমার অর্ডার", 
+      href: isLoggedIn 
+        ? userRole === "ADMIN" 
+          ? "/dashboard/admin" 
+          : "/dashboard/customer/orders" 
+        : "/my-orders", 
+      icon: LayoutDashboard 
     },
     { title: "About", titleBn: "আমাদের সম্পর্কে", href: "/about", icon: BookOpen },
     { title: "Contact", titleBn: "যোগাযোগ", href: "/contact", icon: ClipboardListIcon },
@@ -254,25 +272,6 @@ export function Navbar() {
                 </div>
               );
             })}
-            
-            {/* Dynamic Dashboard/My Orders Link on desktop nav */}
-            {isLoggedIn && (
-              <div className="flex items-center h-full py-2">
-                <Link
-                  href={dashboardHref}
-                  className={cn(
-                    "relative text-sm font-medium font-bengali transition-colors hover:text-fire",
-                    pathname.startsWith(dashboardHref)
-                      ? "text-fire font-bold"
-                      : "text-charcoal/90 hover:text-fire",
-                    "after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-fire after:transition-all after:duration-300 hover:after:w-full",
-                    pathname.startsWith(dashboardHref) && "after:w-full"
-                  )}
-                >
-                  {userRole === "ADMIN" ? "ড্যাশবোর্ড" : "আমার অর্ডার"}
-                </Link>
-              </div>
-            )}
           </div>
 
           {/* Desktop Right Side */}
@@ -497,27 +496,6 @@ export function Navbar() {
                               </div>
                             );
                           })}
-
-                          {isLoggedIn && (
-                            <Link
-                              href={dashboardHref}
-                              onClick={closeMobileMenu}
-                              className={cn(
-                                "relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
-                                pathname.startsWith(dashboardHref)
-                                  ? "text-fire font-bold bg-fire/5"
-                                  : "text-charcoal hover:bg-fire/5 hover:text-fire"
-                              )}
-                            >
-                              <LayoutDashboard className={cn(
-                                "h-5 w-5 transition-colors",
-                                pathname.startsWith(dashboardHref) ? "text-fire" : "text-charcoal/50 group-hover:text-fire"
-                              )} />
-                              <span className="text-base font-medium font-bengali">
-                                {userRole === "ADMIN" ? "ড্যাশবোর্ড" : "আমার অর্ডার"}
-                              </span>
-                            </Link>
-                          )}
                         </div>
                       </TabsContent>
 

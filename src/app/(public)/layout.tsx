@@ -3,6 +3,7 @@ import { Navbar } from "@/components/shared/navbar/Navbar";
 import { Footer } from "@/components/shared/footer/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import WhatsAppButton from "@/components/shared/WhatsAppButton";
+import MobileBottomNav from "@/components/shared/navbar/MobileBottomNav";
 
 export const metadata: Metadata = {
   title: "হোম | লাকড়ি চুলায় রান্না",
@@ -25,6 +26,7 @@ export default function PublicLayout({
       <CartDrawer />
       <main id="main-content" className="flex-1">{children}</main>
       <WhatsAppButton />
+      <MobileBottomNav />
       <Footer />
     </div>
   );

@@ -80,7 +80,7 @@ export default function OrderSuccessPage() {
                 </Link>
               )}
               <Link
-                href="/menu"
+                href="/products"
                 className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-fire/10 text-fire border border-transparent hover:border-fire/20 font-semibold font-bengali rounded-xl transition-all active:scale-95"
               >
                 <ShoppingBag size={18} />

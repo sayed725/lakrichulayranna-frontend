@@ -126,7 +126,7 @@ export function HomeReviews() {
                         {/* Item Info */}
                         {review.item && (
                           <Link
-                            href={`/menu/${review.item.slug}`}
+                            href={`/products/${review.item.slug}`}
                             className="flex items-center gap-2 text-fire text-sm font-semibold mb-3 hover:text-fire-dark transition-colors relative z-10"
                           >
                             <Utensils size={14} />

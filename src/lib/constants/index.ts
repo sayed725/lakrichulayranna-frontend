@@ -99,7 +99,7 @@ export interface NavLink {
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Home", labelBn: "হোম", href: "/" },
-  { label: "Menu", labelBn: "মেনু", href: "/menu" },
+  { label: "Products", labelBn: "পণ্য সমূহ", href: "/products" },
   { label: "About", labelBn: "আমাদের সম্পর্কে", href: "/about" },
   { label: "Contact", labelBn: "যোগাযোগ", href: "/contact" },
 ];

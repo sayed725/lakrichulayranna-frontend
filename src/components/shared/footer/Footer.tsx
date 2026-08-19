@@ -8,7 +8,7 @@ const currentYear = new Date().getFullYear();
 
 const quickLinks = [
   { label: "হোম", href: "/" },
-  { label: "মেনু", href: "/menu" },
+  { label: "পণ্য সমূহ", href: "/products" },
   { label: "আমাদের সম্পর্কে", href: "/about" },
   { label: "যোগাযোগ", href: "/contact" },
 ];

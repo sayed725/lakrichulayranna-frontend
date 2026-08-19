@@ -32,7 +32,7 @@ const fallbackBanner: Banner[] = [
     title: "আগুনের আঁচে রান্না ভালোবাসায় পরিবেশন",
     subtitle: "লাকড়ির চুলায় রান্না করা প্রতিটি খাবারে থাকছে গ্রামের ঐতিহ্যবাহী স্বাদ",
     badge: "খাঁটি দেশীয় স্বাদ",
-    buttonText: "মেনু দেখুন", 
+    buttonText: "পণ্য সমূহ দেখুন", 
     image: "/lakri_chulay_ranna_cover_photo.jpg",
   }
 ];
@@ -151,7 +151,7 @@ export default function HeroSlider({ initialSlides = [] }: HeroSliderProps) {
                   transition={{ duration: 0.5, delay: 0.7 }}
                   className="pt-2 sm:pt-4"
                 >
-                  <Link href={slides[current].categoryId ? `/menu?category=${slides[current].categoryId}` : "/menu"}>
+                  <Link href={slides[current].categoryId ? `/products?category=${slides[current].categoryId}` : "/products"}>
                     <Button
                       size="default"
                       className="bg-fire text-white font-semibold font-bengali text-base rounded-xl hover:bg-fire-dark transition-all duration-300 hover:shadow-xl hover:shadow-fire/30 active:scale-95 px-6 py-3 h-auto"

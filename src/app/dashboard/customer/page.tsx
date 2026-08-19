@@ -96,8 +96,8 @@ export default function CustomerDashboardPage() {
             </div>
             <p className="text-lg font-bold text-charcoal font-bengali mb-2">কোনো অর্ডার নেই</p>
             <p className="text-muted font-bengali mb-6">আপনি এখনও কোনো খাবার অর্ডার করেননি।</p>
-            <Link href="/menu" className="inline-block px-6 py-3 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-colors">
-              মেনু দেখুন
+            <Link href="/products" className="inline-block px-6 py-3 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-colors">
+              পণ্য সমূহ দেখুন
             </Link>
           </div>
         )}

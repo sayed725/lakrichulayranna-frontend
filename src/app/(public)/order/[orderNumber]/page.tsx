@@ -144,7 +144,7 @@ export default function PublicOrderDetailsPage({ params }: { params: Promise<{ o
               <div key={index} className="p-6 flex items-center gap-4 hover:bg-cream-dark/10 transition-colors">
                 <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-border shrink-0 bg-cream">
                   {item.item?.imageUrl && (
-                    <Image src={item.item.imageUrl} alt={item.item.name} fill className="object-cover" />
+                    <Image src={item.item.imageUrl} alt={item.item.name} fill sizes="80px" className="object-cover" />
                   )}
                 </div>
                 <div className="flex-1">

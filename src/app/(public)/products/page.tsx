@@ -76,7 +76,7 @@ export default function MenuPage() {
       if (max) priceObj.lte = max;
       params.set("price", JSON.stringify(priceObj));
     }
-    router.push(`/menu?${params.toString()}`);
+    router.push(`/products?${params.toString()}`);
   };
 
   // Fetch categories

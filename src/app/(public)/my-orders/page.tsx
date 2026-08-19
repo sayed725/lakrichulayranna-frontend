@@ -37,7 +37,7 @@ export default function GuestOrdersPage() {
             <h2 className="text-xl font-bold font-bengali text-charcoal mb-2">কোনো অর্ডার নেই</h2>
             <p className="text-muted font-bengali mb-6">আপনি এখনও কোনো অর্ডার করেননি।</p>
             <Link
-              href="/menu"
+              href="/products"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all cursor-pointer"
             >
               অর্ডার করুন

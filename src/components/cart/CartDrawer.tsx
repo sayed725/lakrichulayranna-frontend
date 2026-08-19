@@ -128,7 +128,7 @@ export function CartDrawer() {
                     onClick={closeCart}
                     className="px-6 py-2.5 bg-fire text-white rounded-xl font-bengali text-sm font-semibold hover:bg-fire-dark transition-colors cursor-pointer"
                   >
-                    মেনু দেখুন
+                    পণ্য সমূহ দেখুন
                   </button>
                 </div>
               ) : (

@@ -54,10 +54,10 @@ export default function NotFound() {
           </Link>
 
           <Link
-            href="/menu"
+            href="/products"
             className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-charcoal/20 text-charcoal font-semibold rounded-xl hover:border-fire hover:text-fire transition-all duration-300 active:scale-95"
           >
-            <span className="font-bengali">মেনু দেখুন</span>
+            <span className="font-bengali">পণ্য সমূহ দেখুন</span>
           </Link>
         </div>
       </div>

@@ -34,7 +34,7 @@ export function FeaturedItems() {
             className="mb-0"
           />
           <Link
-            href="/menu"
+            href="/products"
             className="flex items-center gap-2 text-fire font-semibold font-bengali hover:text-fire-dark transition-colors group"
           >
             সব দেখুন

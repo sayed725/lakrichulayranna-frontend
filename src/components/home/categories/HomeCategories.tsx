@@ -103,7 +103,7 @@ export function HomeCategories() {
               </div> */}
 
               <Link
-                href="/menu"
+                href="/products"
                 className="flex items-center gap-2 text-fire font-semibold font-bengali hover:text-fire-dark transition-colors group"
               >
                 সব দেখুন
@@ -130,7 +130,7 @@ export function HomeCategories() {
                   <CarouselItem key={category.id} className="pl-3 basis-1/2 sm:basis-1/2 md:basis-[28%] lg:basis-1/5">
                     <motion.div variants={itemVariants}>
                       <Link
-                        href={`/menu?category.name=${encodeURIComponent(category.name)}`}
+                        href={`/products?category.name=${encodeURIComponent(category.name)}`}
                         prefetch={true}
                         className="block group relative overflow-hidden rounded-2xl h-36 sm:h-44 bg-cream-dark border border-border hover:shadow-xl hover:shadow-fire/10 transition-all"
                       >

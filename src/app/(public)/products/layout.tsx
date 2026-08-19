@@ -9,13 +9,13 @@ export async function generateMetadata({
   const categoryId = params?.categoryId as string;
   const search = params?.search as string;
 
-  let title = "মেনু | লাকড়ি চুলায় রান্না";
+  let title = "পণ্য সমূহ | লাকড়ি চুলায় রান্না";
   let description = "আমাদের সকল কাঠের চুলার খাবার এক নজরে।";
 
   if (search) {
     title = `"${search}" এর জন্য ফলাফল | লাকড়ি চুলায় রান্না`;
   } else if (categoryId && categoryId !== "all") {
-    title = `ক্যাটাগরি মেনু | লাকড়ি চুলায় রান্না`;
+    title = `ক্যাটাগরি পণ্য সমূহ | লাকড়ি চুলায় রান্না`;
   }
 
   return {

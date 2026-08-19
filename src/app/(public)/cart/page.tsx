@@ -20,6 +20,7 @@ export default function CartPage() {
 
   useEffect(() => {
     setMounted(true);
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
   const handleApplyCoupon = () => {
@@ -42,13 +43,13 @@ export default function CartPage() {
           আপনার কার্ট খালি!
         </h2>
         <p className="text-muted font-bengali mb-8 text-center max-w-md">
-          এখনো কোনো খাবার যোগ করা হয়নি। মেনু থেকে আপনার পছন্দের খাবার বেছে নিন।
+          এখনো কোনো খাবার যোগ করা হয়নি। পণ্য সমূহ থেকে আপনার পছন্দের খাবার বেছে নিন।
         </p>
         <Link
-          href="/menu"
+          href="/products"
           className="px-8 py-4 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-colors"
         >
-          মেনু দেখুন
+          পণ্য সমূহ দেখুন
         </Link>
       </Container>
     );
@@ -84,7 +85,7 @@ export default function CartPage() {
                         <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                       </div>
                       <div className="flex flex-col justify-center">
-                        <Link href={`/menu/${item.slug}`} className="font-bold font-bengali text-charcoal hover:text-fire transition-colors line-clamp-2">
+                        <Link href={`/products/${item.slug}`} className="font-bold font-bengali text-charcoal hover:text-fire transition-colors line-clamp-2">
                           {item.name}
                         </Link>
                         {/* Mobile price */}
