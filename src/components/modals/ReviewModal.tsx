@@ -6,6 +6,7 @@ import { X, MessageSquarePlus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StarRating } from "@/components/dashboard/StarRating";
 import { useSubmitReview, useCustomerReviews } from "@/features/review/hooks/useCustomerReviews";
+import { useAuthStore } from "@/store/auth.store";
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -15,7 +16,8 @@ interface ReviewModalProps {
 
 export function ReviewModal({ isOpen, onClose, order }: ReviewModalProps) {
   const submitReview = useSubmitReview();
-  const { data: reviews } = useCustomerReviews();
+  const { isAuthenticated } = useAuthStore();
+  const { data: reviews } = useCustomerReviews(isOpen && isAuthenticated());
   const [selectedItem, setSelectedItem] = useState<any | null>(null);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");

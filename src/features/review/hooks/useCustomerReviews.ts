@@ -5,13 +5,14 @@ import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
 import { toast } from "sonner";
 
-export const useCustomerReviews = () => {
+export const useCustomerReviews = (enabled: boolean = true) => {
   return useQuery({
     queryKey: ["customer", "reviews"],
     queryFn: async () => {
       const res = await api.get(`${API_ROUTES.REVIEWS.BASE}/my-reviews`);
       return res.data.data;
     },
+    enabled,
   });
 };
 

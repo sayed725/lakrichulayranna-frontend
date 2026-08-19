@@ -21,7 +21,7 @@ export default function GuestOrdersPage() {
 
   if (orderNumbers.length === 0) {
     return (
-      <div className="min-h-screen bg-cream-dark/20 py-12 px-4">
+      <div className="min-h-[60vh] bg-cream-dark/20 py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold font-bengali text-charcoal mb-1">

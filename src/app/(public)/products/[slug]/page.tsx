@@ -111,7 +111,7 @@ export default function ItemDetailPage() {
 
   if (isError || !itemData) {
     return (
-      <div className="min-h-screen bg-cream">
+      <div className="min-h-[60vh] bg-cream">
       <Container className="py-20 text-center">
         <div className="w-24 h-24 bg-cream rounded-full flex items-center justify-center mx-auto mb-6">
           <Package className="w-10 h-10 text-muted-light" />

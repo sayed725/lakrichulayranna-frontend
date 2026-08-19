@@ -32,7 +32,7 @@ export default function PublicOrderDetailsPage({ params }: { params: Promise<{ o
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-cream-dark/20 flex items-center justify-center px-4">
+      <div className="min-h-[60vh] bg-cream-dark/20 flex items-center justify-center px-4">
         <div className="bg-white p-8 rounded-3xl border border-border text-center max-w-md">
           <div className="w-16 h-16 bg-cream rounded-full flex items-center justify-center text-muted mx-auto mb-4">
             <FileText size={32} />
