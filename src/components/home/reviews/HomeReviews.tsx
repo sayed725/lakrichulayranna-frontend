@@ -63,10 +63,14 @@ export function HomeReviews() {
   return (
     <section className="py-10 bg-cream overflow-hidden">
       <Container>
+        {/* header  */}
+        <div className="text-center max-w-2xl mx-auto px-4">
+
         <SectionTitle
           titleBn="গ্রাহকদের মতামত"
           subtitle="যারা আমাদের খাবারের স্বাদ নিয়েছেন, তাদের অভিজ্ঞতা জানুন"
         />
+        </div>
 
         <div className="relative overflow-hidden">
           <motion.div

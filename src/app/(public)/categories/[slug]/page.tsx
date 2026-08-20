@@ -24,7 +24,8 @@ export default function CategoryPage() {
   const { data: itemsData, isLoading: itemsLoading } = useQuery({
     queryKey: ["items", "category", slug],
     queryFn: async () => {
-      const res = await api.get(`${API_ROUTES.ITEMS.BASE}?categorySlug=${slug}`);
+      //  const res = await api.get(`${API_ROUTES.ITEMS.BASE}?categorySlug=${slug}`);
+      const res = await api.get(`${API_ROUTES.ITEMS.BASE}?category.slug=${slug}`);
       return res.data.data;
     },
   });

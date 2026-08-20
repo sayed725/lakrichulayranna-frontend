@@ -28,18 +28,8 @@ export default function ItemDetailPage() {
   const { data: itemData, isLoading, isError } = useQuery({
     queryKey: ["item", slug],
     queryFn: async () => {
-      // First fetch all items to find the one with matching slug
-      const res = await api.get(API_ROUTES.ITEMS.BASE);
-      const items = Array.isArray(res.data.data) ? res.data.data : res.data.data?.items || [];
-      const item = items.find((i: any) => i.slug === slug);
-      
-      if (!item) {
-        throw new Error('Item not found');
-      }
-      
-      // Then fetch full item details by ID
-      const detailRes = await api.get(API_ROUTES.ITEMS.BY_ID(item.id));
-      return detailRes.data.data;
+      const res = await api.get(API_ROUTES.ITEMS.BY_SLUG(slug));
+      return res.data.data;
     },
   });
 
