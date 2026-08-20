@@ -6,12 +6,14 @@ import { usePathname } from "next/navigation";
 import { Menu, User, LogOut, ChevronRight } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { ADMIN_NAV_LINKS, DASHBOARD_NAV_LINKS } from "@/lib/constants";
+import { useSidebar } from "@/components/ui/sidebar";
 
 interface TopbarProps {
-  onMobileMenuToggle: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 export function Topbar({ onMobileMenuToggle }: TopbarProps) {
+  const { toggleSidebar } = useSidebar();
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -65,7 +67,18 @@ export function Topbar({ onMobileMenuToggle }: TopbarProps) {
       return { href: finalHref, label: labelBn, isLast: index === paths.length - 1 };
     });
 
-    return breadcrumbs;
+    const filtered = breadcrumbs.filter((crumb, index) => {
+      if (index < breadcrumbs.length - 1 && breadcrumbs[index + 1].label === crumb.label) {
+        return false;
+      }
+      return true;
+    });
+
+    if (filtered.length > 0) {
+      filtered[filtered.length - 1].isLast = true;
+    }
+
+    return filtered;
   };
 
   const breadcrumbs = generateBreadcrumbs();
@@ -74,7 +87,7 @@ export function Topbar({ onMobileMenuToggle }: TopbarProps) {
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-white px-4 shadow-sm sm:gap-6 sm:px-6 lg:px-8">
       {/* Mobile Menu Toggle */}
       <button
-        onClick={onMobileMenuToggle}
+        onClick={toggleSidebar || onMobileMenuToggle}
         className="lg:hidden p-2 -ml-2 text-charcoal hover:bg-cream rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-fire/50"
         aria-label="Toggle Menu"
       >

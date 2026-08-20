@@ -72,7 +72,7 @@ export function HomeCategories() {
   }, [carouselApi]);
 
   if (!isLoading && categories.length === 0) {
-    console.log("HomeCategories: No categories found", { data, categories });
+    // console.log("HomeCategories: No categories found", { data, categories });
     return null;
   }
 

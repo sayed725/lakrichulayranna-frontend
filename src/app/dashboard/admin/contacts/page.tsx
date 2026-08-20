@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription, SheetClose } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import api from "@/lib/fetcher";
@@ -31,6 +32,7 @@ export default function AdminContactsPage() {
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
@@ -141,47 +143,122 @@ export default function AdminContactsPage() {
         </div>
 
         <div className="flex items-center gap-2 w-auto">
-          <Select value={isReadFilter} onValueChange={(v) => { setIsReadFilter(v || "all"); setPage(1); }}>
-            <SelectTrigger className="w-[130px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-              <SelectValue placeholder="Status">
-                {isReadFilter === "all" ? "All Status" :
-                 isReadFilter === "read" ? "Read" :
-                 isReadFilter === "unread" ? "Unread" : "Status"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="read">Read</SelectItem>
-              <SelectItem value="unread">Unread</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Mobile Filter Button */}
+          <div className="lg:hidden">
+            <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+              <Button variant="outline" className="w-auto gap-2 border-border hover:bg-cream hover:border-fire/30 hover:text-fire rounded-xl h-11 px-3 sm:px-4 transition-all" onClick={() => setIsFilterOpen(true)}>
+                <Filter className="h-4 w-4" />
+                <span className="hidden sm:inline">Filters</span>
+                {isFiltered && <span className="flex h-2 w-2 rounded-full bg-fire" />}
+              </Button>
+              <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col" showCloseButton={false}>
+                <SheetHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0">
+                  <SheetTitle className="text-xl font-bold flex items-center gap-2">
+                    <Filter className="w-5 h-5 text-fire" /> Filters
+                  </SheetTitle>
+                  <SheetClose className="rounded-xl p-2 hover:bg-cream dark:hover:bg-charcoal-light transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fire border border-transparent hover:border-fire/30">
+                    <XCircle className="h-5 w-5 text-muted-foreground hover:text-fire" />
+                  </SheetClose>
+                </SheetHeader>
+                
+                <div className="p-6 space-y-8 flex-1 overflow-y-auto">
+                  <SheetDescription className="sr-only">Filter and sort contacts table</SheetDescription>
+                  
+                  <div className="space-y-3">
+                    <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Status</h3>
+                    <Select value={isReadFilter} onValueChange={(v) => { setIsReadFilter(v || "all"); setPage(1); }}>
+                      <SelectTrigger className="w-full h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
+                        <SelectValue placeholder="All Status">
+                          {isReadFilter === "all" ? "All Status" :
+                           isReadFilter === "read" ? "Read" :
+                           isReadFilter === "unread" ? "Unread" : "Status"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl">
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="read">Read</SelectItem>
+                        <SelectItem value="unread">Unread</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-          <Select value={`${sortBy}-${sortOrder}`} onValueChange={(v) => {
-            const [by, order] = (v || "createdAt-desc").split('-');
-            setSortBy(by);
-            setSortOrder(order as "asc" | "desc");
-            setPage(1);
-          }}>
-            <SelectTrigger className="w-[180px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-              <SelectValue placeholder="Sort By">{getSortLabel()}</SelectValue>
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="createdAt-desc">Newest First</SelectItem>
-              <SelectItem value="createdAt-asc">Oldest First</SelectItem>
-            </SelectContent>
-          </Select>
+                  <div className="space-y-3">
+                    <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Sort By</h3>
+                    <Select value={`${sortBy}-${sortOrder}`} onValueChange={(v) => {
+                      const [by, order] = (v || "createdAt-desc").split('-');
+                      setSortBy(by);
+                      setSortOrder(order as "asc" | "desc");
+                      setPage(1);
+                    }}>
+                      <SelectTrigger className="w-full h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
+                        <SelectValue placeholder="Sort By">{getSortLabel()}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl">
+                        <SelectItem value="createdAt-desc">Newest First</SelectItem>
+                        <SelectItem value="createdAt-asc">Oldest First</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-          {isFiltered && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={resetFilters} 
-              className="text-muted-foreground hover:text-fire hover:bg-cream h-10 px-2"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Reset
-            </Button>
-          )}
+                <div className="p-6 border-t border-border bg-cream/50 dark:bg-charcoal-light/30">
+                  <Button 
+                    onClick={() => { resetFilters(); setIsFilterOpen(false); }}
+                    variant="outline" 
+                    disabled={!isFiltered}
+                    className="w-full h-12 rounded-xl border-border hover:bg-fire hover:text-white hover:border-fire transition-all font-bold"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" /> Reset All Filters
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Desktop Inline Filters */}
+          <div className="hidden lg:flex gap-2 items-center">
+            <Select value={isReadFilter} onValueChange={(v) => { setIsReadFilter(v || "all"); setPage(1); }}>
+              <SelectTrigger className="w-[130px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
+                <SelectValue placeholder="Status">
+                  {isReadFilter === "all" ? "All Status" :
+                   isReadFilter === "read" ? "Read" :
+                   isReadFilter === "unread" ? "Unread" : "Status"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="read">Read</SelectItem>
+                <SelectItem value="unread">Unread</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={`${sortBy}-${sortOrder}`} onValueChange={(v) => {
+              const [by, order] = (v || "createdAt-desc").split('-');
+              setSortBy(by);
+              setSortOrder(order as "asc" | "desc");
+              setPage(1);
+            }}>
+              <SelectTrigger className="w-[180px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
+                <SelectValue placeholder="Sort By">{getSortLabel()}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="createdAt-desc">Newest First</SelectItem>
+                <SelectItem value="createdAt-asc">Oldest First</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {isFiltered && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={resetFilters} 
+                className="text-muted-foreground hover:text-fire hover:bg-cream h-10 px-2"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
