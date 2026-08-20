@@ -11,6 +11,15 @@ import { SkeletonGrid } from "@/components/loaders/SkeletonGrid";
 import { useDebounce } from "@/hooks/useDebounce";
 import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetDescription,
+  SheetClose,
+} from "@/components/ui/sheet";
 
 export default function MenuPage() {
   const searchParams = useSearchParams();
@@ -297,176 +306,164 @@ export default function MenuPage() {
             </div>
           </aside>
 
-          {/* Mobile Filter Drawer */}
-          {isFilterDrawerOpen && (
-            <>
-              {/* Backdrop */}
-              <div
-                className="fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-sm lg:hidden"
-                onClick={() => setIsFilterDrawerOpen(false)}
-              />
-              {/* Drawer */}
-              <div className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white shadow-2xl lg:hidden overflow-y-auto">
-                <div className="sticky top-0 bg-white border-b border-border p-4 flex items-center justify-between">
-                  <h2 className="font-bold text-lg text-charcoal font-bengali">ফিল্টার</h2>
-                  <button
-                    onClick={() => setIsFilterDrawerOpen(false)}
-                    className="p-2 rounded-xl hover:bg-charcoal/5 transition-colors"
-                  >
-                    <X size={20} className="text-charcoal" />
-                  </button>
+          {/* Mobile Filter Drawer using Shadcn Sheet */}
+          <Sheet open={isFilterDrawerOpen} onOpenChange={setIsFilterDrawerOpen}>
+            <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col bg-white border-l border-border" showCloseButton={false}>
+              <SheetHeader className="p-4 border-b border-border flex flex-row items-center justify-between space-y-0">
+                <SheetTitle className="font-bold text-lg text-charcoal font-bengali">ফিল্টার</SheetTitle>
+                <SheetDescription className="sr-only">খাবারের ক্যাটাগরি, মূল্য সীমা এবং অন্যান্য ফিল্টার অপশন বেছে নিন।</SheetDescription>
+                <SheetClose className="p-2 rounded-xl hover:bg-charcoal/5 transition-colors focus:outline-none focus:ring-2 focus:ring-fire">
+                  <X size={20} className="text-charcoal" />
+                  <span className="sr-only">বন্ধ করুন</span>
+                </SheetClose>
+              </SheetHeader>
+              
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {/* Search */}
+                <div className="relative">
+                  <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light" />
+                  <input
+                    type="text"
+                    placeholder="খাবার খুঁজুন..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm font-bengali placeholder:text-muted focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
+                  />
                 </div>
-                <div className="p-4 space-y-4">
-                  {/* Search */}
-                  <div className="relative">
-                    <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light" />
-                    <input
-                      type="text"
-                      placeholder="খাবার খুঁজুন..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm font-bengali placeholder:text-muted focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                    />
-                  </div>
 
-                   {/* Price Range Filter */}
-                  <div className="bg-white rounded-2xl border border-border p-4">
-                    <div className="flex items-center gap-2 mb-4 text-charcoal font-bold font-bengali">
-                      <h3>মূল্য সীমা</h3>
+                {/* Price Range Filter */}
+                <div className="bg-white rounded-2xl border border-border p-4">
+                  <div className="flex items-center gap-2 mb-4 text-charcoal font-bold font-bengali">
+                    <h3>মূল্য সীমা</h3>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <label className="text-xs text-muted mb-1 block">সর্বনিম্ন</label>
+                      <input
+                        type="number"
+                        placeholder="0"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
+                        className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
+                      />
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <label className="text-xs text-muted mb-1 block">সর্বনিম্ন</label>
-                        <input
-                          type="number"
-                          placeholder="0"
-                          value={minPrice}
-                          onChange={(e) => setMinPrice(e.target.value)}
-                          onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
-                          className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                        />
-                      </div>
-                      <span className="text-muted">-</span>
-                      <div className="flex-1">
-                        <label className="text-xs text-muted mb-1 block">সর্বোচ্চ</label>
-                        <input
-                          type="number"
-                          placeholder="1000"
-                          value={maxPrice}
-                          onChange={(e) => setMaxPrice(e.target.value)}
-                          onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
-                          className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                        />
-                      </div>
+                    <span className="text-muted">-</span>
+                    <div className="flex-1">
+                      <label className="text-xs text-muted mb-1 block">সর্বোচ্চ</label>
+                      <input
+                        type="number"
+                        placeholder="1000"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
+                        className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
+                      />
                     </div>
                   </div>
+                </div>
 
-                  {/* Categories */}
-                  <div className="bg-white rounded-2xl border border-border p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
-                        <SlidersHorizontal size={18} />
-                        <h3>ক্যাটাগরি</h3>
-                      </div>
-                      {hasActiveFilters && (
-                        <button
-                          onClick={resetAllFilters}
-                          className="text-xs text-fire hover:text-fire-dark font-semibold transition-colors"
-                        >
-                          রিসেট
-                        </button>
-                      )}
+                {/* Categories */}
+                <div className="bg-white rounded-2xl border border-border p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
+                      <SlidersHorizontal size={18} />
+                      <h3>ক্যাটাগরি</h3>
                     </div>
-                    <div className="flex flex-col gap-2">
+                    {hasActiveFilters && (
                       <button
+                        onClick={resetAllFilters}
+                        className="text-xs text-fire hover:text-fire-dark font-semibold transition-colors"
+                      >
+                        রিসেট
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => {
+                        setActiveCategory("all");
+                        updateFilters("all", isSpicy, isFeatured, minPrice, maxPrice);
+                      }}
+                      className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
+                        activeCategory === "all"
+                          ? "bg-fire/10 text-fire"
+                          : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
+                      }`}
+                    >
+                      সকল আইটেম
+                    </button>
+                    {categories.map((cat: any) => (
+                      <button
+                        key={cat.id}
                         onClick={() => {
-                          setActiveCategory("all");
-                          updateFilters("all", isSpicy, isFeatured, minPrice, maxPrice);
+                          setActiveCategory(cat.name);
+                          updateFilters(cat.name, isSpicy, isFeatured, minPrice, maxPrice);
                         }}
                         className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
-                          activeCategory === "all"
+                          activeCategory === cat.name
                             ? "bg-fire/10 text-fire"
                             : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
                         }`}
                       >
-                        সকল আইটেম
+                        {cat.name}
                       </button>
-                      {categories.map((cat: any) => (
-                        <button
-                          key={cat.id}
-                          onClick={() => {
-                            setActiveCategory(cat.name);
-                            updateFilters(cat.name, isSpicy, isFeatured, minPrice, maxPrice);
-                          }}
-                          className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
-                            activeCategory === cat.name
-                              ? "bg-fire/10 text-fire"
-                              : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
-                          }`}
-                        >
-                          {cat.name}
-                        </button>
-                      ))}
-                    </div>
+                    ))}
                   </div>
+                </div>
 
-                 
-
-                  {/* Spicy Filter */}
-                  <div className="bg-white rounded-2xl border border-border p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
-                        <Flame size={18} className="text-fire" />
-                        <h3>ঝাল খাবার</h3>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setIsSpicy(!isSpicy);
-                          updateFilters(activeCategory, !isSpicy, isFeatured, minPrice, maxPrice);
-                        }}
-                        className={`relative w-12 h-6 rounded-full transition-colors ${
-                          isSpicy ? "bg-fire" : "bg-charcoal/20"
+                {/* Spicy Filter */}
+                <div className="bg-white rounded-2xl border border-border p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
+                      <Flame size={18} className="text-fire" />
+                      <h3>ঝাল খাবার</h3>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsSpicy(!isSpicy);
+                        updateFilters(activeCategory, !isSpicy, isFeatured, minPrice, maxPrice);
+                      }}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${
+                        isSpicy ? "bg-fire" : "bg-charcoal/20"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                          isSpicy ? "left-7" : "left-1"
                         }`}
-                      >
-                        <span
-                          className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                            isSpicy ? "left-7" : "left-1"
-                          }`}
-                        />
-                      </button>
-                    </div>
+                      />
+                    </button>
                   </div>
+                </div>
 
-                  {/* Best Seller Filter */}
-                  <div className="bg-white rounded-2xl border border-border p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
-                        <Sparkles size={18} className="text-fire" />
-                        <h3>বেস্ট সেলার</h3>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setIsFeatured(!isFeatured);
-                          updateFilters(activeCategory, isSpicy, !isFeatured, minPrice, maxPrice);
-                        }}
-                        className={`relative w-12 h-6 rounded-full transition-colors ${
-                          isFeatured ? "bg-fire" : "bg-charcoal/20"
+                {/* Best Seller Filter */}
+                <div className="bg-white rounded-2xl border border-border p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
+                      <Sparkles size={18} className="text-fire" />
+                      <h3>বেস্ট সেলার</h3>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsFeatured(!isFeatured);
+                        updateFilters(activeCategory, isSpicy, !isFeatured, minPrice, maxPrice);
+                      }}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${
+                        isFeatured ? "bg-fire" : "bg-charcoal/20"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                          isFeatured ? "left-7" : "left-1"
                         }`}
-                      >
-                        <span
-                          className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                            isFeatured ? "left-7" : "left-1"
-                          }`}
-                        />
-                      </button>
-                    </div>
+                      />
+                    </button>
                   </div>
-
-                  
                 </div>
               </div>
-            </>
-          )}
+            </SheetContent>
+          </Sheet>
 
           {/* Main Content */}
           <div className="flex-1">

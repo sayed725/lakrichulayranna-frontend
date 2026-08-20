@@ -176,22 +176,23 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        "sticky top-0 z-40 w-full transition-all duration-500 border-b",
+        "sticky top-0 z-40 w-full transition-all duration-500 border-b py-2.5 lg:py-2.5",
         isScrolled
-          ? "bg-cream/90 backdrop-blur-xl border-border/80 shadow-md shadow-charcoal/[0.03] py-2 lg:py-2"
-          : "bg-cream/40 backdrop-blur-md border-transparent py-3.5 lg:py-3.5"
+          ? "bg-cream/90 backdrop-blur-xl border-border/80 shadow-md shadow-charcoal/[0.03]"
+          : "bg-cream/40 backdrop-blur-md border-transparent"
       )}
     >
       {/* Subtle ambient gradient */}
       <div className="absolute inset-0 bg-gradient-to-r from-fire/[0.03] via-transparent to-terracotta/[0.03] pointer-events-none" />
 
       <Container className="relative z-10">
-        <div className="flex items-center justify-between">
+        {/* Desktop Header */}
+        <div className="hidden md:flex items-center justify-between w-full">
           {/* Logo */}
           <Logo size="sm" />
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8 flex-1 justify-center">
+          <div className="flex items-center gap-6 lg:gap-8 flex-1 justify-center">
             {menuItems.map((item) => {
               const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/");
               
@@ -275,7 +276,7 @@ export function Navbar() {
           </div>
 
           {/* Desktop Right Side */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="flex items-center gap-3">
             {/* Cart Button */}
             <button
               onClick={toggleCart}
@@ -352,26 +353,12 @@ export function Navbar() {
               </Button>
             )}
           </div>
+        </div>
 
-          {/* Mobile Menu Trigger */}
-          <div className="flex items-center gap-2 md:hidden">
-            {/* Cart Icon in mobile navbar */}
-            <button
-              onClick={toggleCart}
-              className="relative p-2.5 rounded-xl hover:bg-fire/5 transition-colors duration-200 group cursor-pointer"
-              aria-label="Open cart"
-            >
-              <ShoppingBag
-                size={22}
-                className="text-charcoal group-hover:text-fire transition-colors"
-              />
-              {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 flex items-center justify-center text-[11px] font-bold text-white bg-fire rounded-full ring-2 ring-cream animate-scale-in">
-                  {cartCount > 99 ? "99+" : cartCount}
-                </span>
-              )}
-            </button>
-
+        {/* Mobile Header */}
+        <div className="flex md:hidden items-center justify-between w-full">
+          {/* Left: Hamburger menu */}
+          <div className="flex-1 flex justify-start">
             {mounted && (
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger render={
@@ -383,7 +370,7 @@ export function Navbar() {
                     <Menu className="h-5 w-5" />
                   </Button>
                 } />
-                <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col bg-cream border-l border-border" showCloseButton={false}>
+                <SheetContent side="left" className="w-[85vw] sm:w-[400px] p-0 flex flex-col bg-cream border-r border-border" showCloseButton={false}>
                   <SheetHeader className="p-4 border-b border-border flex flex-row items-center justify-between space-y-0">
                     <SheetTitle className="sr-only">মোবাইল নেভিগেশন মেনু</SheetTitle>
                     <SheetDescription className="sr-only">ন্যাভিগেশন লিংক এবং অ্যাকাউন্ট সেটিংস অ্যাক্সেস করুন।</SheetDescription>
@@ -406,8 +393,6 @@ export function Navbar() {
                           {menuItems.map((item) => {
                             const IconComp = item.icon;
                             const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/");
-                            const hasSubItems = !!item.subItems;
-                            const isExpanded = expandedMenu === item.title;
 
                             return (
                               <div key={item.href} className="flex flex-col">
@@ -428,71 +413,7 @@ export function Navbar() {
                                     )} />
                                     <span className="text-base font-medium font-bengali">{item.titleBn}</span>
                                   </Link>
-                                  
-                                  {/* {hasSubItems && (
-                                    <button 
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        setExpandedMenu(isExpanded ? null : item.title);
-                                      }}
-                                      className="p-3 rounded-xl text-charcoal/50 hover:text-fire hover:bg-fire/5 transition-all flex-shrink-0"
-                                    >
-                                      <ChevronDown className={cn("h-5 w-5 transition-transform duration-300", isExpanded && "rotate-180")} />
-                                    </button>
-                                  )}
-                                  {!hasSubItems && (
-                                    <div className="p-3 pointer-events-none flex-shrink-0">
-                                      <ChevronRight className="h-4 w-4 text-charcoal/30 group-hover:text-fire transition-colors" />
-                                    </div>
-                                  )} */}
                                 </div>
-
-                                {/* Sub-items accordion */}
-                                {item.subItems && (
-                                  <div 
-                                    className={cn(
-                                      "overflow-hidden transition-all duration-300 ease-in-out pr-2",
-                                      isExpanded ? "max-h-96 opacity-100 mt-1 mb-2" : "max-h-0 opacity-0 m-0"
-                                    )}
-                                  >
-                                    <div className="flex flex-col gap-1 border-l-2 border-border ml-8 pl-4 py-2">
-                                      {item.subItems.map(sub => {
-                                        const SubIcon = sub.icon;
-                                        const isSubActive = pathname === sub.href;
-                                        return (
-                                          <Link
-                                            key={sub.title}
-                                            href={sub.href}
-                                            onClick={closeMobileMenu}
-                                            className={cn(
-                                              "flex items-center gap-3 py-2 px-3 rounded-xl transition-colors",
-                                              isSubActive 
-                                                ? "bg-fire/5 text-fire font-bold" 
-                                                : "text-charcoal/80 hover:bg-fire/5 hover:text-fire"
-                                            )}
-                                          >
-                                            <div className="relative shrink-0 w-8 h-8 rounded-lg overflow-hidden border border-border">
-                                              {sub.image ? (
-                                                <Image 
-                                                  src={sub.image} 
-                                                  alt={sub.title} 
-                                                  fill 
-                                                  sizes="32px"
-                                                  className="object-cover" 
-                                                />
-                                              ) : (
-                                                <div className="w-full h-full bg-fire/10 flex items-center justify-center text-fire">
-                                                  <SubIcon className="w-4 h-4" />
-                                                </div>
-                                              )}
-                                            </div>
-                                            <span className="text-sm font-bengali">{sub.title}</span>
-                                          </Link>
-                                        )
-                                      })}
-                                    </div>
-                                  </div>
-                                )}
                               </div>
                             );
                           })}
@@ -597,6 +518,30 @@ export function Navbar() {
                 </SheetContent>
               </Sheet>
             )}
+          </div>
+
+          {/* Middle: Logo */}
+          <div className="flex-shrink-0">
+            <Logo size="sm" />
+          </div>
+
+          {/* Right: Cart */}
+          <div className="flex-1 flex justify-end">
+            <button
+              onClick={toggleCart}
+              className="relative p-2.5 rounded-xl hover:bg-fire/5 transition-colors duration-200 group cursor-pointer"
+              aria-label="Open cart"
+            >
+              <ShoppingBag
+                size={22}
+                className="text-charcoal group-hover:text-fire transition-colors"
+              />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 flex items-center justify-center text-[11px] font-bold text-white bg-fire rounded-full ring-2 ring-cream animate-scale-in">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </Container>

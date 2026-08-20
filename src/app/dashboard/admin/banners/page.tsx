@@ -355,7 +355,7 @@ export default function AdminBannersPage() {
                     <div className="flex items-center gap-4">
                       <div className="relative w-32 h-16 rounded-lg overflow-hidden border border-border bg-cream shrink-0">
                         {banner.image ? (
-                          <Image src={banner.image} alt={banner.title || "Banner"} fill className="object-cover" />
+                          <Image src={banner.image} alt={banner.title || "Banner"} fill sizes="128px" className="object-cover" />
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <ImageIcon className="w-4 h-4 text-muted-foreground" />
