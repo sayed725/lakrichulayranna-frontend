@@ -356,7 +356,7 @@ export default function PublicOrderDetailsPage({ params }: { params: Promise<{ o
           {order.notes && (
             <motion.div variants={fadeInUp} className="bg-amber-50 p-6 rounded-3xl border border-amber-100">
               <p className="font-bengali text-amber-800 leading-relaxed">
-                <span className="font-bold mr-2">অर्डर নোট:</span>
+                <span className="font-bold mr-2">অর্ডারে নোট:</span>
                 {order.notes}
               </p>
             </motion.div>

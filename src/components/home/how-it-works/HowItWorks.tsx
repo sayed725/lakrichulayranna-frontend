@@ -127,7 +127,7 @@ const HowItWorks = () => {
   const Icon = current.icon;
 
   return (
-    <section className="relative py-10 overflow-hidden bg-cream">
+    <section className="relative pt-10 overflow-hidden bg-cream">
       {/* Ambient background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 -left-32 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />

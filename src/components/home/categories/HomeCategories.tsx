@@ -117,22 +117,22 @@ export function HomeCategories() {
             initial="hidden"
             animate="visible"
           >
-            <CarouselContent className="-ml-3 md:-ml-4">
+            <CarouselContent className="-ml-1.5 md:-ml-4">
               {isLoading
                 ? Array.from({ length: 5 }).map((_, i) => (
-                  <CarouselItem key={i} className="pl-3 basis-1/2 sm:basis-1/2 md:basis-[28%] lg:basis-1/5">
+                  <CarouselItem key={i} className="pl-1.5 md:pl-4 basis-1/2 sm:basis-1/2 md:basis-1/3 lg:basis-1/5">
                     <motion.div variants={itemVariants}>
-                      <div className="h-36 sm:h-44 bg-cream-dark/50 rounded-2xl animate-pulse" />
+                      <div className="h-28 sm:h-36 bg-cream-dark/50 rounded-2xl animate-pulse" />
                     </motion.div>
                   </CarouselItem>
                 ))
                 : categories.map((category: any) => (
-                  <CarouselItem key={category.id} className="pl-3 basis-1/2 sm:basis-1/2 md:basis-[28%] lg:basis-1/5">
+                  <CarouselItem key={category.id} className="pl-1.5 md:pl-4 basis-1/2 sm:basis-1/2 md:basis-1/3 lg:basis-1/5">
                     <motion.div variants={itemVariants}>
                       <Link
                         href={`/products?category.name=${encodeURIComponent(category.name)}`}
                         prefetch={true}
-                        className="block group relative overflow-hidden rounded-2xl h-36 sm:h-44 bg-cream-dark border border-border hover:shadow-xl hover:shadow-fire/10 transition-all"
+                        className="block group relative overflow-hidden rounded-2xl h-28 sm:h-36 bg-cream-dark border border-border hover:shadow-xl hover:shadow-fire/10 transition-all"
                       >
                         <div className="relative w-full h-full">
                           <Image

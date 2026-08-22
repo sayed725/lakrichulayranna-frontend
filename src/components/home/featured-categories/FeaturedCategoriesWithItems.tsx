@@ -49,7 +49,7 @@ function CategorySection({ category, isLoading }: { category: any; isLoading: bo
   if (items.length === 0) return null;
 
   return (
-    <section className="py-10 bg-cream">
+    <section className="pt-10 bg-cream">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-10">
           <SectionTitle
@@ -67,7 +67,7 @@ function CategorySection({ category, isLoading }: { category: any; isLoading: bo
         </div>
 
         {/* Grid layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:items-stretch">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-3 sm:items-stretch">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="h-full">
