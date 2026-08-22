@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect, useRef } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, SlidersHorizontal, PackageX, Flame, Sparkles, X, Filter } from "lucide-react";
+import { Search, SlidersHorizontal, PackageX, Flame, Sparkles, X, Filter, RefreshCw } from "lucide-react";
 import { Container } from "@/components/shared/container/Container";
 import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
 import { ItemCard } from "@/components/item/ItemCard";
 import { SkeletonGrid } from "@/components/loaders/SkeletonGrid";
+import { Spinner } from "@/components/ui/spinner";
 import { useDebounce } from "@/hooks/useDebounce";
 import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
@@ -47,6 +48,7 @@ export default function MenuPage() {
   const [minPrice, setMinPrice] = useState<string>(urlMinPrice);
   const [maxPrice, setMaxPrice] = useState<string>(urlMaxPrice);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [limit, setLimit] = useState(10);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
   // Sync state with URL params on changes (e.g. when clicking navbar categories while on this page)
@@ -56,7 +58,22 @@ export default function MenuPage() {
     setIsFeatured(urlIsFeatured);
     setMinPrice(urlMinPrice);
     setMaxPrice(urlMaxPrice);
+    setLimit(10);
   }, [urlCategoryName, urlIsSpicy, urlIsFeatured, urlMinPrice, urlMaxPrice]);
+
+  // Scroll to top when filters or search parameters change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeCategory, debouncedSearch, minPrice, maxPrice, isSpicy, isFeatured]);
+
+  // Scroll down slightly when limit increases (loading more items) to reveal new rows
+  const prevLimit = useRef(10);
+  useEffect(() => {
+    if (limit > 10 && limit !== prevLimit.current) {
+      window.scrollBy({ top: 350, behavior: "smooth" });
+    }
+    prevLimit.current = limit;
+  }, [limit]);
 
   // Check if any filter is active
   const hasActiveFilters = activeCategory !== "all" || isSpicy || isFeatured || searchTerm !== "" || minPrice !== "" || maxPrice !== "";
@@ -69,6 +86,7 @@ export default function MenuPage() {
     setIsFeatured(false);
     setMinPrice("");
     setMaxPrice("");
+    setLimit(10);
     updateFilters("all", false, false, "", "");
     setIsFilterDrawerOpen(false);
   };
@@ -85,6 +103,7 @@ export default function MenuPage() {
       if (max) priceObj.lte = max;
       params.set("price", JSON.stringify(priceObj));
     }
+    setLimit(10);
     router.push(`/products?${params.toString()}`);
   };
 
@@ -99,8 +118,8 @@ export default function MenuPage() {
   const categories = Array.isArray(categoriesData) ? categoriesData : categoriesData?.categories || [];
 
   // Fetch items with filters
-  const { data: itemsData, isLoading } = useQuery({
-    queryKey: ["items", activeCategory, isSpicy, isFeatured, debouncedSearch, minPrice, maxPrice],
+  const { data: itemsData, isLoading, isFetching } = useQuery({
+    queryKey: ["items", activeCategory, isSpicy, isFeatured, debouncedSearch, minPrice, maxPrice, limit],
     queryFn: async () => {
       let url = API_ROUTES.ITEMS.BASE;
       const params = new URLSearchParams();
@@ -108,6 +127,7 @@ export default function MenuPage() {
       if (isSpicy) params.append("isSpicy", "true");
       if (isFeatured) params.append("isFeatured", "true");
       if (debouncedSearch) params.append("searchTerm", debouncedSearch);
+      params.append("limit", limit.toString());
       
       // Price range filter
       if (minPrice || maxPrice) {
@@ -120,8 +140,10 @@ export default function MenuPage() {
       const res = await api.get(`${url}?${params.toString()}`);
       return res.data.data;
     },
+    placeholderData: keepPreviousData,
   });
   const items = Array.isArray(itemsData) ? itemsData : itemsData?.items || [];
+  const hasMore = itemsData?.meta ? items.length < (itemsData.meta.total || 0) : items.length >= limit;
 
   return (
     <div className="py-10 bg-cream min-h-screen">
@@ -229,7 +251,7 @@ export default function MenuPage() {
                         : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
                     }`}
                   >
-                    সকল আইটেম
+                    সকল পণ্য সমূহ
                   </button>
                   {categories.map((cat: any) => (
                     <button
@@ -391,7 +413,7 @@ export default function MenuPage() {
                           : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
                       }`}
                     >
-                      সকল আইটেম
+                      সকল পণ্য সমূহ
                     </button>
                     {categories.map((cat: any) => (
                       <button
@@ -470,10 +492,24 @@ export default function MenuPage() {
             {isLoading ? (
               <SkeletonGrid count={8} columns={3} />
             ) : items.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-3">
-                {items.map((item: any) => (
-                  <ItemCard key={item.id} item={item} />
-                ))}
+              <div className="space-y-8">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-3">
+                  {items.map((item: any) => (
+                    <ItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+                {hasMore && (
+                  <div className="text-center pt-4">
+                    <button
+                      onClick={() => setLimit((prev) => prev + 10)}
+                      disabled={isFetching}
+                      className="px-6 py-2.5 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all cursor-pointer shadow-md disabled:opacity-75 disabled:cursor-not-allowed min-w-[140px] flex items-center justify-center gap-2 mx-auto"
+                    >
+                      {isFetching && <RefreshCw className="w-4 h-4 animate-spin text-white" />}
+                      <span>{isFetching ? "আরও পণ্য লোড হচ্ছে..." : "আরও পণ্য যোগ করুন"}</span>
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-border border-dashed text-center">

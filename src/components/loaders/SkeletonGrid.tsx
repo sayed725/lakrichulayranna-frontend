@@ -8,9 +8,9 @@ interface SkeletonGridProps {
 }
 
 const colClasses = {
-  2: "grid-cols-1 sm:grid-cols-2",
-  3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-  4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+  2: "grid-cols-2",
+  3: "grid-cols-2 md:grid-cols-3",
+  4: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
 };
 
 export function SkeletonGrid({
@@ -19,7 +19,7 @@ export function SkeletonGrid({
   className,
 }: SkeletonGridProps) {
   return (
-    <div className={cn("grid gap-3", colClasses[columns], className)}>
+    <div className={cn("grid gap-1.5 sm:gap-3", colClasses[columns], className)}>
       {Array.from({ length: count }).map((_, i) => (
         <SkeletonCard key={i} />
       ))}
