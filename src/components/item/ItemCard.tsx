@@ -59,30 +59,25 @@ export function ItemCard({ item }: ItemCardProps) {
     : 0;
 
   return (
-    <Link 
-      href={`/products/${item.slug}`}
+    <div 
       className="group flex flex-col bg-white rounded-2xl md:rounded-3xl border border-border/80 overflow-hidden hover:shadow-xl hover:shadow-fire/10 hover:border-fire/30 transition-all duration-300 transform hover:-translate-y-1 h-full"
     >
-      {/* Image Container */}
-      <div className="relative aspect-[4/3] lg:aspect-[1.6/1] w-full overflow-hidden bg-cream-dark/30 shrink-0">
-        <Image
-          src={item.imageUrl}
-          alt={item.name}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        
+      <Link href={`/products/${item.slug}`} className="flex flex-col flex-grow">
+        {/* Image Container */}
+        <div className="relative aspect-[4/3] lg:aspect-[1.6/1] w-full overflow-hidden bg-cream-dark/30 shrink-0">
+          <Image
+            src={item.imageUrl}
+            alt={item.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          
         {/* Badges on Image */}
         <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
-          {item.isFeatured && (
-            <span className="bg-fire/90 text-white backdrop-blur-md px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-bold tracking-wide shadow-sm flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5" /> বেস্ট সেলার
-            </span>
-          )}
-          {hasDiscount && (
-            <span className="bg-error text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-lg shadow-sm">
-              -{discountPercentage}% ছাড়
+          {item.isSpicy && (
+            <span className="bg-amber-600/90 text-white backdrop-blur-md px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-bold tracking-wide shadow-sm flex items-center gap-1">
+              <Flame className="w-2.5 h-2.5 fill-current" /> ঝাল
             </span>
           )}
           {!item.isAvailable && (
@@ -93,31 +88,35 @@ export function ItemCard({ item }: ItemCardProps) {
         </div>
         
         <div className="absolute top-2 right-2 z-10">
-          {item.isSpicy && (
-            <span className="bg-amber-600/90 text-white backdrop-blur-md px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-bold tracking-wide shadow-sm flex items-center gap-1">
-              <Flame className="w-2.5 h-2.5 fill-current" /> ঝাল
+          {hasDiscount && (
+            <span className="bg-error text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-lg shadow-sm">
+              -{discountPercentage}%
             </span>
           )}
         </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-3 sm:p-4 flex flex-col flex-grow">
-        {/* Name and Weight */}
-        <div className="mb-2 flex items-start justify-between gap-2 min-h-[2.5rem]">
-          <h3 className="font-bold font-bengali text-sm sm:text-base md:text-lg text-charcoal line-clamp-2 group-hover:text-fire transition-colors leading-snug flex-1">
-            {item.name}
-          </h3>
-          {item.weight && (
-            <span className="text-[10px] sm:text-xs bg-cream text-charcoal/70 px-2 py-0.5 rounded-md font-semibold border border-border shrink-0 mt-0.5 whitespace-nowrap">
-              {item.weight}
-            </span>
-          )}
         </div>
 
-        {/* Pricing and Cart Action */}
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/80">
-          <div className="flex flex-col">
+        {/* Content */}
+        <div className="p-3 sm:px-4 sm:pt-4 sm:pb-0 pb-0 flex flex-col">
+          {/* Name and Weight */}
+          <div className="flex items-start justify-between gap-2 min-h-[2.5rem]">
+            <h3 className="font-bold font-bengali text-sm sm:text-base md:text-lg text-charcoal line-clamp-2 group-hover:text-fire transition-colors leading-snug flex-1">
+              {item.name}
+            </h3>
+            {item.weight && (
+              <span className="text-[10px] sm:text-xs bg-cream text-charcoal/70 px-2 py-0.5 rounded-md font-semibold border border-border shrink-0 mt-0.5 whitespace-nowrap">
+                {item.weight}
+              </span>
+            )}
+          </div>
+        </div>
+      </Link>
+      
+      {/* Bottom Container: Pricing and Add to Cart Button */}
+      <div className="mt-auto p-3 sm:px-4 sm:pb-4 sm:pt-1 pb-3 pt-1 space-y-2">
+        {/* Pricing */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline gap-2">
             <span className="font-bold text-sm sm:text-base md:text-lg text-fire">
               {formatPrice(effectivePrice)}
             </span>
@@ -127,18 +126,19 @@ export function ItemCard({ item }: ItemCardProps) {
               </span>
             )}
           </div>
-          
-          <button
-            onClick={handleAddToCart}
-            disabled={!item.isAvailable}
-            className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-fire text-white hover:bg-fire-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md hover:shadow-fire/20 hover:scale-105 active:scale-95"
-            aria-label="Add to cart"
-          >
-            <ShoppingBag size={14} className="sm:hidden" />
-            <ShoppingBag size={18} className="hidden sm:block" />
-          </button>
         </div>
+
+        {/* Add to Cart Button */}
+        <button
+          onClick={handleAddToCart}
+          disabled={!item.isAvailable}
+          className="flex items-center justify-center gap-2 w-full py-2 sm:py-2.5 rounded-xl bg-fire text-white hover:bg-fire-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md hover:shadow-fire/20 hover:scale-[1.02] active:scale-95 text-xs sm:text-sm font-bold font-bengali"
+          aria-label="Add to cart"
+        >
+          <ShoppingBag size={16} />
+          <span>{item.isAvailable ? "কার্টে যোগ করুন" : "স্টকে নেই"}</span>
+        </button>
       </div>
-    </Link>
+    </div>
   );
 }

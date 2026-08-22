@@ -186,12 +186,12 @@ export default function ItemDetailPage() {
 
               {/* Badges */}
               <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-                {item.isFeatured && (
+                {/* {item.isFeatured && (
                   <span className="bg-fire/90 text-white backdrop-blur-md border-none py-1.5 px-3 text-xs font-bold tracking-wider uppercase shadow-lg shadow-fire/20 rounded-xl flex items-center gap-1">
                     <Sparkles className="w-3 h-3" />
                     বেস্ট সেলার
                   </span>
-                )}
+                )} */}
                 {hasDiscount && (
                   <span className="bg-error/90 text-white backdrop-blur-md border-none py-1.5 px-3 text-xs font-bold tracking-wider uppercase shadow-lg shadow-error/20 rounded-xl">
                     -{discountPercentage}% ছাড়
@@ -201,8 +201,8 @@ export default function ItemDetailPage() {
 
               <div className="absolute top-4 right-4 z-10">
                 {item.isSpicy && (
-                  <span className="bg-red-500/90 text-white backdrop-blur-md border-none py-1.5 px-3 text-xs font-bold tracking-wider uppercase shadow-lg shadow-red-500/20 rounded-xl flex items-center gap-1">
-                    <Flame className="w-3 h-3" />
+                  <span className="bg-amber-600/90 text-white backdrop-blur-md border-none py-1.5 px-3 text-xs font-bold tracking-wider uppercase shadow-lg shadow-amber-600/20 rounded-xl flex items-center gap-1">
+                    <Flame className="w-3 h-3 fill-current" />
                     ঝাল
                   </span>
                 )}
