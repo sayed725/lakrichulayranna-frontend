@@ -67,8 +67,9 @@ api.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // If 401 and not already retrying, attempt token refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // If 401 and not already retrying, attempt token refresh (except for login requests)
+    const isLoginRequest = originalRequest.url?.includes("/auth/login");
+    if (error.response?.status === 401 && !originalRequest._retry && !isLoginRequest) {
       if (isRefreshing) {
         // Queue the request while refreshing
         return new Promise((resolve, reject) => {

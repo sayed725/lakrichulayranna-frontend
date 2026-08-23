@@ -139,3 +139,13 @@ export const useUpdateOrderItems = () => {
     },
   });
 };
+
+export const useAdminDashboardStats = () => {
+  return useQuery({
+    queryKey: ["admin", "dashboard-stats"],
+    queryFn: async () => {
+      const res = await api.get(`${API_ROUTES.ADMIN.ORDERS}/dashboard-stats`);
+      return res.data;
+    },
+  });
+};
