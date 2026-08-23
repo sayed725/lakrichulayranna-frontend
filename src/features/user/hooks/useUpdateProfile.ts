@@ -38,7 +38,11 @@ export const useChangePassword = () => {
       toast.success("পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে!");
     },
     onError: (error: ApiError) => {
-      toast.error(error.message || "পাসওয়ার্ড পরিবর্তন করতে সমস্যা হয়েছে");
+      if (error.message === "Incorrect old password") {
+        toast.error("বর্তমান পাসওয়ার্ডটি সঠিক নয়!");
+      } else {
+        toast.error(error.message || "পাসওয়ার্ড পরিবর্তন করতে সমস্যা হয়েছে");
+      }
     },
   });
 };

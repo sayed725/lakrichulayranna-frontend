@@ -49,6 +49,7 @@ export default function MenuPage() {
   const [maxPrice, setMaxPrice] = useState<string>(urlMaxPrice);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [limit, setLimit] = useState(10);
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
   // Sync state with URL params on changes (e.g. when clicking navbar categories while on this page)
@@ -74,6 +75,7 @@ export default function MenuPage() {
     }
     prevLimit.current = limit;
   }, [limit]);
+
 
   // Check if any filter is active
   const hasActiveFilters = activeCategory !== "all" || isSpicy || isFeatured || searchTerm !== "" || minPrice !== "" || maxPrice !== "";
@@ -144,6 +146,18 @@ export default function MenuPage() {
   });
   const items = Array.isArray(itemsData) ? itemsData : itemsData?.items || [];
   const hasMore = itemsData?.meta ? items.length < (itemsData.meta.total || 0) : items.length >= limit;
+
+  // Sync isBtnLoading state with isFetching but enforce minimum visible delay (600ms)
+  useEffect(() => {
+    if (isFetching) {
+      setIsBtnLoading(true);
+    } else {
+      const timer = setTimeout(() => {
+        setIsBtnLoading(false);
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [isFetching]);
 
   return (
     <div className="py-10 bg-cream min-h-screen">
@@ -502,11 +516,11 @@ export default function MenuPage() {
                   <div className="text-center pt-4">
                     <button
                       onClick={() => setLimit((prev) => prev + 10)}
-                      disabled={isFetching}
+                      disabled={isBtnLoading}
                       className="px-6 py-2.5 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all cursor-pointer shadow-md disabled:opacity-75 disabled:cursor-not-allowed min-w-[140px] flex items-center justify-center gap-2 mx-auto"
                     >
-                      {isFetching && <RefreshCw className="w-4 h-4 animate-spin text-white" />}
-                      <span>{isFetching ? "আরও পণ্য লোড হচ্ছে..." : "আরও পণ্য যোগ করুন"}</span>
+                      {isBtnLoading && <RefreshCw className="w-4 h-4 animate-spin text-white" />}
+                      <span>{isBtnLoading ? "আরও পণ্য লোড হচ্ছে..." : "আরও পণ্য যোগ করুন"}</span>
                     </button>
                   </div>
                 )}

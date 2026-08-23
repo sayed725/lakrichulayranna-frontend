@@ -35,28 +35,31 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <Container className="py-20 min-h-[60vh] flex flex-col items-center justify-center">
-        <div className="w-24 h-24 bg-cream rounded-full flex items-center justify-center mb-6">
-          <Trash2 size={40} className="text-muted-light" />
-        </div>
-        <h2 className="text-2xl font-bold font-bengali text-charcoal mb-2">
-          আপনার কার্ট খালি!
-        </h2>
-        <p className="text-muted font-bengali mb-8 text-center max-w-md">
-          এখনো কোনো খাবার যোগ করা হয়নি। পণ্য সমূহ থেকে আপনার পছন্দের খাবার বেছে নিন।
-        </p>
-        <Link
-          href="/products"
-          className="px-8 py-4 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-colors"
-        >
-          পণ্য সমূহ দেখুন
-        </Link>
-      </Container>
+      <div className="bg-cream min-h-screen py-20">
+        <Container className="flex flex-col items-center justify-center">
+          <div className="w-24 h-24 bg-cream-dark/30 rounded-full flex items-center justify-center mb-6">
+            <Trash2 size={40} className="text-muted-light" />
+          </div>
+          <h2 className="text-2xl font-bold font-bengali text-charcoal mb-2">
+            আপনার কার্ট খালি!
+          </h2>
+          <p className="text-muted font-bengali mb-8 text-center max-w-md">
+            এখনো কোনো খাবার যোগ করা হয়নি। পণ্য সমূহ থেকে আপনার পছন্দের খাবার বেছে নিন।
+          </p>
+          <Link
+            href="/products"
+            className="px-8 py-4 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-colors"
+          >
+            পণ্য সমূহ দেখুন
+          </Link>
+        </Container>
+      </div>
     );
   }
 
   return (
-    <Container className="py-12 min-h-screen">
+    <div className="bg-cream min-h-screen py-12">
+      <Container>
       <SectionTitle
         title="Shopping Cart"
         titleBn="আপনার কার্ট"
@@ -230,5 +233,6 @@ export default function CartPage() {
         </div>
       </div>
     </Container>
+    </div>
   );
 }
