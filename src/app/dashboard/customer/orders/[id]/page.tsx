@@ -41,34 +41,34 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
     return (
       <div className="space-y-6 animate-pulse w-full">
         {/* Back button skeleton */}
-        <div className="h-6 w-32 bg-cream-dark/50 rounded-xl" />
+        <div className="h-6 w-24 sm:w-32 bg-cream-dark/50 rounded-xl" />
         
         {/* Tracking Timeline Skeleton */}
-        <div className="bg-white border border-border rounded-3xl p-6 sm:p-10 shadow-sm h-40 flex items-center justify-between gap-4">
+        <div className="bg-white border border-border rounded-3xl p-4 sm:p-10 shadow-sm h-24 sm:h-40 flex items-center justify-between gap-1 sm:gap-4 overflow-hidden">
           {Array.from({ length: 5 }).map((_, idx) => (
             <div key={idx} className="flex flex-col items-center flex-1">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-cream-dark/50" />
-              <div className="h-4 w-16 bg-cream-dark/50 rounded-lg mt-3" />
+              <div className="w-7 h-7 sm:w-12 sm:h-12 rounded-full bg-cream-dark/50" />
+              <div className="h-2 w-6 sm:w-16 bg-cream-dark/50 rounded-lg mt-2 sm:mt-3" />
             </div>
           ))}
         </div>
 
         {/* Order Details Grid Skeleton */}
-        <div className="bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-white border border-border rounded-3xl p-4 sm:p-8 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6 mb-6">
             <div className="space-y-2">
-              <div className="h-8 w-64 bg-cream-dark/50 rounded-xl" />
-              <div className="h-4 w-40 bg-cream-dark/30 rounded-lg" />
+              <div className="h-8 w-full max-w-[200px] sm:w-64 bg-cream-dark/50 rounded-xl" />
+              <div className="h-4 w-full max-w-[120px] sm:w-40 bg-cream-dark/30 rounded-lg" />
             </div>
-            <div className="h-10 w-32 bg-cream-dark/50 rounded-xl" />
+            <div className="h-10 w-24 sm:w-32 bg-cream-dark/50 rounded-xl" />
           </div>
           <div className="grid sm:grid-cols-2 gap-8">
             <div className="space-y-3">
-              <div className="h-6 w-36 bg-cream-dark/50 rounded-lg" />
+              <div className="h-6 w-full max-w-[120px] sm:w-36 bg-cream-dark/50 rounded-lg" />
               <div className="h-24 bg-cream-dark/30 rounded-2xl" />
             </div>
             <div className="space-y-3">
-              <div className="h-6 w-36 bg-cream-dark/50 rounded-lg" />
+              <div className="h-6 w-full max-w-[120px] sm:w-36 bg-cream-dark/50 rounded-lg" />
               <div className="h-24 bg-cream-dark/30 rounded-2xl" />
             </div>
           </div>
@@ -77,7 +77,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
         {/* Items List Skeleton */}
         <div className="bg-white border border-border rounded-3xl shadow-sm overflow-hidden">
           <div className="h-14 bg-cream-dark/30 w-full" />
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-6 space-y-4">
             <div className="h-16 bg-cream-dark/30 rounded-2xl" />
             <div className="h-16 bg-cream-dark/30 rounded-2xl" />
           </div>
