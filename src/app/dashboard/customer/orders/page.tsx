@@ -11,6 +11,7 @@ import Link from "next/link";
 import { ReviewModal } from "@/components/modals/ReviewModal";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -44,10 +45,43 @@ export default function CustomerOrdersPage() {
     return (
       <div className="space-y-6">
         <div>
-          <div className="h-8 w-48 bg-cream-dark/50 animate-pulse rounded mb-2" />
-          <div className="h-4 w-64 bg-cream-dark/50 animate-pulse rounded" />
+          <h1 className="text-2xl sm:text-3xl font-bold font-bengali text-charcoal mb-1">
+            আমার অর্ডারসমূহ
+          </h1>
+          <p className="text-muted font-bengali">আপনার পূর্ববর্তী সকল অর্ডারের তালিকা ও ট্র্যাকিং</p>
         </div>
-        <div className="bg-white rounded-3xl border border-border p-6 h-64 animate-pulse" />
+        <div className="space-y-6">
+          {[1, 2].map((n) => (
+            <div key={n} className="bg-white border border-border shadow-sm rounded-3xl overflow-hidden animate-pulse">
+              <div className="bg-cream-dark/10 px-6 py-4 border-b border-border flex flex-col sm:flex-row justify-between gap-4">
+                <div className="flex gap-x-8">
+                  <div className="space-y-2">
+                    <div className="h-3.5 w-28 bg-cream-dark rounded" />
+                    <div className="h-4.5 w-32 bg-cream-dark rounded" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-3.5 w-16 bg-cream-dark rounded" />
+                    <div className="h-4.5 w-20 bg-cream-dark rounded" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3.5 w-16 bg-cream-dark rounded" />
+                  <div className="h-4.5 w-24 bg-cream-dark rounded" />
+                </div>
+              </div>
+              <div className="p-6 flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-center">
+                <div className="flex-1 space-y-4">
+                  <div className="h-5 w-40 bg-cream-dark rounded" />
+                  <div className="h-4 w-60 bg-cream-dark rounded" />
+                </div>
+                <div className="flex gap-3 w-full lg:w-auto mt-2 lg:mt-0">
+                  <div className="h-10 w-28 bg-cream-dark rounded-xl" />
+                  <div className="h-10 w-28 bg-cream-dark rounded-xl" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -100,9 +134,10 @@ export default function CustomerOrdersPage() {
                       <p className="text-xs text-muted font-semibold font-bengali uppercase tracking-wider sm:text-right">অর্ডার নং</p>
                       <div className="flex items-center gap-1.5 justify-start sm:justify-end mt-0.5">
                         <span className="font-bold text-charcoal font-mono text-sm">#{order.orderNumber}</span>
-                        <button
+                        <Button
+                          variant="ghost"
                           onClick={() => handleCopyOrderNumber(order.orderNumber, order.id)}
-                          className="text-muted hover:text-fire transition-colors p-1 rounded hover:bg-cream-dark/50 cursor-pointer"
+                          className="text-muted hover:text-fire transition-colors p-1 rounded hover:bg-cream-dark/50 cursor-pointer h-auto w-auto"
                           title="অর্ডার নাম্বার কপি করুন"
                         >
                           {copiedOrderId === order.id ? (
@@ -110,7 +145,7 @@ export default function CustomerOrdersPage() {
                           ) : (
                             <Copy className="w-3.5 h-3.5" />
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -163,16 +198,18 @@ export default function CustomerOrdersPage() {
 
                   {/* Actions Column */}
                   <div className="w-full lg:w-48 flex flex-col gap-2 shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-border">
-                    <Link 
-                      href={`/dashboard/customer/orders/${order.id}`}
-                      className="flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-fire/10 text-fire hover:bg-fire/20 transition-colors font-bold font-bengali text-sm shadow-sm cursor-pointer"
+                    <Button
+                      variant="ghost"
+                      nativeButton={false}
+                      render={<Link href={`/dashboard/customer/orders/${order.id}`} />}
+                      className="flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-fire/10 text-fire hover:bg-fire/20 transition-colors font-bold font-bengali text-sm shadow-sm cursor-pointer border-0"
                     >
                       <Eye size={16} />
                       বিস্তারিত দেখুন
-                    </Link>
+                    </Button>
 
                     {order.status === "DELIVERED" && (
-                      <button 
+                      <Button 
                         onClick={() => setReviewOrder(order)}
                         disabled={
                           !reviews ? false :
@@ -180,7 +217,7 @@ export default function CustomerOrdersPage() {
                             (id: any) => reviews.some((r: any) => r.itemId === id)
                           )
                         }
-                        className="flex items-center justify-center gap-2 w-full h-10 bg-fire text-white rounded-xl font-bold font-bengali text-sm hover:bg-fire-dark transition-colors disabled:opacity-50 disabled:hover:bg-fire disabled:cursor-not-allowed shadow-sm cursor-pointer"
+                        className="flex items-center justify-center gap-2 w-full h-10 bg-fire text-white rounded-xl font-bold font-bengali text-sm hover:bg-fire-dark transition-colors disabled:opacity-50 disabled:hover:bg-fire disabled:cursor-not-allowed shadow-sm cursor-pointer border-0"
                         title={
                           reviews && [...new Set(order.items.map((i: any) => i.item?.id).filter(Boolean))].every(
                             (id: any) => reviews.some((r: any) => r.itemId === id)
@@ -189,7 +226,7 @@ export default function CustomerOrdersPage() {
                       >
                         <Star size={16} />
                         রিভিউ দিন
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>

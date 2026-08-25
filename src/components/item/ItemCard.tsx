@@ -6,6 +6,7 @@ import { ShoppingBag, Flame, Sparkles } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/store/cart.store";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface Category {
   id: string;
@@ -129,15 +130,15 @@ export function ItemCard({ item }: ItemCardProps) {
         </div>
 
         {/* Add to Cart Button */}
-        <button
+        <Button
           onClick={handleAddToCart}
           disabled={!item.isAvailable}
-          className="flex items-center justify-center gap-2 w-full py-2 sm:py-2.5 rounded-xl bg-fire text-white hover:bg-fire-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md hover:shadow-fire/20 hover:scale-[1.02] active:scale-95 text-xs sm:text-sm font-bold font-bengali"
+          className="flex items-center justify-center gap-2 w-full py-2 sm:py-2.5 h-auto rounded-xl bg-fire text-white hover:bg-fire-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md hover:shadow-fire/20 hover:scale-[1.02] active:scale-95 text-xs sm:text-sm font-bold font-bengali border-0"
           aria-label="Add to cart"
         >
           <ShoppingBag size={16} />
           <span>{item.isAvailable ? "কার্টে যোগ করুন" : "স্টকে নেই"}</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

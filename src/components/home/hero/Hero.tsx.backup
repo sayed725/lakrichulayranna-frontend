@@ -45,8 +45,6 @@ export default function HeroSlider({ initialSlides = [] }: HeroSliderProps) {
   const { data: bannerResponse, isLoading } = useQuery({
     queryKey: ["heroBanners"],
     queryFn: () => getBanners({ isActive: true }),
-    staleTime: 1000 * 60 * 10, // Cache banners for 10 minutes
-    initialData: initialSlides.length > 0 ? { data: initialSlides, success: true, message: "" } : undefined,
   });
 
   

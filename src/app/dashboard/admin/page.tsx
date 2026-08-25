@@ -61,25 +61,7 @@ export default function AdminDashboardPage() {
 
   const isLoading = ordersLoading || statsLoading;
 
-  if (isLoading) {
-    return (
-      <div className="space-y-8 animate-pulse">
-        <div className="space-y-3">
-          <div className="h-8 w-48 bg-cream-dark/50 rounded-xl" />
-          <div className="h-4 w-72 bg-cream-dark/30 rounded-lg" />
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {Array.from({ length: 8 }).map((_, idx) => (
-            <div key={idx} className="h-28 bg-cream-dark/30 rounded-2xl" />
-          ))}
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="h-80 bg-cream-dark/30 rounded-3xl" />
-          <div className="h-80 bg-cream-dark/30 rounded-3xl" />
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="space-y-8 pb-10">
@@ -101,6 +83,7 @@ export default function AdminDashboardPage() {
           icon={<ShoppingBag size={20} />}
           trend={12.5}
           trendLabel="গত সপ্তাহের তুলনায়"
+          isLoading={isLoading}
         />
         <StatsCard
           title="মোট আয়"
@@ -108,16 +91,19 @@ export default function AdminDashboardPage() {
           icon={<DollarSign size={20} />}
           trend={18.2}
           trendLabel="গত সপ্তাহের তুলনায়"
+          isLoading={isLoading}
         />
         <StatsCard
           title="মোট আইটেম"
           value={counts.totalItems}
           icon={<UtensilsCrossed size={20} />}
+          isLoading={isLoading}
         />
         <StatsCard
           title="অপেক্ষমাণ অর্ডার"
           value={counts.pendingOrders}
           icon={<Clock size={20} />}
+          isLoading={isLoading}
         />
         <StatsCard
           title="মোট কাস্টমার"
@@ -125,11 +111,13 @@ export default function AdminDashboardPage() {
           icon={<Users size={20} />}
           trend={8.4}
           trendLabel="গত সপ্তাহের তুলনায়"
+          isLoading={isLoading}
         />
         <StatsCard
           title="সক্রিয় ক্যাটাগরি"
           value={counts.totalCategories}
           icon={<Layers size={20} />}
+          isLoading={isLoading}
         />
         <StatsCard
           title="মোট রিভিউ"
@@ -137,11 +125,13 @@ export default function AdminDashboardPage() {
           icon={<Star size={20} />}
           trend={15.3}
           trendLabel="গত সপ্তাহের তুলনায়"
+          isLoading={isLoading}
         />
         <StatsCard
           title="সক্রিয় কুপন"
           value={counts.totalCoupons}
           icon={<Tag size={20} />}
+          isLoading={isLoading}
         />
       </div>
 
@@ -156,7 +146,9 @@ export default function AdminDashboardPage() {
           </div>
           
           <div className="h-64 w-full relative">
-            {isMounted && weeklySales.length > 0 ? (
+            {isLoading ? (
+              <div className="absolute inset-0 bg-cream-dark/10 rounded-2xl animate-pulse flex items-center justify-center text-muted font-bengali text-sm">ডেটা লোড হচ্ছে...</div>
+            ) : isMounted && weeklySales.length > 0 ? (
               <ResponsiveContainer width="100%" height={250}>
                 <AreaChart data={weeklySales} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
@@ -169,8 +161,9 @@ export default function AdminDashboardPage() {
                   <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: "#1F2937", borderRadius: "12px", border: "none", color: "#F9FAFB" }}
-                    labelStyle={{ fontWeight: "bold", fontFamily: "monospace" }}
+                    contentStyle={{ backgroundColor: "#1F2937", borderRadius: "12px", border: "none" }}
+                    labelStyle={{ color: "#F9FAFB", fontWeight: "bold", fontFamily: "monospace" }}
+                    itemStyle={{ color: "#F9FAFB" }}
                     formatter={(value: any) => [`৳ ${value}`, "বিক্রয়"]}
                   />
                   <Area type="monotone" dataKey="sales" stroke="#FF6B6B" strokeWidth={2} fillOpacity={1} fill="url(#colorSales)" />
@@ -190,14 +183,18 @@ export default function AdminDashboardPage() {
           </div>
           
           <div className="h-64 w-full relative">
-            {isMounted && mostSold.length > 0 ? (
+            {isLoading ? (
+              <div className="absolute inset-0 bg-cream-dark/10 rounded-2xl animate-pulse flex items-center justify-center text-muted font-bengali text-sm">ডেটা লোড হচ্ছে...</div>
+            ) : isMounted && mostSold.length > 0 ? (
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={mostSold} layout="vertical" margin={{ top: 0, right: 10, left: 30, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
                   <XAxis type="number" tickLine={false} axisLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
                   <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tick={{ fill: "#1F2937", fontSize: 11, width: 100 }} width={80} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: "#1F2937", borderRadius: "12px", border: "none", color: "#F9FAFB" }}
+                    contentStyle={{ backgroundColor: "#1F2937", borderRadius: "12px", border: "none" }}
+                    labelStyle={{ color: "#F9FAFB", fontWeight: "bold", fontFamily: "monospace" }}
+                    itemStyle={{ color: "#F9FAFB" }}
                     formatter={(value: any) => [`${value} টি`, "পরিমাণ"]}
                   />
                   <Bar dataKey="quantity" radius={[0, 6, 6, 0]} barSize={16}>

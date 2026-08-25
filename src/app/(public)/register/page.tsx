@@ -11,6 +11,7 @@ import { Container } from "@/components/shared/container/Container";
 import { FormInput } from "@/components/forms/FormInput";
 import { Logo } from "@/components/shared/logo/Logo";
 import { useRegister } from "@/features/auth/hooks/useRegister";
+import { Button } from "@/components/ui/button";
 
 const registerSchema = z.object({
   name: z.string().min(3, "নাম কমপক্ষে ৩ অক্ষরের হতে হবে"),
@@ -126,14 +127,14 @@ export default function RegisterPage() {
               />
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={registerUser.isPending}
-              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold font-bengali text-white bg-fire hover:bg-fire-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fire transition-colors disabled:opacity-50 mt-2"
+              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 h-auto border border-transparent rounded-xl shadow-sm text-sm font-bold font-bengali text-white bg-fire hover:bg-fire-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fire transition-colors disabled:opacity-50 mt-2"
             >
               {registerUser.isPending ? "রেজিস্টার হচ্ছে..." : "অ্যাকাউন্ট তৈরি করুন"}
               {!registerUser.isPending && <ArrowRight size={18} />}
-            </button>
+            </Button>
           </form>
 
           <div className="mt-8 pt-6 border-t border-border">

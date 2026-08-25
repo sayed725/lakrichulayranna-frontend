@@ -20,7 +20,7 @@ export const useSubmitReview = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { itemId: string; rating: number; comment?: string }) => {
+    mutationFn: async (data: { itemId: string; rating: number; comment?: string; reviewerName?: string; reviewerEmail?: string }) => {
       const res = await api.post(API_ROUTES.REVIEWS.BASE, data);
       return res.data;
     },

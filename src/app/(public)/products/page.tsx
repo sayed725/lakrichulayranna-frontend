@@ -1,34 +1,18 @@
-"use client";
+import { env } from "@/config/env";
+import ProductsClient from "./ProductsClient";
 
-import { useState, useEffect, useRef } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Search, SlidersHorizontal, PackageX, Flame, Sparkles, X, Filter, RefreshCw } from "lucide-react";
-import { Container } from "@/components/shared/container/Container";
-import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
-import { ItemCard } from "@/components/item/ItemCard";
-import { SkeletonGrid } from "@/components/loaders/SkeletonGrid";
-import { Spinner } from "@/components/ui/spinner";
-import { useDebounce } from "@/hooks/useDebounce";
-import api from "@/lib/fetcher";
-import { API_ROUTES } from "@/lib/constants";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetDescription,
-  SheetClose,
-} from "@/components/ui/sheet";
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
 
-export default function MenuPage() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const urlCategoryName = searchParams.get("category.name") || "all";
-  const urlIsSpicy = searchParams.get("isSpicy") === "true";
-  const urlIsFeatured = searchParams.get("isFeatured") === "true";
-  const urlPrice = searchParams.get("price");
+export default async function MenuPage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  
+  const urlCategoryName = (resolvedSearchParams["category.name"] as string) || "all";
+  const urlIsSpicy = resolvedSearchParams["isSpicy"] === "true";
+  const urlIsFeatured = resolvedSearchParams["isFeatured"] === "true";
+  const urlPrice = resolvedSearchParams["price"] as string;
+  
   let urlMinPrice = "";
   let urlMaxPrice = "";
   if (urlPrice) {
@@ -40,521 +24,54 @@ export default function MenuPage() {
       // Invalid JSON, ignore
     }
   }
-  
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string>(urlCategoryName);
-  const [isSpicy, setIsSpicy] = useState<boolean>(urlIsSpicy);
-  const [isFeatured, setIsFeatured] = useState<boolean>(urlIsFeatured);
-  const [minPrice, setMinPrice] = useState<string>(urlMinPrice);
-  const [maxPrice, setMaxPrice] = useState<string>(urlMaxPrice);
-  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
-  const [limit, setLimit] = useState(10);
-  const [isBtnLoading, setIsBtnLoading] = useState(false);
-  const debouncedSearch = useDebounce(searchTerm, 500);
 
-  // Sync state with URL params on changes (e.g. when clicking navbar categories while on this page)
-  useEffect(() => {
-    setActiveCategory(urlCategoryName);
-    setIsSpicy(urlIsSpicy);
-    setIsFeatured(urlIsFeatured);
-    setMinPrice(urlMinPrice);
-    setMaxPrice(urlMaxPrice);
-    setLimit(10);
-  }, [urlCategoryName, urlIsSpicy, urlIsFeatured, urlMinPrice, urlMaxPrice]);
+  // Fetch categories and items in parallel on the server side
+  let initialCategories = [];
+  let initialItemsData = null;
 
-  // Scroll to top when filters or search parameters change
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [activeCategory, debouncedSearch, minPrice, maxPrice, isSpicy, isFeatured]);
-
-  // Scroll down slightly when limit increases (loading more items) to reveal new rows
-  const prevLimit = useRef(10);
-  useEffect(() => {
-    if (limit > 10 && limit !== prevLimit.current) {
-      window.scrollBy({ top: 350, behavior: "smooth" });
+  try {
+    const categoriesUrl = `${env.API_URL}/categories`;
+    const categoriesRes = await fetch(categoriesUrl, { next: { revalidate: 60 } });
+    if (categoriesRes.ok) {
+      const json = await categoriesRes.json();
+      initialCategories = json?.data || [];
     }
-    prevLimit.current = limit;
-  }, [limit]);
+  } catch (err) {
+    console.error("Error prefetching categories on server:", err);
+  }
 
-
-  // Check if any filter is active
-  const hasActiveFilters = activeCategory !== "all" || isSpicy || isFeatured || searchTerm !== "" || minPrice !== "" || maxPrice !== "";
-
-  // Reset all filters
-  const resetAllFilters = () => {
-    setSearchTerm("");
-    setActiveCategory("all");
-    setIsSpicy(false);
-    setIsFeatured(false);
-    setMinPrice("");
-    setMaxPrice("");
-    setLimit(10);
-    updateFilters("all", false, false, "", "");
-    setIsFilterDrawerOpen(false);
-  };
-
-  // Update URL when filters change
-  const updateFilters = (category: string, spicy: boolean, featured: boolean, min: string, max: string) => {
+  try {
     const params = new URLSearchParams();
-    if (category !== "all") params.set("category.name", category);
-    if (spicy) params.set("isSpicy", "true");
-    if (featured) params.set("isFeatured", "true");
-    if (min || max) {
+    if (urlCategoryName !== "all") params.append("category.name", urlCategoryName);
+    if (urlIsSpicy) params.append("isSpicy", "true");
+    if (urlIsFeatured) params.append("isFeatured", "true");
+    params.append("limit", "10");
+    if (urlMinPrice || urlMaxPrice) {
       const priceObj: any = {};
-      if (min) priceObj.gte = min;
-      if (max) priceObj.lte = max;
-      params.set("price", JSON.stringify(priceObj));
+      if (urlMinPrice) priceObj.gte = urlMinPrice;
+      if (urlMaxPrice) priceObj.lte = urlMaxPrice;
+      params.append("price", JSON.stringify(priceObj));
     }
-    setLimit(10);
-    router.push(`/products?${params.toString()}`);
-  };
 
-  // Fetch categories
-  const { data: categoriesData } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const res = await api.get(API_ROUTES.CATEGORIES.BASE);
-      return res.data.data;
-    },
-  });
-  const categories = Array.isArray(categoriesData) ? categoriesData : categoriesData?.categories || [];
-
-  // Fetch items with filters
-  const { data: itemsData, isLoading, isFetching } = useQuery({
-    queryKey: ["items", activeCategory, isSpicy, isFeatured, debouncedSearch, minPrice, maxPrice, limit],
-    queryFn: async () => {
-      let url = API_ROUTES.ITEMS.BASE;
-      const params = new URLSearchParams();
-      if (activeCategory !== "all") params.append("category.name", activeCategory);
-      if (isSpicy) params.append("isSpicy", "true");
-      if (isFeatured) params.append("isFeatured", "true");
-      if (debouncedSearch) params.append("searchTerm", debouncedSearch);
-      params.append("limit", limit.toString());
-      
-      // Price range filter
-      if (minPrice || maxPrice) {
-        const priceObj: any = {};
-        if (minPrice) priceObj.gte = minPrice;
-        if (maxPrice) priceObj.lte = maxPrice;
-        params.append("price", JSON.stringify(priceObj));
-      }
-      
-      const res = await api.get(`${url}?${params.toString()}`);
-      return res.data.data;
-    },
-    placeholderData: keepPreviousData,
-  });
-  const items = Array.isArray(itemsData) ? itemsData : itemsData?.items || [];
-  const hasMore = itemsData?.meta ? items.length < (itemsData.meta.total || 0) : items.length >= limit;
-
-  // Sync isBtnLoading state with isFetching but enforce minimum visible delay (600ms)
-  useEffect(() => {
-    if (isFetching) {
-      setIsBtnLoading(true);
-    } else {
-      const timer = setTimeout(() => {
-        setIsBtnLoading(false);
-      }, 600);
-      return () => clearTimeout(timer);
+    const itemsUrl = `${env.API_URL}/items?${params.toString()}`;
+    const itemsRes = await fetch(itemsUrl, { cache: 'no-store' });
+    if (itemsRes.ok) {
+      const json = await itemsRes.json();
+      initialItemsData = json?.data || null;
     }
-  }, [isFetching]);
+  } catch (err) {
+    console.error("Error prefetching items on server:", err);
+  }
 
   return (
-    <div className="py-10 bg-cream min-h-screen">
-      <Container>
-        <SectionTitle
-          // title="Our Menu"
-          titleBn="আমাদের সকল পণ্য"
-          subtitle="খুঁজে নিন আপনার পছন্দের কাঠের চুলার খাবার"
-        />
-
-        <div className="flex flex-col lg:flex-row gap-3">
-          {/* Mobile Search and Filter */}
-          <div className="lg:hidden flex items-center gap-3 mb-4">
-            <div className="flex-1 relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light" />
-              <input
-                type="text"
-                placeholder="খাবার খুঁজুন..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-white text-sm font-bengali placeholder:text-muted focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-              />
-            </div>
-            <button
-              onClick={() => setIsFilterDrawerOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl border border-border text-charcoal font-semibold font-bengali hover:bg-fire hover:text-white transition-colors shrink-0"
-            >
-              <Filter size={18} />
-              ফিল্টার
-            </button>
-          </div>
-
-          {/* Sidebar / Filters */}
-          <aside className="hidden lg:block lg:w-64 shrink-0">
-            <div className="sticky top-[calc(var(--nav-height)+2rem)] space-y-3">
-              {/* Search */}
-              <div className="relative">
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light" />
-                <input
-                  type="text"
-                  placeholder="খাবার খুঁজুন..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm font-bengali placeholder:text-muted focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                />
-              </div>
-
-               {/* Price Range Filter */}
-              <div className="bg-white rounded-2xl border border-border p-4">
-                <div className="flex items-center gap-2 mb-4 text-charcoal font-bold font-bengali">
-                  <h3>মূল্য সীমা</h3>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <label className="text-xs text-muted mb-1 block">সর্বনিম্ন</label>
-                    <input
-                      type="number"
-                      placeholder="0"
-                      value={minPrice}
-                      onChange={(e) => setMinPrice(e.target.value)}
-                      onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
-                      className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                    />
-                  </div>
-                  <span className="text-muted">-</span>
-                  <div className="flex-1">
-                    <label className="text-xs text-muted mb-1 block">সর্বোচ্চ</label>
-                    <input
-                      type="number"
-                      placeholder="1000"
-                      value={maxPrice}
-                      onChange={(e) => setMaxPrice(e.target.value)}
-                      onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
-                      className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Categories */}
-              <div className="bg-white rounded-2xl border border-border p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
-                    <SlidersHorizontal size={18} />
-                    <h3>ক্যাটাগরি</h3>
-                  </div>
-                  {hasActiveFilters && (
-                    <button
-                      onClick={resetAllFilters}
-                      className="text-xs text-fire hover:text-fire-dark font-semibold transition-colors"
-                    >
-                      রিসেট
-                    </button>
-                  )}
-                </div>
-                <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
-                  <button
-                    onClick={() => {
-                      setActiveCategory("all");
-                      updateFilters("all", isSpicy, isFeatured, minPrice, maxPrice);
-                    }}
-                    className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
-                      activeCategory === "all"
-                        ? "bg-fire/10 text-fire"
-                        : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
-                    }`}
-                  >
-                    সকল পণ্য সমূহ
-                  </button>
-                  {categories.map((cat: any) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => {
-                        setActiveCategory(cat.name);
-                        updateFilters(cat.name, isSpicy, isFeatured, minPrice, maxPrice);
-                      }}
-                      className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
-                        activeCategory === cat.name
-                          ? "bg-fire/10 text-fire"
-                          : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
-                      }`}
-                    >
-                      {cat.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-            
-
-              {/* Spicy Filter */}
-              <div className="bg-white rounded-2xl border border-border p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
-                    <Flame size={18} className="text-fire" />
-                    <h3>ঝাল খাবার</h3>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setIsSpicy(!isSpicy);
-                      updateFilters(activeCategory, !isSpicy, isFeatured, minPrice, maxPrice);
-                    }}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                      isSpicy ? "bg-fire" : "bg-charcoal/20"
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                        isSpicy ? "left-7" : "left-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-
-              {/* Best Seller Filter */}
-              <div className="bg-white rounded-2xl border border-border p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
-                    <Sparkles size={18} className="text-fire" />
-                    <h3>বেস্ট সেলার</h3>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setIsFeatured(!isFeatured);
-                      updateFilters(activeCategory, isSpicy, !isFeatured, minPrice, maxPrice);
-                    }}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                      isFeatured ? "bg-fire" : "bg-charcoal/20"
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                        isFeatured ? "left-7" : "left-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-
-             
-            </div>
-          </aside>
-
-          {/* Mobile Filter Drawer using Shadcn Sheet */}
-          <Sheet open={isFilterDrawerOpen} onOpenChange={setIsFilterDrawerOpen}>
-            <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col bg-white border-l border-border" showCloseButton={false}>
-              <SheetHeader className="p-4 border-b border-border flex flex-row items-center justify-between space-y-0">
-                <SheetTitle className="font-bold text-lg text-charcoal font-bengali">ফিল্টার</SheetTitle>
-                <SheetDescription className="sr-only">খাবারের ক্যাটাগরি, মূল্য সীমা এবং অন্যান্য ফিল্টার অপশন বেছে নিন।</SheetDescription>
-                <SheetClose className="p-2 rounded-xl hover:bg-charcoal/5 transition-colors focus:outline-none focus:ring-2 focus:ring-fire">
-                  <X size={20} className="text-charcoal" />
-                  <span className="sr-only">বন্ধ করুন</span>
-                </SheetClose>
-              </SheetHeader>
-              
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {/* Search */}
-                <div className="relative">
-                  <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light" />
-                  <input
-                    type="text"
-                    placeholder="খাবার খুঁজুন..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm font-bengali placeholder:text-muted focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                  />
-                </div>
-
-                {/* Price Range Filter */}
-                <div className="bg-white rounded-2xl border border-border p-4">
-                  <div className="flex items-center gap-2 mb-4 text-charcoal font-bold font-bengali">
-                    <h3>মূল্য সীমা</h3>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1">
-                      <label className="text-xs text-muted mb-1 block">সর্বনিম্ন</label>
-                      <input
-                        type="number"
-                        placeholder="0"
-                        value={minPrice}
-                        onChange={(e) => setMinPrice(e.target.value)}
-                        onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
-                        className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                      />
-                    </div>
-                    <span className="text-muted">-</span>
-                    <div className="flex-1">
-                      <label className="text-xs text-muted mb-1 block">সর্বোচ্চ</label>
-                      <input
-                        type="number"
-                        placeholder="1000"
-                        value={maxPrice}
-                        onChange={(e) => setMaxPrice(e.target.value)}
-                        onBlur={() => updateFilters(activeCategory, isSpicy, isFeatured, minPrice, maxPrice)}
-                        className="w-full px-3 py-2 rounded-lg border border-border text-sm font-bengali focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Categories */}
-                <div className="bg-white rounded-2xl border border-border p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
-                      <SlidersHorizontal size={18} />
-                      <h3>ক্যাটাগরি</h3>
-                    </div>
-                    {hasActiveFilters && (
-                      <button
-                        onClick={resetAllFilters}
-                        className="text-xs text-fire hover:text-fire-dark font-semibold transition-colors"
-                      >
-                        রিসেট
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <button
-                      onClick={() => {
-                        setActiveCategory("all");
-                        updateFilters("all", isSpicy, isFeatured, minPrice, maxPrice);
-                      }}
-                      className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
-                        activeCategory === "all"
-                          ? "bg-fire/10 text-fire"
-                          : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
-                      }`}
-                    >
-                      সকল পণ্য সমূহ
-                    </button>
-                    {categories.map((cat: any) => (
-                      <button
-                        key={cat.id}
-                        onClick={() => {
-                          setActiveCategory(cat.name);
-                          updateFilters(cat.name, isSpicy, isFeatured, minPrice, maxPrice);
-                        }}
-                        className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold font-bengali text-left transition-colors ${
-                          activeCategory === cat.name
-                            ? "bg-fire/10 text-fire"
-                            : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
-                        }`}
-                      >
-                        {cat.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Spicy Filter */}
-                <div className="bg-white rounded-2xl border border-border p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
-                      <Flame size={18} className="text-fire" />
-                      <h3>ঝাল খাবার</h3>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setIsSpicy(!isSpicy);
-                        updateFilters(activeCategory, !isSpicy, isFeatured, minPrice, maxPrice);
-                      }}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${
-                        isSpicy ? "bg-fire" : "bg-charcoal/20"
-                      }`}
-                    >
-                      <span
-                        className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                          isSpicy ? "left-7" : "left-1"
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Best Seller Filter */}
-                <div className="bg-white rounded-2xl border border-border p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-charcoal font-bold font-bengali">
-                      <Sparkles size={18} className="text-fire" />
-                      <h3>বেস্ট সেলার</h3>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setIsFeatured(!isFeatured);
-                        updateFilters(activeCategory, isSpicy, !isFeatured, minPrice, maxPrice);
-                      }}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${
-                        isFeatured ? "bg-fire" : "bg-charcoal/20"
-                      }`}
-                    >
-                      <span
-                        className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                          isFeatured ? "left-7" : "left-1"
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          {/* Main Content */}
-          <div className="flex-1">
-            {isLoading ? (
-              <SkeletonGrid count={8} columns={3} />
-            ) : items.length > 0 ? (
-              <div className="space-y-8">
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-3">
-                  {items.map((item: any) => (
-                    <ItemCard key={item.id} item={item} />
-                  ))}
-                </div>
-                {hasMore && (
-                  <div className="text-center pt-4">
-                    <button
-                      onClick={() => setLimit((prev) => prev + 10)}
-                      disabled={isBtnLoading}
-                      className="px-6 py-2.5 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all cursor-pointer shadow-md disabled:opacity-75 disabled:cursor-not-allowed min-w-[140px] flex items-center justify-center gap-2 mx-auto"
-                    >
-                      {isBtnLoading && <RefreshCw className="w-4 h-4 animate-spin text-white" />}
-                      <span>{isBtnLoading ? "আরও পণ্য লোড হচ্ছে..." : "আরও পণ্য যোগ করুন"}</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-border border-dashed text-center">
-                <div className="w-20 h-20 bg-cream rounded-full flex items-center justify-center mb-4">
-                  <PackageX size={32} className="text-muted-light" />
-                </div>
-                <h3 className="text-xl font-bold font-bengali text-charcoal mb-2">
-                  কোন আইটেম পাওয়া যায়নি
-                </h3>
-                <p className="text-muted font-bengali">
-                  আপনার খোঁজা অনুযায়ী কোনো খাবার পাওয়া যায়নি। অন্য কিছু সার্চ করুন।
-                </p>
-                <button
-                  onClick={() => {
-                    setSearchTerm("");
-                    setActiveCategory("all");
-                    setIsSpicy(false);
-                    setIsFeatured(false);
-                    setMinPrice("");
-                    setMaxPrice("");
-                    updateFilters("all", false, false, "", "");
-                  }}
-                  className="mt-6 px-6 py-2.5 bg-fire/10 text-fire rounded-xl font-semibold font-bengali hover:bg-fire hover:text-white transition-colors cursor-pointer"
-                >
-                  সব খাবার দেখুন
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </Container>
-    </div>
+    <ProductsClient
+      initialCategories={initialCategories}
+      initialItemsData={initialItemsData}
+      urlCategoryName={urlCategoryName}
+      urlIsSpicy={urlIsSpicy}
+      urlIsFeatured={urlIsFeatured}
+      urlMinPrice={urlMinPrice}
+      urlMaxPrice={urlMaxPrice}
+    />
   );
 }

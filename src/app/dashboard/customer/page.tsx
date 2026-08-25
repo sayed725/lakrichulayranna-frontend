@@ -74,14 +74,18 @@ export default function CustomerDashboardPage() {
           </div>
           <div>
             <p className="text-sm font-semibold font-bengali text-muted mb-1">মোট অর্ডার</p>
-            <p className="text-2xl font-bold font-latin text-charcoal">{orders?.length || 0} টি</p>
+            {isLoading ? (
+              <div className="h-8 w-16 bg-cream-dark rounded animate-pulse mt-1" />
+            ) : (
+              <p className="text-2xl font-bold font-latin text-charcoal">{orders?.length || 0} টি</p>
+            )}
           </div>
         </div>
 
         {/* Active Orders Card */}
         <div className="bg-white p-6 rounded-2xl border border-border/80 shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-5 group">
           <div className="w-14 h-14 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform duration-300 shrink-0 relative">
-            {activeOrders.length > 0 && (
+            {!isLoading && activeOrders.length > 0 && (
               <span className="absolute top-1 right-1 flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-fire opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-fire"></span>
@@ -91,7 +95,11 @@ export default function CustomerDashboardPage() {
           </div>
           <div>
             <p className="text-sm font-semibold font-bengali text-muted mb-1">চলমান অর্ডার</p>
-            <p className="text-2xl font-bold font-latin text-charcoal">{activeOrders.length} টি</p>
+            {isLoading ? (
+              <div className="h-8 w-16 bg-cream-dark rounded animate-pulse mt-1" />
+            ) : (
+              <p className="text-2xl font-bold font-latin text-charcoal">{activeOrders.length} টি</p>
+            )}
           </div>
         </div>
 
@@ -102,7 +110,11 @@ export default function CustomerDashboardPage() {
           </div>
           <div>
             <p className="text-sm font-semibold font-bengali text-muted mb-1">মোট খরচ (সম্পন্ন অর্ডার)</p>
-            <p className="text-2xl font-bold text-emerald-600 font-latin">{formatPrice(totalSpent)}</p>
+            {isLoading ? (
+              <div className="h-8 w-24 bg-cream-dark rounded animate-pulse mt-1" />
+            ) : (
+              <p className="text-2xl font-bold text-emerald-600 font-latin">{formatPrice(totalSpent)}</p>
+            )}
           </div>
         </div>
       </motion.div>
@@ -171,9 +183,22 @@ export default function CustomerDashboardPage() {
         </div>
         
         {isLoading ? (
-          <div className="p-12 flex flex-col items-center justify-center gap-3">
-            <div className="w-8 h-8 border-4 border-fire border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-muted font-bengali text-sm">অর্ডারগুলো লোড হচ্ছে...</p>
+          <div className="divide-y divide-border">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 animate-pulse">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-cream-dark shrink-0" />
+                  <div className="space-y-2">
+                    <div className="h-4 w-24 bg-cream-dark rounded" />
+                    <div className="h-3 w-32 bg-cream-dark rounded" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between sm:justify-end gap-6 sm:w-1/2">
+                  <div className="h-6 w-20 bg-cream-dark rounded-full" />
+                  <div className="h-6 w-16 bg-cream-dark rounded" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : recentOrders.length > 0 ? (
           <div className="divide-y divide-border">

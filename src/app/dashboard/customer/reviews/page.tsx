@@ -8,6 +8,7 @@ import { useCustomerReviews, useSubmitReview, useUpdateReview, useDeleteReview }
 import { useCustomerOrders } from "@/features/order/hooks/useCustomerOrders";
 import { StarRating } from "@/components/dashboard/StarRating";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 export default function CustomerReviewsPage() {
   const { data: reviews, isLoading: reviewsLoading } = useCustomerReviews();
@@ -93,28 +94,29 @@ export default function CustomerReviewsPage() {
         <p className="text-muted font-bengali">আপনার পূর্ববর্তী রিভিউ দেখুন এবং নতুন রিভিউ দিন</p>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-2 border-b border-border mb-6">
-        <button
+        <Button
+          variant="ghost"
           onClick={() => setActiveTab("MY_REVIEWS")}
-          className={`pb-4 px-4 font-bold font-bengali text-lg border-b-2 transition-colors ${
+          className={`pb-4 px-4 h-auto font-bold font-bengali text-lg border-b-2 rounded-none hover:bg-transparent transition-colors border-t-0 border-x-0 ${
             activeTab === "MY_REVIEWS" 
-              ? "border-fire text-fire" 
+              ? "border-fire text-fire hover:text-fire" 
               : "border-transparent text-muted hover:text-charcoal"
           }`}
         >
           আমার প্রদত্ত রিভিউ
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
           onClick={() => setActiveTab("WRITE_REVIEW")}
-          className={`pb-4 px-4 font-bold font-bengali text-lg border-b-2 transition-colors ${
+          className={`pb-4 px-4 h-auto font-bold font-bengali text-lg border-b-2 rounded-none hover:bg-transparent transition-colors border-t-0 border-x-0 ${
             activeTab === "WRITE_REVIEW" 
-              ? "border-fire text-fire" 
+              ? "border-fire text-fire hover:text-fire" 
               : "border-transparent text-muted hover:text-charcoal"
           }`}
         >
           নতুন রিভিউ লিখুন
-        </button>
+        </Button>
       </div>
 
       {activeTab === "MY_REVIEWS" ? (
@@ -135,9 +137,13 @@ export default function CustomerReviewsPage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-lg font-bengali text-charcoal">{review.item?.name}</h3>
-                        <button onClick={() => setEditingReviewId(null)} className="p-2 text-muted hover:text-charcoal bg-cream rounded-full">
+                        <Button
+                          variant="ghost"
+                          onClick={() => setEditingReviewId(null)}
+                          className="p-2 h-auto w-auto text-muted hover:text-charcoal bg-cream rounded-full border-0"
+                        >
                           <X size={16} />
-                        </button>
+                        </Button>
                       </div>
                       <StarRating value={editRating} onChange={setEditRating} size={24} />
                       <textarea
@@ -147,13 +153,13 @@ export default function CustomerReviewsPage() {
                         className="w-full px-4 py-2 rounded-xl border border-border bg-white text-sm font-bengali outline-none focus:border-fire transition-all resize-none"
                         placeholder="আপনার মতামত..."
                       />
-                      <button
+                      <Button
                         onClick={() => handleUpdateReview(review.id)}
                         disabled={updateReview.isPending}
-                        className="px-6 py-2 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all disabled:opacity-50"
+                        className="px-6 py-2 h-auto bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all disabled:opacity-50 border-0"
                       >
                         {updateReview.isPending ? "আপডেট হচ্ছে..." : "আপডেট করুন"}
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <>
@@ -166,12 +172,22 @@ export default function CustomerReviewsPage() {
                             {format(new Date(review.createdAt), "dd MMM, yyyy")}
                           </div>
                           <div className="flex items-center gap-2">
-                            <button onClick={() => handleEditClick(review)} className="text-charcoal hover:text-fire transition-colors" title="এডিট করুন">
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleEditClick(review)}
+                              className="text-charcoal hover:text-fire transition-colors h-auto w-auto p-1 hover:bg-transparent"
+                              title="এডিট করুন"
+                            >
                               <Edit2 size={16} />
-                            </button>
-                            <button onClick={() => handleDeleteClick(review.id)} className="text-error hover:text-red-700 transition-colors" title="মুছে ফেলুন">
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleDeleteClick(review.id)}
+                              className="text-error hover:text-red-700 transition-colors h-auto w-auto p-1 hover:bg-transparent"
+                              title="মুছে ফেলুন"
+                            >
                               <Trash2 size={16} />
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -277,14 +293,14 @@ export default function CustomerReviewsPage() {
                 </div>
 
                 <div className="pt-4">
-                  <button
+                  <Button
                     type="submit"
                     disabled={!selectedItem || submitReview.isPending}
-                    className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3.5 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all disabled:opacity-50 cursor-pointer shadow-sm active:scale-95"
+                    className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3.5 h-auto bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-all disabled:opacity-50 cursor-pointer shadow-sm active:scale-95 border-0"
                   >
                     <MessageSquarePlus size={20} />
                     {submitReview.isPending ? "সাবমিট হচ্ছে..." : "রিভিউ সাবমিট করুন"}
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}

@@ -278,9 +278,10 @@ export function Navbar() {
           {/* Desktop Right Side */}
           <div className="flex items-center gap-3">
             {/* Cart Button */}
-            <button
+            <Button
+              variant="ghost"
               onClick={toggleCart}
-              className="relative p-2.5 rounded-xl hover:bg-fire/5 transition-colors duration-200 group cursor-pointer"
+              className="relative p-2.5 h-auto w-auto rounded-xl hover:bg-fire/5 transition-colors duration-200 group cursor-pointer"
               aria-label="Open cart"
             >
               <ShoppingBag
@@ -292,7 +293,7 @@ export function Navbar() {
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
-            </button>
+            </Button>
 
             {!mounted ? (
               <div className="h-10 w-10 bg-cream-dark rounded-full animate-pulse" />
@@ -497,16 +498,17 @@ export function Navbar() {
                           </Link>
 
                           {/* Logout */}
-                          <button
+                          <Button
+                            variant="ghost"
                             onClick={() => {
                               handleLogout();
                               closeMobileMenu();
                             }}
-                            className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl text-error hover:bg-error/5 transition-colors"
+                            className="flex items-center gap-3 w-full justify-start text-left px-4 py-3 h-auto rounded-xl text-error hover:bg-error/5 hover:text-error transition-colors"
                           >
                             <LogOut className="h-5 w-5" />
                             <span className="text-sm font-semibold font-bengali">লগআউট করুন</span>
-                          </button>
+                          </Button>
                         </>
                       ) : (
                          <Button nativeButton={false} render={<Link href="/login" onClick={closeMobileMenu} />} className="w-full h-12 bg-gradient-to-r from-fire to-terracotta hover:from-fire-dark hover:to-terracotta-dark text-white rounded-xl shadow-lg hover:shadow-fire/25 transition-all duration-300 font-bold text-base border-0 font-bengali">
@@ -527,9 +529,10 @@ export function Navbar() {
 
           {/* Right: Cart */}
           <div className="flex-1 flex justify-end">
-            <button
+            <Button
+              variant="ghost"
               onClick={toggleCart}
-              className="relative p-2.5 rounded-xl hover:bg-fire/5 transition-colors duration-200 group cursor-pointer"
+              className="relative p-2.5 h-auto w-auto rounded-xl hover:bg-fire/5 transition-colors duration-200 group cursor-pointer"
               aria-label="Open cart"
             >
               <ShoppingBag
@@ -541,7 +544,7 @@ export function Navbar() {
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </Container>

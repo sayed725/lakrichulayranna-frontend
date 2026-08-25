@@ -1,14 +1,15 @@
 export default function ItemsLoadingSkeleton() {
   return (
-    <div className="border bg-card rounded-xl overflow-hidden shadow-sm">
+    <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
-          <thead className="bg-secondary text-secondary-foreground text-xs uppercase">
+          <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
             <tr>
               <th className="px-6 py-4 w-16">Image</th>
               <th className="px-6 py-4">Name</th>
               <th className="px-6 py-4">Category</th>
               <th className="px-6 py-4 text-right">Price</th>
+              <th className="px-6 py-4 text-center">Spicy</th>
               <th className="px-6 py-4 text-center">Featured</th>
               <th className="px-6 py-4 text-center">Status</th>
               <th className="px-6 py-4 text-right">Actions</th>
@@ -18,28 +19,31 @@ export default function ItemsLoadingSkeleton() {
             {[...Array(5)].map((_, i) => (
               <tr key={i}>
                 <td className="px-6 py-4">
-                  <div className="w-10 h-10 bg-muted animate-pulse rounded-md" />
+                  <div className="w-12 h-12 bg-cream-dark/40 animate-pulse rounded-lg" />
                 </td>
                 <td className="px-6 py-4">
-                  <div className="h-5 w-32 bg-muted animate-pulse rounded mb-1" />
-                  <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+                  <div className="h-5 w-36 bg-cream-dark/40 animate-pulse rounded mb-1.5" />
+                  <div className="h-4 w-24 bg-cream-dark/40 animate-pulse rounded" />
                 </td>
                 <td className="px-6 py-4">
-                  <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+                  <div className="h-5 w-24 bg-cream-dark/40 animate-pulse rounded" />
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <div className="h-5 w-16 bg-muted animate-pulse rounded ml-auto" />
+                  <div className="h-5 w-16 bg-cream-dark/40 animate-pulse rounded ml-auto" />
                 </td>
                 <td className="px-6 py-4 text-center">
-                  <div className="h-6 w-12 bg-muted animate-pulse rounded mx-auto" />
+                  <div className="h-6 w-12 bg-cream-dark/40 animate-pulse rounded mx-auto" />
                 </td>
                 <td className="px-6 py-4 text-center">
-                  <div className="h-6 w-12 bg-muted animate-pulse rounded mx-auto" />
+                  <div className="h-6 w-12 bg-cream-dark/40 animate-pulse rounded mx-auto" />
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <div className="h-6 w-16 bg-cream-dark/40 animate-pulse rounded mx-auto" />
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2">
-                    <div className="h-8 w-8 bg-muted animate-pulse rounded" />
-                    {/* <div className="h-8 w-8 bg-muted animate-pulse rounded" /> */}
+                    <div className="h-8 w-8 bg-cream-dark/40 animate-pulse rounded-lg" />
+                    <div className="h-8 w-8 bg-cream-dark/40 animate-pulse rounded-lg" />
                   </div>
                 </td>
               </tr>

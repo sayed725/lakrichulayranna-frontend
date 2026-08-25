@@ -9,6 +9,7 @@ interface StatsCardProps {
   trend?: number; // percentage
   trendLabel?: string;
   isCurrency?: boolean;
+  isLoading?: boolean;
 }
 
 export function StatsCard({
@@ -18,6 +19,7 @@ export function StatsCard({
   trend,
   trendLabel,
   isCurrency,
+  isLoading,
 }: StatsCardProps) {
   return (
     <Card className="bg-white border border-border shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full py-4 sm:py-5">
@@ -26,7 +28,7 @@ export function StatsCard({
           <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg bg-fire/10 flex items-center justify-center text-fire shrink-0 [&_svg]:size-4 sm:[&_svg]:size-5">
             {icon}
           </div>
-          {trend !== undefined && (
+          {trend !== undefined && !isLoading && (
             <div
               className={`flex items-center gap-0.5 sm:gap-1 text-[11px] sm:text-xs font-semibold px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-full shrink-0 ${
                 trend >= 0
@@ -44,10 +46,14 @@ export function StatsCard({
           <h3 className="text-muted font-bengali text-xs sm:text-sm font-medium mb-0.5 sm:mb-1">
             {title}
           </h3>
-          <p className="text-xl sm:text-2xl font-bold text-charcoal tracking-tight">
-            {isCurrency && "৳ "}
-            {value}
-          </p>
+          {isLoading ? (
+            <div className="h-7 w-20 bg-cream-dark/50 rounded animate-pulse my-0.5 sm:my-1" />
+          ) : (
+            <p className="text-xl sm:text-2xl font-bold text-charcoal tracking-tight">
+              {isCurrency && "৳ "}
+              {value}
+            </p>
+          )}
           {trendLabel && (
             <p className="text-[10px] sm:text-xs text-muted mt-1 sm:mt-1.5 font-bengali">{trendLabel}</p>
           )}

@@ -45,20 +45,26 @@ const headerVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
 };
 
-export function HomeCategories() {
+interface HomeCategoriesProps {
+  initialCategories?: any[];
+}
+
+export function HomeCategories({ initialCategories = [] }: HomeCategoriesProps) {
   const { data, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       const res = await api.get(API_ROUTES.CATEGORIES.BASE);
       return res.data.data;
     },
+    staleTime: 1000 * 60 * 10, // Cache categories for 10 minutes
+    initialData: initialCategories.length > 0 ? initialCategories : undefined,
   });
 
   const categories = Array.isArray(data) ? data : data?.categories || [];
   const [carouselApi, setCarouselApi] = React.useState<CarouselApi>();
 
   React.useEffect(() => {
-    if (!carouselApi) return;
+    if (!carouselApi || categories.length === 0) return;
 
     const intervalId = setInterval(() => {
       if (carouselApi.canScrollNext()) {
@@ -69,12 +75,7 @@ export function HomeCategories() {
     }, 4000);
 
     return () => clearInterval(intervalId);
-  }, [carouselApi]);
-
-  if (!isLoading && categories.length === 0) {
-    // console.log("HomeCategories: No categories found", { data, categories });
-    return null;
-  }
+  }, [carouselApi, categories]);
 
   return (
     <div className="bg-cream overflow-hidden">
@@ -97,11 +98,6 @@ export function HomeCategories() {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              {/* <div className="flex items-center gap-2">
-                <CarouselPrevious className="static translate-y-0 h-8 w-8 sm:h-10 sm:w-10 text-fire border-fire hover:bg-fire hover:text-white transition-colors" />
-                <CarouselNext className="static translate-y-0 h-8 w-8 sm:h-10 sm:w-10 text-fire border-fire hover:bg-fire hover:text-white transition-colors" />
-              </div> */}
-
               <Link
                 href="/products"
                 className="flex items-center gap-2 text-fire font-semibold font-bengali hover:text-fire-dark transition-colors group"
@@ -118,7 +114,7 @@ export function HomeCategories() {
             animate="visible"
           >
             <CarouselContent className="-ml-1.5 md:-ml-4">
-              {isLoading
+              {isLoading && categories.length === 0
                 ? Array.from({ length: 5 }).map((_, i) => (
                   <CarouselItem key={i} className="pl-1.5 md:pl-4 basis-1/2 sm:basis-1/2 md:basis-1/3 lg:basis-1/5">
                     <motion.div variants={itemVariants}>
