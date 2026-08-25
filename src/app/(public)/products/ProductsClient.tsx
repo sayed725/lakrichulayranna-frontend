@@ -69,14 +69,60 @@ export default function ProductsClient({
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeCategory, debouncedSearch, minPrice, maxPrice, isSpicy, isFeatured]);
 
+  // Fetch items with filters
+  const { data: itemsData, isLoading, isFetching } = useQuery({
+    queryKey: ["items", activeCategory, isSpicy, isFeatured, debouncedSearch, minPrice, maxPrice, limit],
+    queryFn: async () => {
+      let url = API_ROUTES.ITEMS.BASE;
+      const params = new URLSearchParams();
+      if (activeCategory !== "all") params.append("category.name", activeCategory);
+      if (isSpicy) params.append("isSpicy", "true");
+      if (isFeatured) params.append("isFeatured", "true");
+      if (debouncedSearch) params.append("searchTerm", debouncedSearch);
+      params.append("limit", limit.toString());
+      
+      // Price range filter
+      if (minPrice || maxPrice) {
+        const priceObj: any = {};
+        if (minPrice) priceObj.gte = minPrice;
+        if (maxPrice) priceObj.lte = maxPrice;
+        params.append("price", JSON.stringify(priceObj));
+      }
+      
+      const res = await api.get(`${url}?${params.toString()}`);
+      return res.data.data;
+    },
+    placeholderData: keepPreviousData,
+    initialData: (activeCategory === urlCategoryName &&
+      isSpicy === urlIsSpicy &&
+      isFeatured === urlIsFeatured &&
+      debouncedSearch === "" &&
+      minPrice === urlMinPrice &&
+      maxPrice === urlMaxPrice &&
+      limit === 10) ? initialItemsData : undefined,
+  });
+  const items = Array.isArray(itemsData) ? itemsData : itemsData?.items || [];
+  const hasMore = itemsData?.meta ? items.length < (itemsData.meta.total || 0) : items.length >= limit;
+
   // Scroll down slightly when limit increases (loading more items) to reveal new rows
+  const [shouldScroll, setShouldScroll] = useState(false);
   const prevLimit = useRef(10);
   useEffect(() => {
     if (limit > 10 && limit !== prevLimit.current) {
-      window.scrollBy({ top: 350, behavior: "smooth" });
+      setShouldScroll(true);
     }
     prevLimit.current = limit;
   }, [limit]);
+
+  useEffect(() => {
+    if (shouldScroll && !isFetching) {
+      const timer = setTimeout(() => {
+        window.scrollBy({ top: 250, behavior: "smooth" });
+        setShouldScroll(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isFetching, shouldScroll]);
 
   // Check if any filter is active
   const hasActiveFilters = activeCategory !== "all" || isSpicy || isFeatured || searchTerm !== "" || minPrice !== "" || maxPrice !== "";
@@ -120,41 +166,6 @@ export default function ProductsClient({
     initialData: initialCategories,
   });
   const categories = Array.isArray(categoriesData) ? categoriesData : categoriesData?.categories || [];
-
-  // Fetch items with filters
-  const { data: itemsData, isLoading, isFetching } = useQuery({
-    queryKey: ["items", activeCategory, isSpicy, isFeatured, debouncedSearch, minPrice, maxPrice, limit],
-    queryFn: async () => {
-      let url = API_ROUTES.ITEMS.BASE;
-      const params = new URLSearchParams();
-      if (activeCategory !== "all") params.append("category.name", activeCategory);
-      if (isSpicy) params.append("isSpicy", "true");
-      if (isFeatured) params.append("isFeatured", "true");
-      if (debouncedSearch) params.append("searchTerm", debouncedSearch);
-      params.append("limit", limit.toString());
-      
-      // Price range filter
-      if (minPrice || maxPrice) {
-        const priceObj: any = {};
-        if (minPrice) priceObj.gte = minPrice;
-        if (maxPrice) priceObj.lte = maxPrice;
-        params.append("price", JSON.stringify(priceObj));
-      }
-      
-      const res = await api.get(`${url}?${params.toString()}`);
-      return res.data.data;
-    },
-    placeholderData: keepPreviousData,
-    initialData: (activeCategory === urlCategoryName &&
-      isSpicy === urlIsSpicy &&
-      isFeatured === urlIsFeatured &&
-      debouncedSearch === "" &&
-      minPrice === urlMinPrice &&
-      maxPrice === urlMaxPrice &&
-      limit === 10) ? initialItemsData : undefined,
-  });
-  const items = Array.isArray(itemsData) ? itemsData : itemsData?.items || [];
-  const hasMore = itemsData?.meta ? items.length < (itemsData.meta.total || 0) : items.length >= limit;
 
   // Sync isBtnLoading state with isFetching but enforce minimum visible delay (600ms)
   useEffect(() => {
