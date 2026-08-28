@@ -37,6 +37,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+export async function generateStaticParams() {
+  try {
+    const res = await fetch(`${env.API_URL}/items?limit=100`, { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+
+    const json = await res.json();
+    const items = Array.isArray(json?.data) 
+      ? json.data 
+      : json?.data?.items || [];
+
+    return items.map((item: any) => ({
+      slug: item.slug,
+    }));
+  } catch (err) {
+    console.error("Error generating static params:", err);
+    return [];
+  }
+}
+
 export default async function ItemDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
@@ -47,7 +66,7 @@ export default async function ItemDetailPage({ params }: PageProps) {
 
   // 1. Fetch main item data on the server
   try {
-    const itemRes = await fetch(`${env.API_URL}/items/slug/${slug}`, { cache: "no-store" });
+    const itemRes = await fetch(`${env.API_URL}/items/slug/${slug}`, { next: { revalidate: 60 } });
     if (itemRes.ok) {
       const json = await itemRes.json();
       initialItemData = json?.data || null;
@@ -63,7 +82,7 @@ export default async function ItemDetailPage({ params }: PageProps) {
     try {
       const [relatedRes, reviewsRes] = await Promise.all([
         fetch(`${env.API_URL}/items?category.id=${item.categoryId}`, { next: { revalidate: 60 } }),
-        fetch(`${env.API_URL}/reviews/item/${item.id}`, { cache: "no-store" })
+        fetch(`${env.API_URL}/reviews/item/${item.id}`, { next: { revalidate: 60 } })
       ]);
 
       if (relatedRes.ok) {

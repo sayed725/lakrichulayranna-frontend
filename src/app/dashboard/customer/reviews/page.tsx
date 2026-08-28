@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import { Star, MessageSquarePlus, MessageCircle, Edit2, Trash2, X } from "lucide-react";
+import { Star, MessageSquarePlus, MessageCircle, Edit2, Trash2, X  } from "lucide-react";
 import { useCustomerReviews, useSubmitReview, useUpdateReview, useDeleteReview } from "@/features/review/hooks/useCustomerReviews";
 import { useCustomerOrders } from "@/features/order/hooks/useCustomerOrders";
 import { StarRating } from "@/components/dashboard/StarRating";
@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 export default function CustomerReviewsPage() {
   const { data: reviews, isLoading: reviewsLoading } = useCustomerReviews();
   const { data: orders, isLoading: ordersLoading } = useCustomerOrders();
+  
+
   const submitReview = useSubmitReview();
   const updateReview = useUpdateReview();
   const deleteReview = useDeleteReview();
@@ -126,10 +128,19 @@ export default function CustomerReviewsPage() {
             <div className="p-8 text-center animate-pulse text-muted font-bengali">লোড হচ্ছে...</div>
           ) : reviews && reviews.length > 0 ? (
             reviews.map((review: any) => (
-              <div key={review.id} className="bg-white rounded-3xl p-6 border border-border shadow-sm flex flex-col sm:flex-row gap-6">
-                <div className="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 border border-border bg-cream">
-                  {review.item?.imageUrl && (
-                    <Image src={review.item.imageUrl} alt={review.item.name} fill className="object-cover" />
+              <div key={review.id} className="bg-white rounded-3xl p-6 border border-border shadow-sm flex flex-col sm:flex-row gap-6 group hover:shadow-md transition-shadow">
+                <div className="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 border border-border bg-cream shadow-inner">
+                  {(review.item?.imageUrl || review.item?.image) ? (
+                    <Image 
+                      src={review.item?.imageUrl || review.item?.image} 
+                      alt={review.item?.name || "খাবারের ছবি"} 
+                      fill 
+                      className="object-cover transition-transform duration-500 group-hover:scale-110" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted font-bengali bg-cream-dark/20 text-xs">
+                      ছবি নেই
+                    </div>
                   )}
                 </div>
                 <div className="flex-1">
@@ -138,9 +149,9 @@ export default function CustomerReviewsPage() {
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-lg font-bengali text-charcoal">{review.item?.name}</h3>
                         <Button
-                          variant="ghost"
+                          variant="destructive"
                           onClick={() => setEditingReviewId(null)}
-                          className="p-2 h-auto w-auto text-muted hover:text-charcoal bg-cream rounded-full border-0"
+                          className="p-2 h-auto w-auto text-muted  bg-cream rounded-full border-0"
                         >
                           <X size={16} />
                         </Button>
@@ -251,14 +262,25 @@ export default function CustomerReviewsPage() {
                       <div 
                         key={item.id}
                         onClick={() => setSelectedItem(item)}
-                        className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                        className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all group ${
                           selectedItem?.id === item.id 
-                            ? "border-fire bg-fire/5" 
-                            : "border-border hover:border-fire/50"
+                            ? "border-fire bg-fire/5 shadow-sm" 
+                            : "border-border hover:border-fire/30 hover:bg-cream/10"
                         }`}
                       >
-                        <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
-                          <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                        <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-border shadow-sm bg-cream">
+                          {item.imageUrl ? (
+                            <Image 
+                              src={item.imageUrl} 
+                              alt={item.name} 
+                              fill 
+                              className="object-cover transition-transform duration-300 group-hover:scale-110" 
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-muted text-[10px] bg-cream-dark/20">
+                              ছবি নেই
+                            </div>
+                          )}
                         </div>
                         <span className="font-semibold font-bengali text-sm text-charcoal line-clamp-2">
                           {item.name}
