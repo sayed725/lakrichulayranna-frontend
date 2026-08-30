@@ -64,9 +64,8 @@ export default async function ItemDetailPage({ params }: PageProps) {
   let initialRelatedItems: any[] = [];
   let initialReviews: any[] = [];
 
-  // 1. Fetch main item data on the server
   try {
-    const itemRes = await fetch(`${env.API_URL}/items/slug/${slug}`, { next: { revalidate: 60 } });
+    const itemRes = await fetch(`${env.API_URL}/items/slug/${slug}`, { next: { revalidate: 180 } });
     if (itemRes.ok) {
       const json = await itemRes.json();
       initialItemData = json?.data || null;
@@ -81,8 +80,8 @@ export default async function ItemDetailPage({ params }: PageProps) {
   if (item) {
     try {
       const [relatedRes, reviewsRes] = await Promise.all([
-        fetch(`${env.API_URL}/items?category.id=${item.categoryId}`, { next: { revalidate: 60 } }),
-        fetch(`${env.API_URL}/reviews/item/${item.id}`, { next: { revalidate: 60 } })
+        fetch(`${env.API_URL}/items?category.id=${item.categoryId}`, { next: { revalidate: 180 } }),
+        fetch(`${env.API_URL}/reviews/item/${item.id}`, { next: { revalidate: 180 } })
       ]);
 
       if (relatedRes.ok) {

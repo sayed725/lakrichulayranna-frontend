@@ -3,16 +3,16 @@ import HeroSlider from "@/components/home/hero/Hero";
 import { HomeCategories } from "@/components/home/categories/HomeCategories";
 import { FeaturedItems } from "@/components/home/featured-items/FeaturedItems";
 
-export const revalidate = 60; // Revalidate data every 60 seconds (ISR)
+export const revalidate = 180; // Revalidate every 3 minutes (ISR)
 
 async function getHomeData() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   
   try {
     const [bannersRes, categoriesRes, featuredRes] = await Promise.all([
-      fetch(`${apiUrl}/banners?isActive=true`, { next: { revalidate: 60 } }).then((res) => res.json()),
-      fetch(`${apiUrl}/categories`, { next: { revalidate: 60 } }).then((res) => res.json()),
-      fetch(`${apiUrl}/items?isFeatured=true`, { next: { revalidate: 60 } }).then((res) => res.json()),
+      fetch(`${apiUrl}/banners?isActive=true`, { next: { revalidate: 180 } }).then((res) => res.json()),
+      fetch(`${apiUrl}/categories`, { next: { revalidate: 180 } }).then((res) => res.json()),
+      fetch(`${apiUrl}/items?isFeatured=true`, { next: { revalidate: 180 } }).then((res) => res.json()),
     ]);
 
     return {

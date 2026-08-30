@@ -17,7 +17,7 @@ export async function generateMetadata({
   
   try {
     // We fetch the metadata securely via backend API
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1"}/items/slug/${slug}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/items/slug/${slug}`, {
       next: { revalidate: 3600 }
     });
     const data = await res.json();

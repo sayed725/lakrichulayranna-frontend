@@ -31,7 +31,7 @@ export default async function MenuPage({ searchParams }: PageProps) {
 
   try {
     const categoriesUrl = `${env.API_URL}/categories`;
-    const categoriesRes = await fetch(categoriesUrl, { next: { revalidate: 60 } });
+    const categoriesRes = await fetch(categoriesUrl, { next: { revalidate: 180 } });
     if (categoriesRes.ok) {
       const json = await categoriesRes.json();
       initialCategories = json?.data || [];
