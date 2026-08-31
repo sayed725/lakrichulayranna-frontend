@@ -44,7 +44,6 @@ export function ItemCard({ item }: ItemCardProps) {
       id: item.id,
       name: item.name,
       price: item.price,
-      discountPrice: item.discountPrice ?? undefined,
       imageUrl: item.imageUrl,
       slug: item.slug,
       weight: item.weight,
@@ -53,10 +52,10 @@ export function ItemCard({ item }: ItemCardProps) {
     toast.success(`${item.name} কার্টে যোগ করা হয়েছে!`);
   };
 
-  const effectivePrice = item.discountPrice ?? item.price;
-  const hasDiscount = item.discountPrice !== null;
+  const effectivePrice = item.price;
+  const hasDiscount = item.discountPrice !== null && item.discountPrice !== undefined && item.discountPrice > 0;
   const discountPercentage = hasDiscount 
-    ? Math.round(((item.price - item.discountPrice!) / item.price) * 100)
+    ? Math.round(((item.discountPrice! - item.price) / item.discountPrice!) * 100)
     : 0;
 
   return (
@@ -123,7 +122,7 @@ export function ItemCard({ item }: ItemCardProps) {
             </span>
             {hasDiscount && (
               <span className="text-[10px] sm:text-xs text-muted line-through">
-                {formatPrice(item.price)}
+                {formatPrice(item.discountPrice!)}
               </span>
             )}
           </div>

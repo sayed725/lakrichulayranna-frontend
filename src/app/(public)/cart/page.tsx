@@ -3,35 +3,25 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Plus, Trash2, ArrowRight, Tag } from "lucide-react";
+import { Minus, Plus, Trash2, ArrowRight } from "lucide-react";
 import { Container } from "@/components/shared/container/Container";
 import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
 import { useCartStore } from "@/store/cart.store";
-import { useCouponStore } from "@/store/coupon.store";
-import { useValidateCoupon } from "@/features/cart/hooks/useValidateCoupon";
 import { formatPrice } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export default function CartPage() {
   const [mounted, setMounted] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
   const { items, updateQty, removeItem, subtotal } = useCartStore();
-  const { coupon, discount, clearCoupon } = useCouponStore();
-  const validateCoupon = useValidateCoupon();
 
   useEffect(() => {
     setMounted(true);
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  const handleApplyCoupon = () => {
-    if (!couponCode.trim()) return;
-    validateCoupon.mutate({ code: couponCode.trim(), subtotal: subtotal() });
-  };
-
   if (!mounted) return null;
 
   const currentSubtotal = subtotal();
-  const total = currentSubtotal - discount;
 
   if (items.length === 0) {
     return (
@@ -46,12 +36,14 @@ export default function CartPage() {
           <p className="text-muted font-bengali mb-8 text-center max-w-md">
             এখনো কোনো খাবার যোগ করা হয়নি। পণ্য সমূহ থেকে আপনার পছন্দের খাবার বেছে নিন।
           </p>
-          <Link
-            href="/products"
-            className="px-8 py-4 bg-fire text-white rounded-xl font-bold font-bengali hover:bg-fire-dark transition-colors"
+          <Button
+            nativeButton={false}
+            variant="fire"
+            render={<Link href="/products" />}
+            className="px-8 h-12 rounded-xl font-bold font-bengali border-0 cursor-pointer"
           >
             পণ্য সমূহ দেখুন
-          </Link>
+          </Button>
         </Container>
       </div>
     );
@@ -106,19 +98,23 @@ export default function CartPage() {
                     {/* Qty & Mobile Total row */}
                     <div className="col-span-2 flex sm:justify-center items-center justify-between">
                       <div className="flex items-center justify-between px-2 bg-cream rounded-xl border border-border w-28 h-10">
-                        <button
+                        <Button
                           onClick={() => updateQty(item.id, item.quantity - 1)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white text-charcoal transition-colors cursor-pointer"
+                          variant="ghost"
+                          size="icon"
+                          className="hover:bg-white text-charcoal rounded-lg cursor-pointer size-8"
                         >
                           <Minus size={16} />
-                        </button>
+                        </Button>
                         <span className="font-bold text-sm">{item.quantity}</span>
-                        <button
+                        <Button
                           onClick={() => updateQty(item.id, item.quantity + 1)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white text-charcoal transition-colors cursor-pointer"
+                          variant="ghost"
+                          size="icon"
+                          className="hover:bg-white text-charcoal rounded-lg cursor-pointer size-8"
                         >
                           <Plus size={16} />
-                        </button>
+                        </Button>
                       </div>
                       
                       {/* Mobile Total & Remove */}
@@ -161,56 +157,12 @@ export default function CartPage() {
               অর্ডার সামারি
             </h3>
 
-            {/* Coupon Section */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold font-bengali text-charcoal mb-2">
-                কুপন কোড (যদি থাকে)
-              </label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light" />
-                  <input
-                    type="text"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                    placeholder="কোড লিখুন"
-                    disabled={!!coupon}
-                    className="w-full pl-9 pr-3 py-3 rounded-xl border border-border bg-cream/50 text-sm font-bengali outline-none focus:border-fire transition-all"
-                  />
-                </div>
-                {coupon ? (
-                  <button onClick={clearCoupon} className="px-4 py-3 rounded-xl bg-error/10 text-error font-semibold font-bengali cursor-pointer">
-                    বাদ দিন
-                  </button>
-                ) : (
-                  <button 
-                    onClick={handleApplyCoupon}
-                    disabled={!couponCode.trim() || validateCoupon.isPending}
-                    className="px-4 py-3 rounded-xl bg-charcoal text-cream font-semibold font-bengali disabled:opacity-50 cursor-pointer"
-                  >
-                    {validateCoupon.isPending ? "..." : "প্রয়োগ"}
-                  </button>
-                )}
-              </div>
-              {coupon && (
-                <p className="text-success text-sm font-bengali mt-2 font-medium">
-                  {coupon.code} প্রয়োগ করা হয়েছে (-{formatPrice(discount)})
-                </p>
-              )}
-            </div>
-
             {/* Totals */}
             <div className="space-y-3 font-bengali mb-6">
               <div className="flex justify-between text-muted">
                 <span>সাবটোটাল</span>
                 <span className="text-charcoal font-semibold">{formatPrice(currentSubtotal)}</span>
               </div>
-              {discount > 0 && (
-                <div className="flex justify-between text-success">
-                  <span>ডিসকাউন্ট</span>
-                  <span className="font-semibold">-{formatPrice(discount)}</span>
-                </div>
-              )}
               <div className="flex justify-between text-muted">
                 <span>ডেলিভারি চার্জ</span>
                 <span className="text-xs mt-1">চেকআউটে হিসাব করা হবে</span>
@@ -218,17 +170,19 @@ export default function CartPage() {
               
               <div className="pt-4 border-t border-border flex justify-between items-end">
                 <span className="text-lg font-bold text-charcoal">মোট (আনুমানিক)</span>
-                <span className="text-2xl font-bold text-fire">{formatPrice(total)}</span>
+                <span className="text-2xl font-bold text-fire">{formatPrice(currentSubtotal)}</span>
               </div>
             </div>
 
-            <Link
-              href="/checkout"
-              className="flex items-center justify-center gap-2 w-full py-4 bg-fire text-white rounded-xl font-bengali font-bold text-lg hover:bg-fire-dark transition-all hover:shadow-lg hover:shadow-fire/25 active:scale-[0.98]"
+            <Button
+              nativeButton={false}
+              variant="fire"
+              render={<Link href="/checkout" />}
+              className="flex items-center justify-center gap-2 w-full h-12 rounded-xl font-bengali font-bold text-lg border-0 cursor-pointer"
             >
               চেকআউটে যান
               <ArrowRight size={20} />
-            </Link>
+            </Button>
           </div>
         </div>
       </div>

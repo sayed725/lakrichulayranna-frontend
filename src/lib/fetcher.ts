@@ -114,7 +114,12 @@ api.interceptors.response.use(
         // Clear auth data on refresh failure
         if (typeof window !== "undefined") {
           localStorage.removeItem("auth-storage");
-          window.location.href = "/login";
+          
+          const pathname = window.location.pathname;
+          const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/checkout");
+          if (isProtected) {
+            window.location.href = `/login?callbackUrl=${encodeURIComponent(pathname)}`;
+          }
         }
         return Promise.reject(refreshError);
       } finally {

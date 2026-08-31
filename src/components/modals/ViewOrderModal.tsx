@@ -113,8 +113,13 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
               {order.items?.map((item: any, index: number) => (
                 <div key={index} className="p-6 flex items-center gap-4">
                   <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-border shrink-0 bg-cream">
-                    {item.item?.imageUrl && (
-                      <Image src={item.item.imageUrl} alt={item.item.name} fill className="object-cover" />
+                    {(item.item?.imageUrl || item.itemImageUrl || item.imageUrl || item.image || item.item?.image) && (
+                      <Image
+                        src={item.item?.imageUrl || item.itemImageUrl || item.imageUrl || item.image || item.item?.image}
+                        alt={item.item?.name || item.itemName || "Item Image"}
+                        fill
+                        className="object-cover"
+                      />
                     )}
                   </div>
                   <div className="flex-1">

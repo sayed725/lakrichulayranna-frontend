@@ -22,7 +22,7 @@ export interface Item {
   slug: string;
   description: string;
   price: number;
-  discountPrice?: number;
+  discountPrice?: number | null;
   imageUrl: string;
   images: string[];
   categoryId: string;
@@ -49,7 +49,7 @@ export interface CreateItemPayload {
   slug: string;
   description: string;
   price: number;
-  discountPrice?: number;
+  discountPrice?: number | null;
   imageUrl: string;
   images: string[];
   categoryId: string;

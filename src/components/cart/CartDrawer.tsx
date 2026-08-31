@@ -1,26 +1,19 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ShoppingBag, Trash2, Tag, ArrowRight } from "lucide-react";
+import { X, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/store/cart.store";
 import { useUIStore } from "@/store/ui.store";
-import { useCouponStore } from "@/store/coupon.store";
 import { CartItem } from "./CartItem";
 import { formatPrice } from "@/lib/utils";
-import api from "@/lib/fetcher";
-import { API_ROUTES } from "@/lib/constants";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 export function CartDrawer() {
   const { items, clearCart, subtotal, totalItems } = useCartStore();
   const { isCartOpen, closeCart } = useUIStore();
-  const { coupon, discount, setCoupon, clearCoupon } = useCouponStore();
-  const [couponCode, setCouponCode] = useState("");
-  const [couponLoading, setCouponLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -38,28 +31,8 @@ export function CartDrawer() {
     };
   }, [isCartOpen]);
 
-  const handleApplyCoupon = async () => {
-    if (!couponCode.trim()) return;
-    setCouponLoading(true);
-    try {
-      const res = await api.post(API_ROUTES.COUPONS.VALIDATE, {
-        code: couponCode.trim(),
-        subtotal: subtotal(),
-      });
-      setCoupon(res.data.data, subtotal());
-      toast.success("কুপন প্রয়োগ হয়েছে!");
-      setCouponCode("");
-    } catch (err: unknown) {
-      const error = err as { message?: string };
-      toast.error(error.message || "কুপন সঠিক নয়");
-    } finally {
-      setCouponLoading(false);
-    }
-  };
-
   const currentSubtotal = mounted ? subtotal() : 0;
   const currentTotalItems = mounted ? totalItems() : 0;
-  const total = currentSubtotal - discount;
 
   return (
     <AnimatePresence>
@@ -143,86 +116,33 @@ export function CartDrawer() {
             {/* Bottom Section (only when items exist) */}
             {items.length > 0 && (
               <div className="border-t border-border p-5 space-y-4">
-                {/* Coupon Field */}
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Tag
-                      size={14}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light"
-                    />
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                      placeholder="কুপন কোড"
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-border bg-cream/50 text-sm font-bengali placeholder:text-muted-light focus:border-fire focus:ring-1 focus:ring-fire/20 outline-none transition-all"
-                      disabled={!!coupon}
-                    />
-                  </div>
-                  {coupon ? (
-                    <button
-                      onClick={clearCoupon}
-                      className="px-4 py-2.5 rounded-xl border border-error/20 text-error text-sm font-semibold hover:bg-error/5 transition-colors cursor-pointer"
-                    >
-                      বাদ দিন
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleApplyCoupon}
-                      disabled={couponLoading || !couponCode.trim()}
-                      className="px-4 py-2.5 rounded-xl bg-fire text-white text-sm font-semibold hover:bg-fire-dark transition-all hover:shadow-lg hover:shadow-fire/25 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:active:scale-100 cursor-pointer"
-                    >
-                      {couponLoading ? "..." : "প্রয়োগ"}
-                    </button>
-                  )}
-                </div>
-
-                {/* Applied coupon badge */}
-                {coupon && (
-                  <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-success/10 text-success text-sm">
-                    <span className="font-bengali">
-                      <strong>{coupon.code}</strong> কুপন প্রয়োগ হয়েছে
-                    </span>
-                    <span className="font-semibold">-{formatPrice(discount)}</span>
-                  </div>
-                )}
-
                 {/* Totals */}
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between text-muted font-bengali">
-                    <span>সাবটোটাল</span>
-                    <span>{formatPrice(currentSubtotal)}</span>
-                  </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-success font-bengali">
-                      <span>ডিসকাউন্ট</span>
-                      <span>-{formatPrice(discount)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-lg font-bold text-charcoal font-bengali pt-2 border-t border-border">
+                  <div className="flex justify-between text-lg font-bold text-charcoal font-bengali pt-2">
                     <span>মোট</span>
-                    <span className="text-fire">{formatPrice(total)}</span>
+                    <span className="text-fire">{formatPrice(currentSubtotal)}</span>
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="space-y-2">
-                  <Link
-                    href="/checkout"
-                    onClick={closeCart}
-                    className="flex items-center justify-center gap-2 w-full py-3.5 bg-fire text-white rounded-xl font-bengali font-semibold hover:bg-fire-dark transition-all hover:shadow-lg hover:shadow-fire/25 active:scale-[0.98]"
+                  <Button
+                    nativeButton={false}
+                    variant="fire"
+                    render={<Link href="/checkout" onClick={closeCart} />}
+                    className="flex items-center justify-center gap-2 w-full h-12 rounded-xl font-bengali font-semibold border-0 cursor-pointer"
                   >
                     চেকআউট করুন
                     <ArrowRight size={18} />
-                  </Link>
-                  <button
+                  </Button>
+                  <Button
                     onClick={clearCart}
+                    variant="ghost"
                     className="flex items-center justify-center gap-2 w-full py-2.5 text-sm text-muted hover:text-error rounded-xl hover:bg-error/5 transition-colors font-bengali cursor-pointer"
                   >
                     <Trash2 size={14} />
                     কার্ট মুছুন
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

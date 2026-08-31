@@ -81,6 +81,7 @@ export default function AdminItemsPage() {
     isNew: false,
     isSpicy: false,
     description: "",
+    discountPrice: null as number | null,
   });
 
   const [search, setSearch] = useState("");
@@ -160,6 +161,7 @@ export default function AdminItemsPage() {
       isNew: false,
       isSpicy: false,
       description: "",
+      discountPrice: null,
     });
   };
 
@@ -198,6 +200,7 @@ export default function AdminItemsPage() {
       isNew: item.isNew || false,
       isSpicy: item.isSpicy || false,
       description: item.description || "",
+      discountPrice: item.discountPrice ?? null,
     });
     setIsEditOpen(true);
   };
@@ -685,6 +688,11 @@ export default function AdminItemsPage() {
                   <h3 className="text-xl font-bold text-charcoal font-bengali">{selectedItem.name}</h3>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="font-bold text-fire text-lg">{formatPrice(selectedItem.price)}</span>
+                    {selectedItem.discountPrice && (
+                      <span className="text-sm text-muted-foreground line-through">
+                        {formatPrice(selectedItem.discountPrice)}
+                      </span>
+                    )}
                     {selectedItem.weight && (
                       <span className="text-muted-foreground">• {selectedItem.weight}</span>
                     )}

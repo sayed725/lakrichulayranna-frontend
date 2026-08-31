@@ -76,20 +76,18 @@ export default function AddItemForm({
         </div>
 
         <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Discount Price (৳)</label>
+            <Input type="number" step="0.01" placeholder="e.g. 120.00" value={formData.discountPrice ?? ''} onChange={(e) => setFormData({ ...formData, discountPrice: e.target.value === '' ? null : parseFloat(e.target.value) })} className="rounded-xl border-slate-200" />
+        </div>
+
+        <div className="space-y-2">
             <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Weight <span className="text-red-500">*</span></label>
             <Input required placeholder="e.g. 500g" value={formData.weight} onChange={(e) => setFormData({ ...formData, weight: e.target.value })} className="rounded-xl border-slate-200" />
         </div>
 
-        {/* Slug */}
-        <div className="space-y-2 col-span-2">
+        <div className="space-y-2">
             <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Slug</label>
-            <Textarea
-                placeholder="crunchy-popcorn"
-                value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                rows={2}
-                className="rounded-xl border-slate-200 resize-none h-20"
-            />
+            <Input placeholder="crunchy-popcorn" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} className="rounded-xl border-slate-200" />
         </div>
 
         {/* Description */}

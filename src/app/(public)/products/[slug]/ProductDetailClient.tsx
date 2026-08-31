@@ -79,10 +79,10 @@ export default function ProductDetailClient({
 
   const reviews = reviewsResponse || [];
 
-  const effectivePrice = item?.discountPrice ?? item?.price ?? 0;
-  const hasDiscount = item?.discountPrice !== null && item?.discountPrice !== undefined;
+  const effectivePrice = item?.price ?? 0;
+  const hasDiscount = item?.discountPrice !== null && item?.discountPrice !== undefined && item?.discountPrice > 0;
   const discountPercentage = hasDiscount 
-    ? Math.round(((item.price - item.discountPrice!) / item.price) * 100)
+    ? Math.round(((item.discountPrice! - item.price) / item.discountPrice!) * 100)
     : 0;
 
   const allImages: string[] = item
@@ -98,7 +98,6 @@ export default function ProductDetailClient({
       id: item.id,
       name: item.name,
       price: item.price,
-      discountPrice: item.discountPrice ?? undefined,
       imageUrl: item.imageUrl,
       slug: item.slug,
     }, qty);
@@ -250,7 +249,7 @@ export default function ProductDetailClient({
               </span>
               {hasDiscount && (
                 <span className="text-xl text-muted line-through mb-1">
-                  {formatPrice(item.price)}
+                  {formatPrice(item.discountPrice!)}
                 </span>
               )}
             </div>

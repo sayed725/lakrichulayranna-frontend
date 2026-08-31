@@ -30,17 +30,6 @@ export default async function MenuPage({ searchParams }: PageProps) {
   let initialItemsData = null;
 
   try {
-    const categoriesUrl = `${env.API_URL}/categories`;
-    const categoriesRes = await fetch(categoriesUrl, { next: { revalidate: 180 } });
-    if (categoriesRes.ok) {
-      const json = await categoriesRes.json();
-      initialCategories = json?.data || [];
-    }
-  } catch (err) {
-    console.error("Error prefetching categories on server:", err);
-  }
-
-  try {
     const params = new URLSearchParams();
     if (urlCategoryName !== "all") params.append("category.name", urlCategoryName);
     if (urlIsSpicy) params.append("isSpicy", "true");
@@ -53,14 +42,26 @@ export default async function MenuPage({ searchParams }: PageProps) {
       params.append("price", JSON.stringify(priceObj));
     }
 
+    const categoriesUrl = `${env.API_URL}/categories`;
     const itemsUrl = `${env.API_URL}/items?${params.toString()}`;
-    const itemsRes = await fetch(itemsUrl, { cache: 'no-store' });
+
+    // Parallel fetch with caching (ISR)
+    const [categoriesRes, itemsRes] = await Promise.all([
+      fetch(categoriesUrl, { next: { revalidate: 180 } }),
+      fetch(itemsUrl, { next: { revalidate: 60 } })
+    ]);
+
+    if (categoriesRes.ok) {
+      const json = await categoriesRes.json();
+      initialCategories = json?.data || [];
+    }
+
     if (itemsRes.ok) {
       const json = await itemsRes.json();
       initialItemsData = json?.data || null;
     }
   } catch (err) {
-    console.error("Error prefetching items on server:", err);
+    console.error("Error prefetching catalog data on server:", err);
   }
 
   return (

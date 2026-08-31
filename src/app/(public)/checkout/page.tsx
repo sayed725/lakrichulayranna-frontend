@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ShieldCheck, MapPin, Phone, User, FileText, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, MapPin, Phone, User, FileText, CheckCircle2, Tag, Banknote } from "lucide-react";
 
 import { Container } from "@/components/shared/container/Container";
 import { FormInput } from "@/components/forms/FormInput";
@@ -14,8 +14,11 @@ import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useCartStore } from "@/store/cart.store";
 import { useAuthStore } from "@/store/auth.store";
 import { useCouponStore } from "@/store/coupon.store";
+import { useValidateCoupon } from "@/features/cart/hooks/useValidateCoupon";
 import { usePlaceOrder } from "@/features/order/hooks/usePlaceOrder";
 import { formatPrice } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { CartItem } from "@/components/cart/CartItem";
 
 const checkoutSchema = z.object({
   customerName: z.string().min(3, "কমপক্ষে ৩ অক্ষরের নাম প্রয়োজন"),
@@ -33,10 +36,13 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 export default function CheckoutPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const { items, subtotal } = useCartStore();
   const { user } = useAuthStore();
-  const { coupon, discount } = useCouponStore();
+  const { coupon, discount, clearCoupon } = useCouponStore();
   const placeOrder = usePlaceOrder();
+  const validateCoupon = useValidateCoupon();
+  const [couponCode, setCouponCode] = useState("");
   const [selectedCity, setSelectedCity] = useState("ঢাকা");
 
   const {
@@ -60,10 +66,20 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     setMounted(true);
-    if (items.length === 0) {
+    if (useCartStore.persist.hasHydrated()) {
+      setHydrated(true);
+    }
+    const unsub = useCartStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    if (hydrated && items.length === 0) {
       router.push("/cart");
     }
-  }, [items.length, router]);
+  }, [hydrated, items.length, router]);
 
   // Update delivery charge when delivery area changes
   useEffect(() => {
@@ -72,7 +88,12 @@ export default function CheckoutPage() {
     }
   }, [deliveryAreaValue]);
 
-  if (!mounted || items.length === 0) return null;
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) return;
+    validateCoupon.mutate({ code: couponCode.trim(), subtotal: subtotal() });
+  };
+
+  if (!mounted || !hydrated || items.length === 0) return null;
 
   const currentSubtotal = subtotal();
 
@@ -223,7 +244,7 @@ export default function CheckoutPage() {
                   <div className="w-6 h-6 rounded-full border-4 border-fire bg-white" />
                   <span className="font-bold font-bengali text-charcoal">ক্যাশ অন ডেলিভারি (COD)</span>
                 </div>
-                <Image src="/cod-icon.png" alt="COD" width={40} height={40} className="opacity-50" onError={(e) => e.currentTarget.style.display = 'none'} />
+                <Banknote size={24} className="text-fire/70" />
               </label>
             </div>
           </form>
@@ -238,23 +259,52 @@ export default function CheckoutPage() {
 
             <div className="space-y-4 mb-6 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
               {items.map((item) => (
-                <div key={item.id} className="flex gap-4 items-center">
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-cream">
-                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-fire text-white text-xs font-bold rounded-full flex items-center justify-center">
-                      {item.quantity}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-bengali font-semibold text-sm line-clamp-2 text-charcoal">
-                      {item.name}
-                    </h4>
-                    <p className="text-fire font-bold mt-1">
-                      {formatPrice((item.discountPrice ?? item.price) * item.quantity)}
-                    </p>
-                  </div>
-                </div>
+                <CartItem key={item.id} item={item} />
               ))}
+            </div>
+
+            {/* Coupon Section */}
+            <div className="mb-6 border-t border-border pt-6">
+              <label className="block text-sm font-semibold font-bengali text-charcoal mb-2">
+                কুপন কোড (যদি থাকে)
+              </label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light" />
+                  <input
+                    type="text"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    placeholder="কোড লিখুন"
+                    disabled={!!coupon}
+                    className="w-full pl-9 pr-3 py-3 rounded-xl border border-border bg-cream/50 text-sm font-bengali outline-none focus:border-fire transition-all"
+                  />
+                </div>
+                {coupon ? (
+                  <Button
+                    type="button"
+                    onClick={clearCoupon}
+                    variant="outline"
+                    className="rounded-xl border-red-200 text-error hover:bg-red-50 hover:text-error font-bold font-bengali h-12 px-6"
+                  >
+                    বাদ দিন
+                  </Button>
+                ) : (
+                  <Button 
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    disabled={!couponCode.trim() || validateCoupon.isPending}
+                    className="rounded-xl bg-fire text-white font-bold font-bengali h-12 px-6 hover:bg-fire-dark transition-all"
+                  >
+                    {validateCoupon.isPending ? "..." : "প্রয়োগ"}
+                  </Button>
+                )}
+              </div>
+              {coupon && (
+                <p className="text-success text-sm font-bengali mt-2 font-medium">
+                  {coupon.code} প্রয়োগ করা হয়েছে (-{formatPrice(discount)})
+                </p>
+              )}
             </div>
 
             <div className="space-y-3 font-bengali pt-4 border-t border-border mb-6">
@@ -279,11 +329,11 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
               form="checkout-form"
               disabled={placeOrder.isPending}
-              className="flex items-center justify-center gap-2 w-full py-4 bg-fire text-white rounded-xl font-bengali font-bold text-lg hover:bg-fire-dark transition-all hover:shadow-lg hover:shadow-fire/25 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+              className="flex items-center justify-center gap-2 w-full py-6 bg-fire text-white rounded-xl font-bengali font-bold text-lg hover:bg-fire-dark transition-all hover:shadow-lg hover:shadow-fire/25 active:scale-[0.98] disabled:opacity-50"
             >
               {placeOrder.isPending ? "প্রসেস হচ্ছে..." : (
                 <>
@@ -291,7 +341,7 @@ export default function CheckoutPage() {
                   অর্ডার কনফার্ম করুন
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
