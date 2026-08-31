@@ -3,6 +3,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getItems, createItem, updateItem, deleteItem } from "@/services/item.service";
 import { getCategories } from "@/services/category.service";
+
+const decodeHtmlEntities = (str: string) => {
+  if (!str) return "";
+  return str
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&amp;/g, '&');
+};
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Pencil, Trash2, ImageIcon, XCircle, Filter, Search, RefreshCw, Eye, MoreVertical, Edit2 } from "lucide-react";
@@ -227,20 +237,24 @@ export default function AdminItemsPage() {
           <h1 className="text-2xl font-bold font-bengali text-charcoal">আইটেমসমূহ</h1>
           <p className="text-muted-foreground text-sm hidden md:block font-bengali">মেনুর সকল খাবার পরিচালনা করুন</p>
         </div>
-        <Dialog open={isCreateOpen} onOpenChange={(val) => {
-          if (val) {
-            resetForm();
-            if (categories.length > 0) {
-              setFormData(prev => ({ ...prev, categoryId: categories[0].id }));
+        <Dialog
+          open={isCreateOpen}
+          disablePointerDismissal
+          onOpenChange={(val) => {
+            if (val) {
+              resetForm();
+              if (categories.length > 0) {
+                setFormData(prev => ({ ...prev, categoryId: categories[0].id }));
+              }
             }
-          }
-          setIsCreateOpen(val);
-        }}>
+            setIsCreateOpen(val);
+          }}
+        >
           <Button className="bg-fire text-white font-semibold hover:bg-fire-dark" onClick={() => setIsCreateOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
             নতুন আইটেম
           </Button>
-          <DialogContent className="max-w-3xl">
+          <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>নতুন আইটেম তৈরি করুন</DialogTitle>
             </DialogHeader>
@@ -618,11 +632,15 @@ export default function AdminItemsPage() {
         </div>
       )}
 
-      <Dialog open={isEditOpen} onOpenChange={(val) => {
-        if (!val) resetForm();
-        setIsEditOpen(val);
-      }}>
-        <DialogContent className="max-w-3xl">
+      <Dialog
+        open={isEditOpen}
+        disablePointerDismissal
+        onOpenChange={(val) => {
+          if (!val) resetForm();
+          setIsEditOpen(val);
+        }}
+      >
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>আইটেম এডিট করুন</DialogTitle>
           </DialogHeader>
@@ -640,13 +658,13 @@ export default function AdminItemsPage() {
 
       {/* View Item Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-bengali">আইটেম বিস্তারিত দেখুন</DialogTitle>
             <DialogDescription>সম্পূর্ণ আইটেমের বিস্তারিত তথ্য</DialogDescription>
           </DialogHeader>
           {selectedItem && (
-            <div className="space-y-4 mt-4">
+            <div className="space-y-4 mt-4 w-full min-w-0 overflow-hidden">
               <div className="flex items-center gap-4 p-4 bg-cream/30 dark:bg-charcoal-light/20 rounded-lg">
                 {selectedItem.imageUrl || (selectedItem.images && selectedItem.images[0]) ? (
                   <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
@@ -675,9 +693,12 @@ export default function AdminItemsPage() {
               </div>
 
               {selectedItem.description && (
-                <div className="space-y-2">
+                <div className="space-y-2 w-full">
                   <label className="text-sm font-semibold text-muted-foreground">Description</label>
-                  <p className="text-charcoal font-bengali">{selectedItem.description}</p>
+                  <div 
+                    className="text-charcoal dark:text-cream font-bengali prose-custom w-full overflow-hidden break-words"
+                    dangerouslySetInnerHTML={{ __html: decodeHtmlEntities(selectedItem.description) }}
+                  />
                 </div>
               )}
 

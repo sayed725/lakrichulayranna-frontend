@@ -95,13 +95,20 @@ export default function AddItemForm({
         {/* Description */}
         <div className="space-y-2 col-span-2">
             <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Full Description</label>
-            <Textarea 
-                placeholder="Detailed snack description..." 
-                value={formData.description} 
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={4}
-                className="rounded-xl border-slate-200"
-            />
+            <div className="bg-white rounded-xl overflow-hidden border border-slate-200 focus-within:border-orange-500 ql-custom-container">
+              {typeof window !== "undefined" && (() => {
+                const ReactQuill = require("react-quill-new").default;
+                return (
+                  <ReactQuill
+                    theme="snow"
+                    value={formData.description || ""}
+                    onChange={(content: string) => setFormData({ ...formData, description: content })}
+                    placeholder="Detailed snack description with bold, lists, formatting..."
+                    className="font-bengali h-48 mb-10"
+                  />
+                );
+              })()}
+            </div>
         </div>
 
         {/* Main Image */}

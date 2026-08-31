@@ -110,7 +110,47 @@ function OrderItem({ orderNumber, setReviewOrder }: { orderNumber: string; setRe
 
   if (isLoading) {
     return (
-      <div className="bg-white border border-border rounded-3xl p-6 h-40 animate-pulse w-full" />
+      <div className="bg-white border border-border shadow-sm rounded-3xl overflow-hidden animate-pulse">
+        {/* Skeleton Header */}
+        <div className="bg-cream-dark/10 px-6 py-4 border-b border-border">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-wrap gap-x-8 gap-y-2">
+              <div>
+                <div className="h-3 w-24 bg-gray-200 rounded mb-1.5" />
+                <div className="h-4 w-32 bg-gray-200 rounded" />
+              </div>
+              <div>
+                <div className="h-3 w-12 bg-gray-200 rounded mb-1.5" />
+                <div className="h-4 w-16 bg-gray-200 rounded" />
+              </div>
+              <div>
+                <div className="h-3 w-20 bg-gray-200 rounded mb-1.5" />
+                <div className="h-4 w-28 bg-gray-200 rounded" />
+              </div>
+            </div>
+            <div>
+              <div className="h-3 w-16 bg-gray-200 rounded mb-1.5 sm:ml-auto" />
+              <div className="h-4 w-24 bg-gray-200 rounded sm:ml-auto" />
+            </div>
+          </div>
+        </div>
+        {/* Skeleton Body */}
+        <div className="p-6 flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-center">
+          <div className="flex-1 w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-4 w-12 bg-gray-200 rounded" />
+              <div className="h-6 w-20 bg-gray-200 rounded-full" />
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <div className="w-16 h-16 bg-gray-200 rounded-xl" />
+              <div className="w-16 h-16 bg-gray-200 rounded-xl" />
+            </div>
+          </div>
+          <div className="w-full lg:w-48 flex flex-col gap-2 shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-border">
+            <div className="h-10 bg-gray-200 rounded-xl w-full" />
+          </div>
+        </div>
+      </div>
     );
   }
 

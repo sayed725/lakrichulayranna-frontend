@@ -15,6 +15,16 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
+const decodeHtmlEntities = (str: string) => {
+  if (!str) return "";
+  return str
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&amp;/g, '&');
+};
+
 interface ProductDetailClientProps {
   slug: string;
   initialItemData: any;
@@ -222,14 +232,14 @@ export default function ProductDetailClient({
           </div>
 
           {/* Right: Product Info */}
-          <div className="flex flex-col pt-2">
+          <div className="flex flex-col pt-2 min-w-0">
             {/* Category */}
             <div className="text-fire font-bold tracking-widest uppercase text-xs mb-3">
               {item.category?.name || "Category"}
             </div>
 
             {/* Title */}
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-bengali text-charcoal leading-tight mb-3">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-bengali text-charcoal leading-normal py-1 mb-3 break-words">
               {item.name}
             </h1>
 
@@ -274,11 +284,12 @@ export default function ProductDetailClient({
 
             {/* Description */}
             {item.description && (
-              <div className="mb-8">
+              <div className="mb-8 w-full">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-muted mb-3">এই খাবার সম্পর্কে</h3>
-                <p className="text-muted font-bengali leading-relaxed">
-                  {item.description}
-                </p>
+                <div 
+                  className="text-muted-foreground font-bengali prose-custom max-w-none w-full overflow-hidden break-words"
+                  dangerouslySetInnerHTML={{ __html: decodeHtmlEntities(item.description) }}
+                />
               </div>
             )}
 

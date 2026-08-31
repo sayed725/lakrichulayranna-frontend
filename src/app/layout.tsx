@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
+import "react-quill-new/dist/quill.snow.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 
