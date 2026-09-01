@@ -4,11 +4,21 @@ import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
-import "react-quill-new/dist/quill.snow.css";
-import { Geist } from "next/font/google";
+import { Geist, Hind_Siliguri, Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const hindSiliguri = Hind_Siliguri({
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["bengali", "latin"],
+  variable: "--font-bengali",
+  display: "swap",
+});
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-latin",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -55,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="bn" data-scroll-behavior="smooth" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
+    <html lang="bn" data-scroll-behavior="smooth" suppressHydrationWarning className={cn("font-sans", geist.variable, hindSiliguri.variable, inter.variable)}>
       <body className="font-bengali antialiased">
         <ThemeProvider>
           <NextTopLoader color="oklch(0.65 0.20 45)" showSpinner={false} />

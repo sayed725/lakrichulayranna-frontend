@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -31,11 +32,13 @@ export function Logo({ className, size = "md", variant = "default" }: LogoProps)
         className
       )}
     >
-      <img
+      <Image
         src="/lakri_chulay_ranna_logo.png"
         alt="লাকড়ি চুলায় রান্না লোগো"
-        style={{ height: `${height}px`, width: "auto" }}
-        className="object-contain shrink-0"
+        width={width}
+        height={height}
+        priority
+        className="object-contain shrink-0 h-auto"
       />
       <div className={cn("inline-flex items-baseline gap-1", sizeClasses[size])}>
         <span className={isLight ? "text-cream" : "text-charcoal"}>লাকড়ি চুলায়</span>

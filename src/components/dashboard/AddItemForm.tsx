@@ -1,5 +1,6 @@
 "use client";
 
+import "react-quill-new/dist/quill.snow.css";
 import { ImageUploadField } from '@/components/shared/form/image-upload-field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

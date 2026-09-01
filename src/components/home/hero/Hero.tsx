@@ -90,6 +90,7 @@ export default function HeroSlider({ initialSlides = [] }: HeroSliderProps) {
             alt={slides[current].title || "Banner"}
             fill
             priority
+            sizes="(max-width: 768px) 100vw, 100vw"
             className="object-cover"
           />
           {/* Enhanced Premium Gradient Overlay */}

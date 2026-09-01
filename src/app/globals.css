@@ -1,6 +1,3 @@
-/* ── Google Fonts ── */
-@import url("https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap");
-
 @import "tailwindcss";
 
 @import "tw-animate-css";
@@ -34,8 +31,8 @@
   --color-error: #EF4444;
 
   /* Fonts */
-  --font-bengali: "Hind Siliguri", sans-serif;
-  --font-latin: "Inter", sans-serif;
+  --font-bengali: var(--font-bengali), "Hind Siliguri", sans-serif;
+  --font-latin: var(--font-latin), "Inter", sans-serif;
 
   /* Animations */
   --animate-fade-in: fade-in 0.5s ease-out;
