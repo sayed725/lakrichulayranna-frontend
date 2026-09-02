@@ -233,7 +233,7 @@ export default function ProductDetailClient({
           {/* Right: Product Info */}
           <div className="flex flex-col pt-2 min-w-0">
             {/* Category */}
-            <div className="text-fire font-bold tracking-widest uppercase text-xs mb-3">
+            <div className="text-fire font-bold tracking-widest uppercase text-xs mb-3 truncate max-w-full" title={item.category?.name || "Category"}>
               {item.category?.name || "Category"}
             </div>
 

@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getItems, createItem, updateItem, deleteItem } from "@/services/item.service";
 import { getCategories } from "@/services/category.service";
+import { triggerRevalidation } from "@/lib/revalidate";
 
 const decodeHtmlEntities = (str: string) => {
   if (!str) return "";
@@ -122,6 +123,7 @@ export default function AdminItemsPage() {
     mutationFn: createItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
+      triggerRevalidation({ tag: "items" });
       toast.success("Item created successfully");
       setIsCreateOpen(false);
       resetForm();
@@ -135,6 +137,7 @@ export default function AdminItemsPage() {
     mutationFn: ({ id, payload }: { id: string; payload: any }) => updateItem(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
+      triggerRevalidation({ tag: "items" });
       toast.success("Item updated successfully");
       setIsEditOpen(false);
     },

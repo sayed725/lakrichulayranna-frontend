@@ -19,6 +19,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription, SheetClose } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
+import { triggerRevalidation } from "@/lib/revalidate";
 import { getCategories, createCategory, updateCategory, deleteCategory as deleteCategoryApi, Category } from "@/services/category.service";
 import AddCategoryForm from "@/components/dashboard/AddCategoryForm";
 import USPagination from "@/components/shared/USPagination";
@@ -69,6 +70,7 @@ export default function AdminCategoriesPage() {
     mutationFn: createCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      triggerRevalidation({ tag: "categories" });
       toast.success("Category created successfully");
       setIsCreateOpen(false);
       resetForm();
@@ -82,6 +84,7 @@ export default function AdminCategoriesPage() {
     mutationFn: ({ id, payload }: { id: string; payload: any }) => updateCategory(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      triggerRevalidation({ tag: "categories" });
       toast.success("Category updated successfully");
       setIsEditOpen(false);
     },
@@ -94,6 +97,7 @@ export default function AdminCategoriesPage() {
     mutationFn: deleteCategoryApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      triggerRevalidation({ tag: "categories" });
       toast.success("Category deleted successfully");
     },
     onError: (error: any) => {

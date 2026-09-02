@@ -47,8 +47,8 @@ export default async function MenuPage({ searchParams }: PageProps) {
 
     // Parallel fetch with caching (ISR)
     const [categoriesRes, itemsRes] = await Promise.all([
-      fetch(categoriesUrl, { next: { revalidate: 180 } }),
-      fetch(itemsUrl, { next: { revalidate: 60 } })
+      fetch(categoriesUrl, { next: { revalidate: 600, tags: ["categories", "products"] } }),
+      fetch(itemsUrl, { next: { revalidate: 600, tags: ["items", "products"] } })
     ]);
 
     if (categoriesRes.ok) {

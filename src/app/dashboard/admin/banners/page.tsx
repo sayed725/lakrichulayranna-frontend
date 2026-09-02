@@ -18,6 +18,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription, SheetClose } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
+import { triggerRevalidation } from "@/lib/revalidate";
 import { getBanners, createBanner, updateBanner, deleteBanner as deleteBannerApi, Banner } from "@/services/banner.service";
 import AddBannerForm from "@/components/dashboard/AddBannerForm";
 import BannersLoadingSkeleton from "@/components/dashboard/BannersLoadingSkeleton";
@@ -70,6 +71,7 @@ export default function AdminBannersPage() {
     mutationFn: createBanner,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["banners"] });
+      triggerRevalidation({ tag: "banners" });
       toast.success("Banner created successfully");
       setIsCreateOpen(false);
       resetForm();
@@ -83,6 +85,7 @@ export default function AdminBannersPage() {
     mutationFn: ({ id, payload }: { id: string; payload: any }) => updateBanner(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["banners"] });
+      triggerRevalidation({ tag: "banners" });
       toast.success("Banner updated successfully");
       setIsEditOpen(false);
     },
@@ -95,6 +98,7 @@ export default function AdminBannersPage() {
     mutationFn: deleteBannerApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["banners"] });
+      triggerRevalidation({ tag: "banners" });
       toast.success("Banner deleted successfully");
     },
     onError: (error: any) => {
@@ -106,6 +110,7 @@ export default function AdminBannersPage() {
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) => updateBanner(id, { isActive }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["banners"] });
+      triggerRevalidation({ tag: "banners" });
       toast.success("Banner status updated");
     },
     onError: (error: any) => {

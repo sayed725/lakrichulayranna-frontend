@@ -297,13 +297,13 @@ export default function ProductsClient({
                         setActiveCategory(cat.name);
                         updateFilters(cat.name, isSpicy, isFeatured, minPrice, maxPrice);
                       }}
-                      className={`whitespace-nowrap px-4 py-2 h-auto rounded-xl text-sm font-semibold font-bengali text-left transition-colors justify-start ${
+                      className={`whitespace-nowrap max-w-full px-4 py-2 h-auto rounded-xl text-sm font-semibold font-bengali text-left transition-colors justify-start ${
                         activeCategory === cat.name
                           ? "bg-fire/10 text-fire hover:bg-fire/10 hover:text-fire"
                           : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
                       }`}
                     >
-                      {cat.name}
+                      <span className="truncate max-w-full">{cat.name}</span>
                     </Button>
                   ))}
                 </div>
@@ -460,13 +460,13 @@ export default function ProductsClient({
                           setActiveCategory(cat.name);
                           updateFilters(cat.name, isSpicy, isFeatured, minPrice, maxPrice);
                         }}
-                        className={`whitespace-nowrap px-4 py-2 h-auto rounded-xl text-sm font-semibold font-bengali text-left transition-colors justify-start ${
+                        className={`whitespace-nowrap max-w-full px-4 py-2 h-auto rounded-xl text-sm font-semibold font-bengali text-left transition-colors justify-start ${
                           activeCategory === cat.name
                             ? "bg-fire/10 text-fire hover:bg-fire/10 hover:text-fire"
                             : "text-muted hover:bg-charcoal/5 hover:text-charcoal"
                         }`}
                       >
-                        {cat.name}
+                        <span className="truncate max-w-full">{cat.name}</span>
                       </Button>
                     ))}
                   </div>
