@@ -154,15 +154,15 @@ export default function HeroSlider({ initialSlides = [] }: HeroSliderProps) {
                   transition={{ duration: 0.5, delay: 0.7 }}
                   className="pt-2 sm:pt-4"
                 >
-                  <Link href={slides[current].categoryId ? `/products?category=${slides[current].categoryId}` : "/products"}>
-                    <Button
-                      size="default"
-                      className="bg-fire text-white font-semibold font-bengali text-base rounded-xl hover:bg-fire-dark transition-all duration-300 hover:shadow-xl hover:shadow-fire/30 active:scale-95 px-6 py-3 h-auto"
-                    >
-                      <Utensils size={18} className="mr-2 group-hover:rotate-12 transition-transform" />
-                      {slides[current].buttonText}
-                    </Button>
-                  </Link>
+                    <Link href={slides[current].categoryId ? `/products?category=${slides[current].categoryId}` : "/products"}>
+                      <Button
+                        size="default"
+                        className="bg-fire text-white font-semibold font-bengali text-sm sm:text-base rounded-xl hover:bg-fire-dark transition-all duration-300 hover:shadow-xl hover:shadow-fire/30 active:scale-95 px-4 py-2 sm:px-6 sm:py-3 h-auto"
+                      >
+                        <Utensils className="w-4 h-4 sm:w-[18px] sm:h-[18px] mr-1.5 sm:mr-2 group-hover:rotate-12 transition-transform" />
+                        {slides[current].buttonText}
+                      </Button>
+                    </Link>
                 </motion.div>
               )}
             </motion.div>

@@ -511,8 +511,8 @@ export function Navbar() {
                           </Button>
                         </>
                       ) : (
-                         <Button nativeButton={false} render={<Link href="/login" onClick={closeMobileMenu} />} className="w-full h-12 bg-gradient-to-r from-fire to-terracotta hover:from-fire-dark hover:to-terracotta-dark text-white rounded-xl shadow-lg hover:shadow-fire/25 transition-all duration-300 font-bold text-base border-0 font-bengali">
-                           লগইন করুন
+                         <Button nativeButton={false} render={<Link href="/login" onClick={closeMobileMenu} />} className="w-full h-10 bg-gradient-to-r from-fire to-terracotta hover:from-fire-dark hover:to-terracotta-dark text-white rounded-xl shadow-md hover:shadow-fire/25 transition-all duration-300 font-semibold text-sm border-0 font-bengali">
+                           লগইন করুন 
                          </Button>
                       )}
                     </div>

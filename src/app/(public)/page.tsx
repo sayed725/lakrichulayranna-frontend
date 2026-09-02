@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import HeroSlider from "@/components/home/hero/Hero";
 import { HomeCategories } from "@/components/home/categories/HomeCategories";
 import { FeaturedItems } from "@/components/home/featured-items/FeaturedItems";
+import { FeaturesSection } from "@/components/shared/features/FeaturesSection";
 
 export const revalidate = 600; // Revalidate every 10 minutes (ISR)
 
@@ -71,6 +72,7 @@ export default async function HomePage() {
       <HomeOffers />
       <HowItWorks />
       <HomeReviews />
+      <FeaturesSection/>
     </main>
   );
 }

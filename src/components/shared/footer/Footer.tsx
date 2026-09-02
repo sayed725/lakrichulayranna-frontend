@@ -22,9 +22,9 @@ const customerLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-charcoal text-cream/80 mt-auto">
-      {/* Top decorative fire line */}
-      <div className="h-1 bg-gradient-to-r from-fire via-terracotta to-fire" />
+      <footer className="bg-charcoal text-cream/80 mt-auto">
+        {/* Top decorative fire line */}
+        <div className="h-1 bg-gradient-to-r from-fire via-terracotta to-fire" />
 
       <Container className="py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
