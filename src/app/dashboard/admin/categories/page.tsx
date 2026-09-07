@@ -416,8 +416,8 @@ export default function AdminCategoriesPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
-                        <MoreVertical size={18} className="text-muted-foreground" />
+                      <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                        <MoreVertical size={18} />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleViewCategory(category)}>
@@ -473,16 +473,16 @@ export default function AdminCategoriesPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateOpen} onOpenChange={(open) => { if (!open) resetForm(); setIsCreateOpen(open); }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>নতুন ক্যাটাগরি যোগ করুন</DialogTitle>
+            <DialogTitle className="font-bengali">নতুন ক্যাটাগরি যোগ করুন</DialogTitle>
           </DialogHeader>
           <AddCategoryForm
             formData={formData}
             setFormData={setFormData}
             onSubmit={handleCreateSubmit}
             isPending={createMutation.isPending}
-            buttonText="Create Category"
+            buttonText="ক্যাটাগরি তৈরি করুন"
             onCancel={() => { resetForm(); setIsCreateOpen(false); }}
           />
         </DialogContent>
@@ -490,16 +490,16 @@ export default function AdminCategoriesPage() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={(open) => { if (!open) resetForm(); setIsEditOpen(open); }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>ক্যাটাগরি এডিট করুন</DialogTitle>
+            <DialogTitle className="font-bengali">ক্যাটাগরি এডিট করুন</DialogTitle>
           </DialogHeader>
           <AddCategoryForm
             formData={formData}
             setFormData={setFormData}
             onSubmit={handleEditSubmit}
             isPending={updateMutation.isPending}
-            buttonText="Update Category"
+            buttonText="ক্যাটাগরি আপডেট করুন"
             onCancel={() => { resetForm(); setIsEditOpen(false); }}
           />
         </DialogContent>
@@ -507,60 +507,106 @@ export default function AdminCategoriesPage() {
 
       {/* View Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-bengali">ক্যাটাগরি বিস্তারিত দেখুন</DialogTitle>
-            <DialogDescription>সম্পূর্ণ ক্যাটাগরির বিস্তারিত তথ্য</DialogDescription>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+          <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <DialogTitle className="text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-fire shrink-0" />
+                  <span>ক্যাটাগরি বিস্তারিত</span>
+                </DialogTitle>
+                <DialogDescription className="text-muted-foreground text-xs mt-1 font-bengali">
+                  ক্যাটাগরির বিস্তারিত তথ্য ও পরিসংখ্যান
+                </DialogDescription>
+              </div>
+              {selectedCategory && (
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-bengali ${
+                  selectedCategory.isActive 
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
+                    : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                }`}>
+                  {selectedCategory.isActive ? "সক্রিয়" : "নিষ্ক্রিয়"}
+                </span>
+              )}
+            </div>
           </DialogHeader>
+
           {selectedCategory && (
-            <div className="space-y-4 mt-4">
-              <div className="flex items-center gap-4 p-4 bg-cream/30 dark:bg-charcoal-light/20 rounded-lg">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+              {/* Category Header Card */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:p-5 bg-card rounded-2xl border border-border/70 shadow-xs">
                 {selectedCategory.imageUrl ? (
-                  <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
+                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border border-border/60 shrink-0 bg-muted/30 shadow-xs">
                     <Image
                       src={selectedCategory.imageUrl}
                       alt={selectedCategory.name}
-                      width={80}
-                      height={80}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </div>
                 ) : (
-                  <div className="w-20 h-20 rounded-lg bg-cream dark:bg-charcoal-light flex items-center justify-center shrink-0">
-                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-muted/30 flex items-center justify-center shrink-0 border border-border/60">
+                    <ImageIcon className="w-10 h-10 text-muted-foreground/60" />
                   </div>
                 )}
-                <div>
-                  <h3 className="text-xl font-bold text-charcoal font-bengali">{selectedCategory.name}</h3>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full text-sm">
-                      {selectedCategory._count?.items || 0} Items
+
+                <div className="space-y-2 min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2.5 py-0.5 rounded-md bg-fire/10 text-fire text-xs font-bold font-latin">
+                      {selectedCategory._count?.items || 0} Total Items
                     </span>
+                    {selectedCategory.isFeatured && (
+                      <span className="px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-600 text-xs font-bold">
+                        Featured
+                      </span>
+                    )}
                   </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-charcoal font-bengali leading-snug">{selectedCategory.name}</h3>
                 </div>
               </div>
 
+              {/* Status & Featured Metrics Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                  <span className="text-xs text-muted-foreground block font-bengali">স্ট্যাটাস</span>
+                  <span className={`text-sm font-bold px-3 py-0.5 rounded-md inline-block ${
+                    selectedCategory.isActive ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"
+                  }`}>
+                    {selectedCategory.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
+                <div className="p-4 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                  <span className="text-xs text-muted-foreground block font-bengali">ফিচার্ড ক্যাটাগরি</span>
+                  <span className={`text-sm font-bold px-3 py-0.5 rounded-md inline-block ${
+                    selectedCategory.isFeatured ? "bg-amber-500/10 text-amber-600" : "text-muted-foreground bg-muted/30"
+                  }`}>
+                    {selectedCategory.isFeatured ? "Yes" : "No"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Description */}
               {selectedCategory.description && (
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Description</label>
-                  <p className="text-charcoal font-bengali">{selectedCategory.description}</p>
+                <div className="p-4 sm:p-5 bg-card rounded-2xl border border-border/70 shadow-xs space-y-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">বিবরণ</h4>
+                  <p className="text-charcoal font-bengali text-sm leading-relaxed break-words">
+                    {selectedCategory.description}
+                  </p>
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Status</label>
-                  <p className="text-charcoal">{selectedCategory.isActive ? "Active" : "Inactive"}</p>
+              {/* Footer Meta */}
+              <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
+                <div>
+                  <span className="font-semibold text-charcoal mr-1">তৈরি করা হয়েছে:</span>
+                  <span>{format(new Date(selectedCategory.createdAt), "dd MMM, yyyy 'at' HH:mm")}</span>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Featured</label>
-                  <p className="text-charcoal">{selectedCategory.isFeatured ? "Yes" : "No"}</p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Created At</label>
-                <p className="text-charcoal">{format(new Date(selectedCategory.createdAt), "dd MMM, yyyy 'at' HH:mm")}</p>
+                {selectedCategory.updatedAt && (
+                  <div>
+                    <span className="font-semibold text-charcoal mr-1">সর্বশেষ আপডেট:</span>
+                    <span>{format(new Date(selectedCategory.updatedAt), "dd MMM, yyyy 'at' HH:mm")}</span>
+                  </div>
+                )}
               </div>
             </div>
           )}

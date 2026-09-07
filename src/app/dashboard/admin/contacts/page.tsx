@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Mail, Phone, MessageSquare, CheckCircle, Clock, Search, Filter, RefreshCw, Eye, Trash2, XCircle, MoreVertical } from "lucide-react";
+import { Mail, Phone, MessageSquare, CheckCircle, Clock, Search, Filter, RefreshCw, Eye, Trash2, XCircle, MoreVertical, Copy, Check } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,17 @@ export default function AdminContactsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const handleCopy = (text: string, key: string, label: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    toast.success(`${label} copied!`, {
+      description: `${text} copied to clipboard`,
+    });
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
 
   const { data: contactResponse, isLoading: contactsLoading } = useAdminContacts({
     page,
@@ -282,27 +293,66 @@ export default function AdminContactsPage() {
               <tbody className="divide-y divide-border">
                 {contacts.map((contact: any) => (
                   <tr key={contact.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-fire to-terracotta flex items-center justify-center text-white font-bold shrink-0">
+                    <td className="px-6 py-4 align-middle">
+                      <div className="flex items-center gap-3 group/contactname">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-fire to-terracotta flex items-center justify-center text-white font-bold shrink-0 shadow-xs">
                           {contact.name?.charAt(0).toUpperCase() || "C"}
                         </div>
-                        <div>
-                          <p className="font-bold text-charcoal font-bengali">{contact.name}</p>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1">
+                            <p className="font-bold text-charcoal font-bengali truncate">{contact.name}</p>
+                            {contact.name && (
+                              <button
+                                onClick={() => handleCopy(contact.name, `tbl-name-${contact.id}`, 'Contact name')}
+                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/contactname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                                title="Copy contact name"
+                              >
+                                {copiedKey === `tbl-name-${contact.id}` ? (
+                                  <Check className="w-3 h-3 text-green-600" />
+                                ) : (
+                                  <Copy className="w-3 h-3" />
+                                )}
+                              </button>
+                            )}
+                          </div>
                           <p className="text-xs text-muted-foreground font-latin">{format(new Date(contact.createdAt), "dd MMM, yyyy")}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 align-middle">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-sm text-charcoal">
-                          <Mail size={14} className="text-muted-foreground" />
-                          <span className="font-latin">{contact.email}</span>
+                        <div className="flex items-center gap-1 group/contactemail min-h-[22px]">
+                          <Mail size={14} className="text-muted-foreground shrink-0 mr-1" />
+                          <span className="font-latin truncate text-charcoal text-sm">{contact.email}</span>
+                          {contact.email && (
+                            <button
+                              onClick={() => handleCopy(contact.email, `tbl-email-${contact.id}`, 'Email address')}
+                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/contactemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                              title="Copy email address"
+                            >
+                              {copiedKey === `tbl-email-${contact.id}` ? (
+                                <Check className="w-3 h-3 text-green-600" />
+                              ) : (
+                                <Copy className="w-3 h-3" />
+                              )}
+                            </button>
+                          )}
                         </div>
                         {contact.phone && (
-                          <div className="flex items-center gap-2 text-sm text-charcoal">
-                            <Phone size={14} className="text-muted-foreground" />
-                            <span className="font-latin">{contact.phone}</span>
+                          <div className="flex items-center gap-1 group/contactphone min-h-[22px]">
+                            <Phone size={14} className="text-muted-foreground shrink-0 mr-1" />
+                            <span className="font-latin text-xs text-muted-foreground">{contact.phone}</span>
+                            <button
+                              onClick={() => handleCopy(contact.phone, `tbl-phone-${contact.id}`, 'Phone number')}
+                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/contactphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                              title="Copy phone number"
+                            >
+                              {copiedKey === `tbl-phone-${contact.id}` ? (
+                                <Check className="w-3 h-3 text-green-600" />
+                              ) : (
+                                <Copy className="w-3 h-3" />
+                              )}
+                            </button>
                           </div>
                         )}
                       </div>
@@ -335,8 +385,8 @@ export default function AdminContactsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
-                          <MoreVertical size={18} className="text-muted-foreground" />
+                        <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                          <MoreVertical size={18} />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => handleViewContact(contact)}>
@@ -382,71 +432,156 @@ export default function AdminContactsPage() {
 
       {/* View Contact Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-bengali">যোগাযোগ বার্তা দেখুন</DialogTitle>
-            <DialogDescription>সম্পূর্ণ যোগাযোগ বার্তার বিস্তারিত</DialogDescription>
-          </DialogHeader>
-          {selectedContact && (
-            <div className="space-y-4 mt-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-fire to-terracotta flex items-center justify-center text-white font-bold text-2xl shrink-0">
-                  {selectedContact.name?.charAt(0).toUpperCase() || "C"}
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-charcoal font-bengali">{selectedContact.name}</h3>
-                  <p className="text-sm text-muted-foreground font-latin">{format(new Date(selectedContact.createdAt), "dd MMM, yyyy 'at' HH:mm")}</p>
-                </div>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+          <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <DialogTitle className="text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-fire shrink-0" />
+                  <span>যোগাযোগ বার্তা দেখুন</span>
+                </DialogTitle>
+                <DialogDescription className="text-muted-foreground text-xs mt-1 font-bengali">
+                  গ্রাহকের থেকে প্রাপ্ত বার্তার সম্পূর্ণ বিবরণ
+                </DialogDescription>
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Email</label>
-                  <div className="flex items-center gap-2 text-charcoal">
-                    <Mail size={16} className="text-muted-foreground" />
-                    <span className="font-latin">{selectedContact.email}</span>
-                  </div>
-                </div>
-                {selectedContact.phone && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-muted-foreground">Phone</label>
-                    <div className="flex items-center gap-2 text-charcoal">
-                      <Phone size={16} className="text-muted-foreground" />
-                      <span className="font-latin">{selectedContact.phone}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Subject</label>
-                <div className="flex items-center gap-2 text-charcoal">
-                  <MessageSquare size={16} className="text-muted-foreground" />
-                  <span className="font-bengali">{selectedContact.subject}</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Message</label>
-                <p className="text-charcoal font-bengali p-4 bg-cream/30 dark:bg-charcoal-light/20 rounded-lg">
-                  {selectedContact.message}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Status</label>
-                <div className="flex items-center gap-2">
+              {selectedContact && (
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-latin flex items-center gap-1 ${
+                  selectedContact.isRead 
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
+                    : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                }`}>
                   {selectedContact.isRead ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success/10 text-success text-xs font-bold font-latin">
-                      <CheckCircle size={12} />
-                      পঠিত
-                    </span>
+                    <><CheckCircle size={12} /> পঠিত (Read)</>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-fire/10 text-fire text-xs font-bold font-latin">
-                      <Clock size={12} />
-                      অপঠিত
-                    </span>
+                    <><Clock size={12} /> অপঠিত (Unread)</>
                   )}
+                </span>
+              )}
+            </div>
+          </DialogHeader>
+
+          {selectedContact && (
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+              {/* Contact Profile Header Card */}
+              <div className="p-5 bg-card rounded-2xl border border-border/70 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-fire to-terracotta flex items-center justify-center text-white font-bold text-2xl font-bengali shrink-0 border border-fire/20 shadow-xs">
+                    {selectedContact.name?.charAt(0).toUpperCase() || "C"}
+                  </div>
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex items-center gap-1 group/modalcontactname">
+                      <h3 className="font-bold text-charcoal font-bengali text-xl leading-tight truncate">{selectedContact.name}</h3>
+                      {selectedContact.name && (
+                        <button
+                          onClick={() => handleCopy(selectedContact.name, 'modal-name', 'Contact name')}
+                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalcontactname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                          title="Copy contact name"
+                        >
+                          {copiedKey === 'modal-name' ? (
+                            <Check className="w-3.5 h-3.5 text-green-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground font-latin">{format(new Date(selectedContact.createdAt), "dd MMM, yyyy 'at' HH:mm")}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Specs Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Email Card */}
+                <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-1 group/modalemailcard flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 font-bengali">
+                      <Mail size={14} className="text-fire" /> ইমেইল ঠিকানা
+                    </p>
+                    <p className="text-charcoal font-latin font-medium text-sm truncate">{selectedContact.email || "N/A"}</p>
+                  </div>
+                  {selectedContact.email && (
+                    <button
+                      onClick={() => handleCopy(selectedContact.email, 'modal-email', 'Email address')}
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalemailcard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      title="Copy email address"
+                    >
+                      {copiedKey === 'modal-email' ? (
+                        <Check className="w-3.5 h-3.5 text-green-600" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Phone Card */}
+                <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-1 group/modalphonecard flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 font-bengali">
+                      <Phone size={14} className="text-fire" /> ফোন নম্বর
+                    </p>
+                    <p className="text-charcoal font-latin font-medium text-sm truncate">{selectedContact.phone || "N/A"}</p>
+                  </div>
+                  {selectedContact.phone && (
+                    <button
+                      onClick={() => handleCopy(selectedContact.phone, 'modal-phone', 'Phone number')}
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalphonecard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      title="Copy phone number"
+                    >
+                      {copiedKey === 'modal-phone' ? (
+                        <Check className="w-3.5 h-3.5 text-green-600" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Subject */}
+                <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-1 sm:col-span-2 group/modalsubject flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 font-bengali">
+                      <MessageSquare size={14} className="text-fire" /> বিষয় (Subject)
+                    </p>
+                    <p className="text-charcoal font-bengali font-semibold text-sm leading-relaxed break-words">{selectedContact.subject || "N/A"}</p>
+                  </div>
+                  {selectedContact.subject && (
+                    <button
+                      onClick={() => handleCopy(selectedContact.subject, 'modal-subject', 'Subject')}
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalsubject:opacity-100 focus:opacity-100 cursor-pointer shrink-0 mt-0.5"
+                      title="Copy subject"
+                    >
+                      {copiedKey === 'modal-subject' ? (
+                        <Check className="w-3.5 h-3.5 text-green-600" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Message Body */}
+                <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-2 sm:col-span-2 group/modalmsg flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-muted-foreground font-bengali">বার্তা (Message)</p>
+                    {selectedContact.message && (
+                      <button
+                        onClick={() => handleCopy(selectedContact.message, 'modal-message', 'Message')}
+                        className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalmsg:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                        title="Copy message"
+                      >
+                        {copiedKey === 'modal-message' ? (
+                          <Check className="w-3.5 h-3.5 text-green-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  <div className="p-4 bg-background/80 rounded-xl border border-border/60 text-charcoal font-bengali text-sm leading-relaxed whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto">
+                    {selectedContact.message}
+                  </div>
                 </div>
               </div>
             </div>

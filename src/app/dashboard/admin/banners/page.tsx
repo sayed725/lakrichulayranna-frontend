@@ -410,8 +410,8 @@ export default function AdminBannersPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
-                        <MoreVertical size={18} className="text-muted-foreground" />
+                      <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                        <MoreVertical size={18} />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleViewBanner(banner)}>
@@ -466,16 +466,16 @@ export default function AdminBannersPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateOpen} onOpenChange={(open) => { if (!open) resetForm(); setIsCreateOpen(open); }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>নতুন ব্যানার যোগ করুন</DialogTitle>
+            <DialogTitle className="font-bengali">নতুন ব্যানার যোগ করুন</DialogTitle>
           </DialogHeader>
           <AddBannerForm
             formData={formData}
             setFormData={setFormData}
             onSubmit={handleCreateSubmit}
             isPending={createMutation.isPending}
-            buttonText="Create Banner"
+            buttonText="ব্যানার তৈরি করুন"
             onCancel={() => { resetForm(); setIsCreateOpen(false); }}
           />
         </DialogContent>
@@ -483,16 +483,16 @@ export default function AdminBannersPage() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={(open) => { if (!open) resetForm(); setIsEditOpen(open); }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>ব্যানার এডিট করুন</DialogTitle>
+            <DialogTitle className="font-bengali">ব্যানার এডিট করুন</DialogTitle>
           </DialogHeader>
           <AddBannerForm
             formData={formData}
             setFormData={setFormData}
             onSubmit={handleEditSubmit}
             isPending={updateMutation.isPending}
-            buttonText="Update Banner"
+            buttonText="ব্যানার আপডেট করুন"
             onCancel={() => { resetForm(); setIsEditOpen(false); }}
           />
         </DialogContent>
@@ -500,83 +500,108 @@ export default function AdminBannersPage() {
 
       {/* View Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-bengali">ব্যানার বিস্তারিত দেখুন</DialogTitle>
-            <DialogDescription>সম্পূর্ণ ব্যানারের বিস্তারিত তথ্য</DialogDescription>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+          <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <DialogTitle className="text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-fire shrink-0" />
+                  <span>ব্যানার বিস্তারিত</span>
+                </DialogTitle>
+                <DialogDescription className="text-muted-foreground text-xs mt-1 font-bengali">
+                  ব্যানারের সম্পূর্ণ বিস্তারিত তথ্য ও কনফিগারেশন
+                </DialogDescription>
+              </div>
+              {selectedBanner && (
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-bengali ${
+                  selectedBanner.isActive 
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
+                    : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                }`}>
+                  {selectedBanner.isActive ? "সক্রিয়" : "নিষ্ক্রিয়"}
+                </span>
+              )}
+            </div>
           </DialogHeader>
+
           {selectedBanner && (
-            <div className="space-y-4 mt-4">
-              <div className="flex items-center gap-4 p-4 bg-cream/30 dark:bg-charcoal-light/20 rounded-lg">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+              {/* Banner Image Preview Card */}
+              <div className="bg-card rounded-2xl border border-border/70 overflow-hidden shadow-xs">
                 {selectedBanner.image ? (
-                  <div className="w-48 h-24 rounded-lg overflow-hidden shrink-0">
+                  <div className="relative w-full h-44 sm:h-56 bg-muted/30">
                     <Image
                       src={selectedBanner.image}
-                      alt={selectedBanner.title}
-                      width={192}
-                      height={96}
-                      className="w-full h-full object-cover"
+                      alt={selectedBanner.title || "Banner Preview"}
+                      fill
+                      className="object-cover"
                     />
+                    {selectedBanner.badge && (
+                      <span className="absolute top-3 left-3 px-3 py-1 text-xs font-bold bg-fire text-white rounded-full shadow-md font-bengali">
+                        {selectedBanner.badge}
+                      </span>
+                    )}
                   </div>
                 ) : (
-                  <div className="w-48 h-24 rounded-lg bg-cream dark:bg-charcoal-light flex items-center justify-center shrink-0">
-                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                  <div className="w-full h-44 sm:h-56 bg-muted/30 flex items-center justify-center border-b border-border/60">
+                    <ImageIcon className="w-12 h-12 text-muted-foreground/50" />
                   </div>
                 )}
-                <div>
-                  <h3 className="text-xl font-bold text-charcoal font-bengali">{selectedBanner.title || "Untitled Banner"}</h3>
-                  {selectedBanner.badge && (
-                    <span className="inline-block px-2 py-0.5 text-xs font-semibold bg-fire text-white rounded-full mt-1">
-                      {selectedBanner.badge}
-                    </span>
-                  )}
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full text-sm">
-                      Order: {selectedBanner.order}
+
+                <div className="p-4 sm:p-5 space-y-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {selectedBanner.category?.name && (
+                      <span className="px-2.5 py-0.5 rounded-md bg-fire/10 text-fire text-xs font-bold font-bengali">
+                        {selectedBanner.category.name}
+                      </span>
+                    )}
+                    <span className="px-2.5 py-0.5 rounded-md bg-muted/40 text-muted-foreground text-xs font-medium font-latin">
+                      Display Order: #{selectedBanner.order}
                     </span>
                   </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-charcoal font-bengali">{selectedBanner.title || "Untitled Banner"}</h3>
+                  {selectedBanner.subtitle && (
+                    <p className="text-sm text-muted-foreground font-bengali leading-relaxed">{selectedBanner.subtitle}</p>
+                  )}
                 </div>
               </div>
 
-              {selectedBanner.subtitle && (
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Subtitle</label>
-                  <p className="text-charcoal font-bengali">{selectedBanner.subtitle}</p>
+              {/* Status & Type Details */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                  <span className="text-xs text-muted-foreground block font-bengali">স্ট্যাটাস</span>
+                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-md inline-block ${
+                    selectedBanner.isActive ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"
+                  }`}>
+                    {selectedBanner.isActive ? "Active" : "Inactive"}
+                  </span>
                 </div>
-              )}
-
-              {selectedBanner.buttonText && (
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Button Text</label>
-                  <p className="text-charcoal">{selectedBanner.buttonText}</p>
+                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                  <span className="text-xs text-muted-foreground block font-bengali">ব্যানার টাইপ</span>
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-md inline-block bg-fire/10 text-fire font-latin">
+                    {selectedBanner.banner ? "Main Banner" : "Regular"}
+                  </span>
                 </div>
-              )}
-
-              {selectedBanner.category && (
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Category</label>
-                  <p className="text-charcoal">{selectedBanner.category.name}</p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Status</label>
-                  <p className="text-charcoal">{selectedBanner.isActive ? "Active" : "Inactive"}</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Banner Type</label>
-                  <p className="text-charcoal">{selectedBanner.banner ? "Banner" : "Regular"}</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Order</label>
-                  <p className="text-charcoal">{selectedBanner.order}</p>
+                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1 col-span-2 sm:col-span-1">
+                  <span className="text-xs text-muted-foreground block font-bengali">বাটন টেক্সট</span>
+                  <span className="text-xs font-bold text-charcoal font-bengali truncate block">
+                    {selectedBanner.buttonText || "N/A"}
+                  </span>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Created At</label>
-                <p className="text-charcoal">{format(new Date(selectedBanner.createdAt), "dd MMM, yyyy 'at' HH:mm")}</p>
+              {/* Footer Meta */}
+              <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
+                <div>
+                  <span className="font-semibold text-charcoal mr-1">তৈরি করা হয়েছে:</span>
+                  <span>{format(new Date(selectedBanner.createdAt), "dd MMM, yyyy 'at' HH:mm")}</span>
+                </div>
+                {selectedBanner.updatedAt && (
+                  <div>
+                    <span className="font-semibold text-charcoal mr-1">সর্বশেষ আপডেট:</span>
+                    <span>{format(new Date(selectedBanner.updatedAt), "dd MMM, yyyy 'at' HH:mm")}</span>
+                  </div>
+                )}
               </div>
             </div>
           )}

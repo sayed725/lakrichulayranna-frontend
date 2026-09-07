@@ -72,10 +72,10 @@ export default function AddCategoryForm({
           </div>
       </div>
 
-      <div className="pt-2 flex justify-end gap-3 mt-6 pb-2">
-          <Button type="button" variant="outline" onClick={onCancel} className="rounded-xl px-6 hover:bg-primary/10">Cancel</Button>
+      <div className="pt-2 flex justify-end gap-3 mt-6 pb-2 font-bengali">
+          <Button type="button" variant="outline" onClick={onCancel} className="rounded-xl px-6 hover:bg-primary/10">বাতিল</Button>
           <Button type="submit" disabled={isPending} className="rounded-xl px-8 bg-fire text-white font-semibold hover:bg-fire-dark">
-              {isPending ? "Saving..." : buttonText}
+              {isPending ? "সংরক্ষণ করা হচ্ছে..." : buttonText}
           </Button>
       </div>
     </form>

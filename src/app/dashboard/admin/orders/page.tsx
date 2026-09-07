@@ -178,7 +178,7 @@ export default function AdminOrdersPage() {
       <Dialog open={isCreateOpen} onOpenChange={(val) => {
         setIsCreateOpen(val);
       }}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-bengali">ম্যানুয়াল অর্ডার তৈরি করুন</DialogTitle>
           </DialogHeader>
@@ -521,8 +521,8 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
-                          <MoreVertical size={18} className="text-muted-foreground" />
+                        <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                          <MoreVertical size={18} />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => handleViewItem(order)}>

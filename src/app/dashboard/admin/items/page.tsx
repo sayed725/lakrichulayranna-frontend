@@ -578,8 +578,8 @@ export default function AdminItemsPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
-                        <MoreVertical size={18} className="text-muted-foreground" />
+                      <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                        <MoreVertical size={18} />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleViewItem(item)}>
@@ -664,92 +664,142 @@ export default function AdminItemsPage() {
 
       {/* View Item Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="font-bengali">আইটেম বিস্তারিত দেখুন</DialogTitle>
-            <DialogDescription>সম্পূর্ণ আইটেমের বিস্তারিত তথ্য</DialogDescription>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+          <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <DialogTitle className="text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-fire shrink-0" />
+                  <span>আইটেম বিস্তারিত</span>
+                </DialogTitle>
+                {selectedItem?.slug && (
+                  <DialogDescription className="text-muted-foreground font-mono text-xs mt-1">
+                    Slug: {selectedItem.slug}
+                  </DialogDescription>
+                )}
+              </div>
+              {selectedItem && (
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-bengali ${
+                  selectedItem.isAvailable 
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
+                    : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                }`}>
+                  {selectedItem.isAvailable ? "উপলব্ধ" : "অনুপলব্ধ"}
+                </span>
+              )}
+            </div>
           </DialogHeader>
+
           {selectedItem && (
-            <div className="space-y-4 mt-4 w-full min-w-0 overflow-hidden">
-              <div className="flex items-center gap-4 p-4 bg-cream/30 dark:bg-charcoal-light/20 rounded-lg">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+              {/* Main Banner / Header Info */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:p-5 bg-card rounded-2xl border border-border/70 shadow-xs">
                 {selectedItem.imageUrl || (selectedItem.images && selectedItem.images[0]) ? (
-                  <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
+                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border border-border/60 shrink-0 bg-muted/30 shadow-xs">
                     <Image
                       src={selectedItem.imageUrl || selectedItem.images[0]}
                       alt={selectedItem.name}
-                      width={80}
-                      height={80}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </div>
                 ) : (
-                  <div className="w-20 h-20 rounded-lg bg-cream dark:bg-charcoal-light flex items-center justify-center shrink-0">
-                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-muted/30 flex items-center justify-center shrink-0 border border-border/60">
+                    <ImageIcon className="w-10 h-10 text-muted-foreground/60" />
                   </div>
                 )}
-                <div>
-                  <h3 className="text-xl font-bold text-charcoal font-bengali">{selectedItem.name}</h3>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="font-bold text-fire text-lg">{formatPrice(selectedItem.price)}</span>
-                    {selectedItem.discountPrice && (
-                      <span className="text-sm text-muted-foreground line-through">
-                        {formatPrice(selectedItem.discountPrice)}
+                <div className="space-y-2 min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {selectedItem.category?.name && (
+                      <span className="px-2.5 py-0.5 rounded-md bg-fire/10 text-fire text-xs font-bold font-bengali">
+                        {selectedItem.category.name}
                       </span>
                     )}
                     {selectedItem.weight && (
-                      <span className="text-muted-foreground">• {selectedItem.weight}</span>
+                      <span className="px-2.5 py-0.5 rounded-md bg-muted/40 text-muted-foreground text-xs font-medium">
+                        {selectedItem.weight}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-charcoal font-bengali leading-snug">{selectedItem.name}</h3>
+                  <div className="flex items-baseline gap-3 pt-1">
+                    <span className="font-bold text-fire text-xl sm:text-2xl font-latin">
+                      {formatPrice(selectedItem.discountPrice ?? selectedItem.price)}
+                    </span>
+                    {selectedItem.discountPrice && (
+                      <span className="text-sm text-muted-foreground line-through font-latin">
+                        {formatPrice(selectedItem.price)}
+                      </span>
                     )}
                   </div>
                 </div>
               </div>
 
+              {/* Multiple Images Gallery */}
+              {selectedItem.images && selectedItem.images.length > 1 && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">গ্যালারি ছবিসমূহ</h4>
+                  <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin">
+                    {selectedItem.images.map((img: string, idx: number) => (
+                      <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-border/60 shrink-0 bg-muted/20">
+                        <Image src={img} alt={`Gallery ${idx + 1}`} fill className="object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Badges / Highlights */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 text-center">
+                  <span className="text-xs text-muted-foreground block mb-1">Featured</span>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${selectedItem.isFeatured ? "bg-amber-500/10 text-amber-600" : "text-muted-foreground"}`}>
+                    {selectedItem.isFeatured ? "Yes" : "No"}
+                  </span>
+                </div>
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 text-center">
+                  <span className="text-xs text-muted-foreground block mb-1">Best Selling</span>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${selectedItem.isBestSelling ? "bg-emerald-500/10 text-emerald-600" : "text-muted-foreground"}`}>
+                    {selectedItem.isBestSelling ? "Yes" : "No"}
+                  </span>
+                </div>
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 text-center">
+                  <span className="text-xs text-muted-foreground block mb-1">Spicy</span>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${selectedItem.isSpicy ? "bg-rose-500/10 text-rose-600" : "text-muted-foreground"}`}>
+                    {selectedItem.isSpicy ? "Yes" : "No"}
+                  </span>
+                </div>
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 text-center">
+                  <span className="text-xs text-muted-foreground block mb-1">New Item</span>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${selectedItem.isNew ? "bg-blue-500/10 text-blue-600" : "text-muted-foreground"}`}>
+                    {selectedItem.isNew ? "Yes" : "No"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Description */}
               {selectedItem.description && (
-                <div className="space-y-2 w-full">
-                  <label className="text-sm font-semibold text-muted-foreground">Description</label>
+                <div className="p-4 sm:p-5 bg-card rounded-2xl border border-border/70 shadow-xs space-y-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">বিবরণ</h4>
                   <div 
-                    className="text-charcoal dark:text-cream font-bengali prose-custom w-full overflow-hidden break-words"
+                    className="text-charcoal dark:text-cream font-bengali text-sm leading-relaxed prose-custom w-full overflow-hidden break-words"
                     dangerouslySetInnerHTML={{ __html: decodeHtmlEntities(selectedItem.description) }}
                   />
                 </div>
               )}
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Category</label>
-                <p className="text-charcoal">{selectedItem.category?.name || "-"}</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Status</label>
-                  <p className="text-charcoal">{selectedItem.isAvailable ? "Available" : "Unavailable"}</p>
+              {/* Additional Meta */}
+              <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
+                <div>
+                  <span className="font-semibold text-charcoal mr-1">তৈরি করা হয়েছে:</span>
+                  <span>{format(new Date(selectedItem.createdAt), "dd MMM, yyyy 'at' HH:mm")}</span>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Featured</label>
-                  <p className="text-charcoal">{selectedItem.isFeatured ? "Yes" : "No"}</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Best Selling</label>
-                  <p className="text-charcoal">{selectedItem.isBestSelling ? "Yes" : "No"}</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Spicy</label>
-                  <p className="text-charcoal">{selectedItem.isSpicy ? "Yes" : "No"}</p>
-                </div>
-              </div>
-
-              {selectedItem.slug && (
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Slug</label>
-                  <p className="text-charcoal font-mono text-sm">{selectedItem.slug}</p>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Created At</label>
-                <p className="text-charcoal">{format(new Date(selectedItem.createdAt), "dd MMM, yyyy 'at' HH:mm")}</p>
+                {selectedItem.updatedAt && (
+                  <div>
+                    <span className="font-semibold text-charcoal mr-1">সর্বশেষ আপডেট:</span>
+                    <span>{format(new Date(selectedItem.updatedAt), "dd MMM, yyyy 'at' HH:mm")}</span>
+                  </div>
+                )}
               </div>
             </div>
           )}

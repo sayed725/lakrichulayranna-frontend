@@ -433,8 +433,8 @@ export default function AdminCouponsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
-                          <MoreVertical size={18} className="text-muted-foreground" />
+                        <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                          <MoreVertical size={18} />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => handleViewCoupon(coupon)}>
@@ -484,12 +484,12 @@ export default function AdminCouponsPage() {
 
       {/* Coupon Form Dialog */}
       <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-bengali">
               {editingCoupon ? "কুপন এডিট করুন" : "নতুন কুপন তৈরি করুন"}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="font-bengali">
               {editingCoupon ? "কুপনের তথ্য আপডেট করুন" : "নতুন কুপন তৈরি করুন"}
             </DialogDescription>
           </DialogHeader>
@@ -624,21 +624,23 @@ export default function AdminCouponsPage() {
               <Label htmlFor="isActive">Active</Label>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4">
+            <div className="flex justify-end gap-3 pt-4 font-bengali">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsFormDialogOpen(false)}
-                className="rounded-xl"
+                className="rounded-xl px-6 hover:bg-primary/10"
               >
-                Cancel
+                বাতিল
               </Button>
               <Button
                 type="submit"
                 disabled={createCoupon.isPending || updateCoupon.isPending}
-                className="bg-fire text-white hover:bg-fire-dark rounded-xl"
+                className="bg-fire text-white hover:bg-fire-dark rounded-xl px-8 font-semibold"
               >
-                {editingCoupon ? "Update Coupon" : "Create Coupon"}
+                {createCoupon.isPending || updateCoupon.isPending 
+                  ? "সংরক্ষণ করা হচ্ছে..." 
+                  : editingCoupon ? "কুপন আপডেট করুন" : "কুপন তৈরি করুন"}
               </Button>
             </div>
           </form>
@@ -647,82 +649,106 @@ export default function AdminCouponsPage() {
 
       {/* View Coupon Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-bengali">কুপন বিস্তারিত দেখুন</DialogTitle>
-            <DialogDescription>সম্পূর্ণ কুপনের বিস্তারিত তথ্য</DialogDescription>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+          <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <DialogTitle className="text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-fire shrink-0" />
+                  <span>কুপন বিস্তারিত</span>
+                </DialogTitle>
+                <DialogDescription className="text-muted-foreground text-xs mt-1 font-bengali">
+                  কুপনের অফার ও ব্যবহারের বিস্তারিত তথ্য
+                </DialogDescription>
+              </div>
+              {selectedCoupon && (
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-bengali ${
+                  selectedCoupon.isActive 
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
+                    : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                }`}>
+                  {selectedCoupon.isActive ? "সক্রিয়" : "নিষ্ক্রিয়"}
+                </span>
+              )}
+            </div>
           </DialogHeader>
+
           {selectedCoupon && (
-            <div className="space-y-4 mt-4">
-              <div className="flex items-center justify-between p-4 bg-cream/30 dark:bg-charcoal-light/20 rounded-lg">
-                <div>
-                  <span className="font-bold text-charcoal font-mono text-xl bg-cream px-3 py-2 rounded-lg border border-border">
-                    {selectedCoupon.code}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+              {/* Coupon Hero Card */}
+              <div className="p-5 bg-card rounded-2xl border border-border/70 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-charcoal font-mono text-xl sm:text-2xl bg-fire/10 text-fire px-4 py-2 rounded-xl border border-fire/20 tracking-wider">
+                      {selectedCoupon.code}
+                    </span>
+                    <span className="px-2.5 py-1 rounded-md bg-muted/40 text-muted-foreground text-xs font-semibold">
+                      {selectedCoupon.discountType}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-charcoal font-bengali pt-1">{selectedCoupon.title}</h3>
+                </div>
+
+                <div className="text-left sm:text-right shrink-0">
+                  <span className="text-xs text-muted-foreground block mb-1">ডিসকাউন্ট পরিমাণ</span>
+                  <span className="font-bold text-fire text-2xl font-latin">
+                    {selectedCoupon.discountType === "PERCENTAGE" 
+                      ? `${selectedCoupon.discountValue}%` 
+                      : formatPrice(selectedCoupon.discountValue)}
                   </span>
                 </div>
-                <div className="flex items-center gap-1 font-bold text-fire text-xl">
-                  {selectedCoupon.discountType === "PERCENTAGE" ? (
-                    <>
-                      {/* <Percent size={20} /> */}
-                      <span>{selectedCoupon.discountValue}%</span>
-                    </>
-                  ) : (
-                    <>
-                      {/* <DollarSign size={20} /> */}
-                      <span>{formatPrice(selectedCoupon.discountValue)}</span>
-                    </>
-                  )}
+              </div>
+
+              {/* Usage & Limits Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                  <span className="text-xs text-muted-foreground block font-bengali">সর্বনিম্ন অর্ডার</span>
+                  <span className="text-xs font-bold text-charcoal font-latin">
+                    {selectedCoupon.minOrderAmount ? formatPrice(selectedCoupon.minOrderAmount) : "No Limit"}
+                  </span>
+                </div>
+                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                  <span className="text-xs text-muted-foreground block font-bengali">সর্বোচ্চ ছাড়</span>
+                  <span className="text-xs font-bold text-charcoal font-latin">
+                    {selectedCoupon.maxDiscountAmount ? formatPrice(selectedCoupon.maxDiscountAmount) : "No Limit"}
+                  </span>
+                </div>
+                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                  <span className="text-xs text-muted-foreground block font-bengali">মোট লিমিট</span>
+                  <span className="text-xs font-bold text-charcoal font-latin">
+                    {selectedCoupon.usageLimit || "Unlimited"}
+                  </span>
+                </div>
+                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                  <span className="text-xs text-muted-foreground block font-bengali">ব্যবহৃত হয়েছে</span>
+                  <span className="text-xs font-bold text-fire font-latin">
+                    {selectedCoupon.usedCount} times
+                  </span>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Title</label>
-                <p className="text-charcoal font-bengali">{selectedCoupon.title}</p>
-              </div>
-
+              {/* Description Card */}
               {selectedCoupon.description && (
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Description</label>
-                  <p className="text-charcoal font-bengali">{selectedCoupon.description}</p>
+                <div className="p-4 sm:p-5 bg-card rounded-2xl border border-border/70 shadow-xs space-y-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">বিবরণ</h4>
+                  <p className="text-charcoal font-bengali text-sm leading-relaxed break-words">
+                    {selectedCoupon.description}
+                  </p>
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Min Order Amount</label>
-                  <p className="text-charcoal">{selectedCoupon.minOrderAmount ? formatPrice(selectedCoupon.minOrderAmount) : "No minimum"}</p>
+              {/* Footer Timestamps & Expiry */}
+              <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
+                <div>
+                  <span className="font-semibold text-charcoal mr-1">মেয়াদ শেষ:</span>
+                  <span className="font-latin text-fire font-semibold">
+                    {format(new Date(selectedCoupon.expiryDate), "dd MMM, yyyy 'at' HH:mm")}
+                  </span>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Max Discount Amount</label>
-                  <p className="text-charcoal">{selectedCoupon.maxDiscountAmount ? formatPrice(selectedCoupon.maxDiscountAmount) : "No limit"}</p>
+                <div>
+                  <span className="font-semibold text-charcoal mr-1">তৈরি করা হয়েছে:</span>
+                  <span>{format(new Date(selectedCoupon.createdAt), "dd MMM, yyyy 'at' HH:mm")}</span>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Usage Limit</label>
-                  <p className="text-charcoal">{selectedCoupon.usageLimit || "Unlimited"}</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Used Count</label>
-                  <p className="text-charcoal">{selectedCoupon.usedCount}</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Expiry Date</label>
-                  <p className="text-charcoal">{format(new Date(selectedCoupon.expiryDate), "dd MMM, yyyy 'at' HH:mm")}</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground">Status</label>
-                  <p className="text-charcoal">{selectedCoupon.isActive ? "Active" : "Inactive"}</p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Created At</label>
-                <p className="text-charcoal">{format(new Date(selectedCoupon.createdAt), "dd MMM, yyyy 'at' HH:mm")}</p>
               </div>
             </div>
           )}

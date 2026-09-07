@@ -151,7 +151,7 @@ export function EditOrderModal({ isOpen, onClose, order, onSubmit, isSubmitting 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-bengali">অর্ডার সম্পাদনা করুন</DialogTitle>
         </DialogHeader>

@@ -448,8 +448,8 @@ export default function AdminReviewsPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="p-2 hover:bg-cream/50 rounded-lg transition-colors">
-                        <MoreVertical size={18} className="text-muted-foreground" />
+                      <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                        <MoreVertical size={18} />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleViewReview(review)}>
@@ -495,38 +495,91 @@ export default function AdminReviewsPage() {
 
       {/* View Review Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-bengali">রিভিউ দেখুন</DialogTitle>
-            <DialogDescription>সম্পূর্ণ রিভিউ বিস্তারিত</DialogDescription>
-          </DialogHeader>
-          {selectedReview && (
-            <div className="space-y-4 mt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-bold text-charcoal font-bengali text-lg">{selectedReview.item?.name}</p>
-                  <p className="text-sm text-muted-foreground font-bengali">{selectedReview.user?.name}</p>
-                </div>
-                <div className="flex items-center gap-1 text-warning">
-                  <Star size={20} fill="currentColor" />
-                  <span className="font-bold text-charcoal text-xl ml-1">{selectedReview.rating}</span>
-                </div>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+          <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <DialogTitle className="text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-fire shrink-0" />
+                  <span>রিভিউ বিস্তারিত</span>
+                </DialogTitle>
+                <DialogDescription className="text-muted-foreground text-xs mt-1 font-bengali">
+                  গ্রাহকের মতামত ও রেটিং বিস্তারিত
+                </DialogDescription>
               </div>
-              <div className="bg-cream/50 dark:bg-charcoal-light/30 p-4 rounded-lg">
-                <p className="text-charcoal font-bengali whitespace-pre-wrap">{selectedReview.comment || "No comment"}</p>
-              </div>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span>তারিখ: {format(new Date(selectedReview.createdAt), "dd MMM, yyyy HH:mm")}</span>
-                <span className={`px-2 py-1 rounded-lg text-xs font-semibold font-bengali ${
-                  selectedReview.isApproved ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+              {selectedReview && (
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-bengali ${
+                  selectedReview.isApproved 
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
+                    : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
                 }`}>
                   {selectedReview.isApproved ? "অনুমোদিত" : "অপেক্ষমাণ"}
                 </span>
-                {selectedReview.isFeatured && (
-                  <span className="px-2 py-1 rounded-lg text-xs font-semibold font-bengali bg-amber-100 text-amber-700">
-                    ফিচার
-                  </span>
-                )}
+              )}
+            </div>
+          </DialogHeader>
+
+          {selectedReview && (
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+              {/* Product Info & Rating Header */}
+              <div className="p-5 bg-card rounded-2xl border border-border/70 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="space-y-1.5 min-w-0 flex-1">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">আইটেমের নাম</span>
+                  <h3 className="text-lg sm:text-xl font-bold text-charcoal font-bengali truncate">{selectedReview.item?.name || "Unknown Item"}</h3>
+                </div>
+
+                <div className="flex flex-col items-start sm:items-end shrink-0">
+                  <span className="text-xs text-muted-foreground mb-1 font-bengali">রেটিং</span>
+                  <div className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-xl">
+                    <div className="flex items-center text-amber-500">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={16}
+                          className={i < (selectedReview.rating || 0) ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}
+                        />
+                      ))}
+                    </div>
+                    <span className="font-bold text-charcoal font-latin text-base ml-1">{selectedReview.rating}.0</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reviewer Profile & Badges */}
+              <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-fire/10 text-fire font-bold flex items-center justify-center font-bengali shrink-0">
+                    {selectedReview.user?.name?.charAt(0) || "U"}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-charcoal font-bengali text-sm">{selectedReview.user?.name || "Anonymous User"}</h4>
+                    <p className="text-xs text-muted-foreground font-latin">{selectedReview.user?.email || selectedReview.user?.phone || "Customer"}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {selectedReview.isFeatured && (
+                    <span className="px-3 py-1 rounded-full text-xs font-bold font-bengali bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                      ফিচার্ড রিভিউ 🔥
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Review Comment Box */}
+              <div className="p-5 bg-card rounded-2xl border border-border/70 shadow-xs space-y-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">গ্রাহকের মন্তব্য</h4>
+                <p className="text-charcoal font-bengali text-sm leading-relaxed whitespace-pre-wrap break-words">
+                  {selectedReview.comment || "কোনো মন্তব্য নেই।"}
+                </p>
+              </div>
+
+              {/* Footer Meta */}
+              <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex items-center justify-between text-xs text-muted-foreground font-bengali">
+                <div>
+                  <span className="font-semibold text-charcoal mr-1">রিভিউর তারিখ:</span>
+                  <span className="font-latin">{format(new Date(selectedReview.createdAt), "dd MMM, yyyy 'at' HH:mm")}</span>
+                </div>
               </div>
             </div>
           )}
