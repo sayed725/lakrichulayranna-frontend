@@ -71,7 +71,13 @@ export const useUpdateOrderStatus = () => {
         return {
           ...old,
           data: old.data.map((order: any) =>
-            order.id === orderId ? { ...order, status } : order
+            order.id === orderId
+              ? {
+                  ...order,
+                  status,
+                  ...(status === "DELIVERED" ? { paymentStatus: "PAID" } : {}),
+                }
+              : order
           ),
         };
       });

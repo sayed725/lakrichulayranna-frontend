@@ -62,6 +62,7 @@ export default function AdminBannersPage() {
       sortBy,
       sortOrder
     }),
+    placeholderData: (previousData) => previousData,
   });
 
   const banners = bannerResponse?.data || [];
@@ -83,14 +84,38 @@ export default function AdminBannersPage() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: any }) => updateBanner(id, payload),
+    onMutate: async ({ id, payload }) => {
+      await queryClient.cancelQueries({ queryKey: ["banners"] });
+
+      const previousQueriesData = queryClient.getQueriesData({ queryKey: ["banners"] });
+
+      queryClient.setQueriesData({ queryKey: ["banners"] }, (old: any) => {
+        if (!old || !old.data) return old;
+        return {
+          ...old,
+          data: old.data.map((banner: any) =>
+            banner.id === id ? { ...banner, ...payload } : banner
+          ),
+        };
+      });
+
+      return { previousQueriesData };
+    },
+    onError: (error: any, _variables, context: any) => {
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach(([queryKey, data]: [any, any]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      toast.error(error.message || "Failed to update banner");
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["banners"] });
       triggerRevalidation({ tag: "banners" });
       toast.success("Banner updated successfully");
       setIsEditOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to update banner");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["banners"] });
     },
   });
 
@@ -108,13 +133,37 @@ export default function AdminBannersPage() {
 
   const toggleMutation = useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) => updateBanner(id, { isActive }),
+    onMutate: async ({ id, isActive }) => {
+      await queryClient.cancelQueries({ queryKey: ["banners"] });
+
+      const previousQueriesData = queryClient.getQueriesData({ queryKey: ["banners"] });
+
+      queryClient.setQueriesData({ queryKey: ["banners"] }, (old: any) => {
+        if (!old || !old.data) return old;
+        return {
+          ...old,
+          data: old.data.map((banner: any) =>
+            banner.id === id ? { ...banner, isActive } : banner
+          ),
+        };
+      });
+
+      return { previousQueriesData };
+    },
+    onError: (error: any, _variables, context: any) => {
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach(([queryKey, data]: [any, any]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      toast.error(error.message || "Failed to update banner status");
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["banners"] });
       triggerRevalidation({ tag: "banners" });
       toast.success("Banner status updated");
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to update banner status");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["banners"] });
     },
   });
 
@@ -404,7 +453,6 @@ export default function AdminBannersPage() {
                           isActive: checked
                         });
                       }}
-                      disabled={toggleMutation.isPending}
                       className="data-checked:bg-green-500"
                     />
                   </td>

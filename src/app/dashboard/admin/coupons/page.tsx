@@ -427,7 +427,6 @@ export default function AdminCouponsPage() {
                       <Switch
                         checked={coupon.isActive}
                         onCheckedChange={() => handleToggle(coupon.id, coupon.isActive)}
-                        disabled={toggleCoupon.isPending}
                         className={"data-checked:bg-green-500"}
                       />
                     </td>

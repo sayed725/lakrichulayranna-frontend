@@ -108,6 +108,7 @@ export default function AdminItemsPage() {
       sortBy,
       sortOrder
     }),
+    placeholderData: (previousData) => previousData,
   });
 
   const { data: catResponse } = useQuery({
@@ -135,14 +136,42 @@ export default function AdminItemsPage() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: any }) => updateItem(id, payload),
+    onMutate: async ({ id, payload }) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic update
+      await queryClient.cancelQueries({ queryKey: ["items"] });
+
+      // Snapshot previous query data for rollback on failure
+      const previousQueriesData = queryClient.getQueriesData({ queryKey: ["items"] });
+
+      // Optimistically update all cached items queries instantly (0ms delay!)
+      queryClient.setQueriesData({ queryKey: ["items"] }, (old: any) => {
+        if (!old || !old.data) return old;
+        return {
+          ...old,
+          data: old.data.map((item: any) =>
+            item.id === id ? { ...item, ...payload } : item
+          ),
+        };
+      });
+
+      return { previousQueriesData };
+    },
+    onError: (error: any, _variables, context: any) => {
+      // Rollback to previous state on error
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach(([queryKey, data]: [any, any]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      toast.error(error.message || "Failed to update item");
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"] });
       triggerRevalidation({ tag: "items" });
       toast.success("Item updated successfully");
       setIsEditOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to update item");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["items"] });
     },
   });
 
@@ -520,7 +549,6 @@ export default function AdminItemsPage() {
                           payload: { isBestSelling: checked }
                         });
                       }}
-                      disabled={updateMutation.isPending}
                       className="data-checked:bg-purple-500"
                     />
                   </td>
@@ -533,7 +561,6 @@ export default function AdminItemsPage() {
                           payload: { isFeatured: checked }
                         });
                       }}
-                      disabled={updateMutation.isPending}
                       className="data-checked:bg-amber-500"
                     />
                   </td>
@@ -546,7 +573,6 @@ export default function AdminItemsPage() {
                           payload: { isCategoryFeatured: checked }
                         });
                       }}
-                      disabled={updateMutation.isPending}
                       className="data-checked:bg-orange-500"
                     />
                   </td>
@@ -559,7 +585,6 @@ export default function AdminItemsPage() {
                           payload: { isNew: checked }
                         });
                       }}
-                      disabled={updateMutation.isPending}
                       className="data-checked:bg-blue-500"
                     />
                   </td>
@@ -572,7 +597,6 @@ export default function AdminItemsPage() {
                           payload: { isAvailable: checked }
                         });
                       }}
-                      disabled={updateMutation.isPending}
                       className="data-checked:bg-green-500"
                     />
                   </td>

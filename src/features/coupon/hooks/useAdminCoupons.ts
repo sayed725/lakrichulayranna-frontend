@@ -41,6 +41,7 @@ export const useAdminCoupons = (params: CouponQueryParams = {}) => {
       const res = await api.get(`${API_ROUTES.ADMIN.COUPONS}?${queryParams.toString()}`);
       return res.data;
     },
+    placeholderData: (previousData) => previousData,
   });
 };
 
@@ -52,12 +53,40 @@ export const useToggleCoupon = () => {
       const res = await api.patch(`${API_ROUTES.ADMIN.COUPONS}/${couponId}`, { isActive });
       return res.data;
     },
+    onMutate: async ({ couponId, isActive }) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic update
+      await queryClient.cancelQueries({ queryKey: ["admin", "coupons"] });
+
+      // Snapshot previous query data for rollback on failure
+      const previousQueriesData = queryClient.getQueriesData({ queryKey: ["admin", "coupons"] });
+
+      // Optimistically update all cached coupons queries instantly (0ms delay!)
+      queryClient.setQueriesData({ queryKey: ["admin", "coupons"] }, (old: any) => {
+        if (!old || !old.data) return old;
+        return {
+          ...old,
+          data: old.data.map((coupon: any) =>
+            coupon.id === couponId ? { ...coupon, isActive } : coupon
+          ),
+        };
+      });
+
+      return { previousQueriesData };
+    },
+    onError: (error: any, _variables, context: any) => {
+      // Rollback to previous state on error
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach(([queryKey, data]: [any, any]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      toast.error(error.message || "আপডেট করতে সমস্যা হয়েছে");
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "coupons"] });
       toast.success("কুপন স্ট্যাটাস আপডেট করা হয়েছে");
     },
-    onError: (error: any) => {
-      toast.error(error.message || "আপডেট করতে সমস্যা হয়েছে");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "coupons"] });
     },
   });
 };

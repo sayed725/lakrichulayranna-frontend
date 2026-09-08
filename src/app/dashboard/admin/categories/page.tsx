@@ -61,6 +61,7 @@ export default function AdminCategoriesPage() {
       sortBy,
       sortOrder
     }),
+    placeholderData: (previousData) => previousData,
   });
 
   const categories = categoryResponse?.data || [];
@@ -82,14 +83,42 @@ export default function AdminCategoriesPage() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: any }) => updateCategory(id, payload),
+    onMutate: async ({ id, payload }) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic update
+      await queryClient.cancelQueries({ queryKey: ["categories"] });
+
+      // Snapshot previous query data for rollback on failure
+      const previousQueriesData = queryClient.getQueriesData({ queryKey: ["categories"] });
+
+      // Optimistically update all cached categories queries instantly (0ms delay!)
+      queryClient.setQueriesData({ queryKey: ["categories"] }, (old: any) => {
+        if (!old || !old.data) return old;
+        return {
+          ...old,
+          data: old.data.map((category: any) =>
+            category.id === id ? { ...category, ...payload } : category
+          ),
+        };
+      });
+
+      return { previousQueriesData };
+    },
+    onError: (error: any, _variables, context: any) => {
+      // Rollback to previous state on error
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach(([queryKey, data]: [any, any]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      toast.error(error.message || "Failed to update category");
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
       triggerRevalidation({ tag: "categories" });
       toast.success("Category updated successfully");
       setIsEditOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to update category");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 
@@ -397,7 +426,6 @@ export default function AdminCategoriesPage() {
                           payload: { isFeatured: checked }
                         });
                       }}
-                      disabled={updateMutation.isPending}
                       className="data-checked:bg-amber-500"
                     />
                   </td>
@@ -410,7 +438,6 @@ export default function AdminCategoriesPage() {
                           payload: { isActive: checked }
                         });
                       }}
-                      disabled={updateMutation.isPending}
                       className="data-checked:bg-green-500"
                     />
                   </td>

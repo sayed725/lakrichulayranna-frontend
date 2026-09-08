@@ -62,6 +62,7 @@ export default function AdminUsersPage() {
       });
       return res.data;
     },
+    placeholderData: (previousData) => previousData,
   });
 
   const users = userResponse?.data || [];
@@ -72,12 +73,40 @@ export default function AdminUsersPage() {
       const res = await api.patch(`${API_ROUTES.ADMIN.USERS}/${userId}/status`, { status });
       return res.data;
     },
+    onMutate: async ({ userId, status }) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic update
+      await queryClient.cancelQueries({ queryKey: ["admin", "users"] });
+
+      // Snapshot previous query data for rollback on failure
+      const previousQueriesData = queryClient.getQueriesData({ queryKey: ["admin", "users"] });
+
+      // Optimistically update all cached users queries instantly (0ms delay!)
+      queryClient.setQueriesData({ queryKey: ["admin", "users"] }, (old: any) => {
+        if (!old || !old.data) return old;
+        return {
+          ...old,
+          data: old.data.map((user: any) =>
+            user.id === userId ? { ...user, status } : user
+          ),
+        };
+      });
+
+      return { previousQueriesData };
+    },
+    onError: (error: any, _variables, context: any) => {
+      // Rollback to previous state on error
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach(([queryKey, data]: [any, any]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      toast.error(error.message || "স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে");
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
       toast.success("ব্যবহারকারী স্ট্যাটাস আপডেট করা হয়েছে");
     },
-    onError: (error: any) => {
-      toast.error(error.message || "স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
     },
   });
 
@@ -433,7 +462,6 @@ export default function AdminUsersPage() {
                       <Select
                         value={user.status}
                         onValueChange={(value) => handleStatusChange(user.id, value)}
-                        disabled={updateStatusMutation.isPending}
                       >
                         <SelectTrigger className="w-[110px] h-8 text-xs font-semibold justify-center bg-background rounded-lg mx-auto">
                           <SelectValue />

@@ -63,6 +63,7 @@ export default function AdminReviewsPage() {
       });
       return res.data;
     },
+    placeholderData: (previousData) => previousData,
   });
 
   const reviews = reviewResponse?.data || [];
@@ -73,12 +74,42 @@ export default function AdminReviewsPage() {
       const res = await api.patch(`${API_ROUTES.ADMIN.REVIEWS}/${reviewId}/${status}`);
       return res.data;
     },
+    onMutate: async ({ reviewId, status }) => {
+      await queryClient.cancelQueries({ queryKey: ["admin", "reviews"] });
+
+      const previousQueriesData = queryClient.getQueriesData({ queryKey: ["admin", "reviews"] });
+
+      queryClient.setQueriesData({ queryKey: ["admin", "reviews"] }, (old: any) => {
+        if (!old || !old.data) return old;
+        return {
+          ...old,
+          data: old.data.map((review: any) => {
+            if (review.id !== reviewId) return review;
+            const updatedReview = { ...review };
+            if (status === 'approve') updatedReview.isApproved = true;
+            if (status === 'unapprove') updatedReview.isApproved = false;
+            if (status === 'feature') updatedReview.isFeatured = true;
+            if (status === 'unfeature') updatedReview.isFeatured = false;
+            return updatedReview;
+          }),
+        };
+      });
+
+      return { previousQueriesData };
+    },
+    onError: (error: any, _variables, context: any) => {
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach(([queryKey, data]: [any, any]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      toast.error(error.message || "স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে");
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "reviews"] });
       toast.success("রিভিউ স্ট্যাটাস আপডেট করা হয়েছে");
     },
-    onError: (error: any) => {
-      toast.error(error.message || "স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "reviews"] });
     },
   });
 
@@ -498,7 +529,6 @@ export default function AdminReviewsPage() {
                         <Switch
                           checked={review.isApproved}
                           onCheckedChange={() => handleToggleStatus(review.id, review.isApproved)}
-                          disabled={updateReviewStatusMutation.isPending}
                           className={"data-checked:bg-green-500"}
                         />
                       </td>
@@ -508,7 +538,6 @@ export default function AdminReviewsPage() {
                         <Switch
                           checked={review.isFeatured || false}
                           onCheckedChange={() => handleToggleFeatured(review.id, review.isFeatured || false)}
-                          disabled={updateReviewStatusMutation.isPending}
                           className={"data-checked:bg-amber-500"}
                         />
                       </td>

@@ -42,7 +42,7 @@ export default function ItemsLoadingSkeleton() {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2">
-                    <div className="h-8 w-8 bg-cream-dark/40 animate-pulse rounded-lg" />
+                    {/* <div className="h-8 w-8 bg-cream-dark/40 animate-pulse rounded-lg" /> */}
                     <div className="h-8 w-8 bg-cream-dark/40 animate-pulse rounded-lg" />
                   </div>
                 </td>
