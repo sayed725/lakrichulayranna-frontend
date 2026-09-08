@@ -349,7 +349,7 @@ export function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button nativeButton={false} render={<Link href="/login" />} className="bg-gradient-to-r from-fire to-terracotta hover:from-fire-dark hover:to-terracotta-dark text-white rounded-xl shadow-lg hover:shadow-fire/25 transition-all duration-300 font-bold text-sm px-6 h-10 hover:scale-105 border-0 font-bengali">
+              <Button variant="fire" nativeButton={false} render={<Link href="/login" />} className="rounded-xl font-bold font-bengali text-sm px-6 h-10 border-0">
                 লগইন
               </Button>
             )}
@@ -511,7 +511,7 @@ export function Navbar() {
                           </Button>
                         </>
                       ) : (
-                         <Button nativeButton={false} render={<Link href="/login" onClick={closeMobileMenu} />} className="w-full h-10 bg-gradient-to-r from-fire to-terracotta hover:from-fire-dark hover:to-terracotta-dark text-white rounded-xl shadow-md hover:shadow-fire/25 transition-all duration-300 font-semibold text-sm border-0 font-bengali">
+                         <Button variant="fire" nativeButton={false} render={<Link href="/login" onClick={closeMobileMenu} />} className="w-full h-10 rounded-xl font-bold font-bengali text-sm border-0">
                            লগইন করুন 
                          </Button>
                       )}
