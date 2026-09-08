@@ -16,7 +16,7 @@ export default function ItemsLoadingSkeleton() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(10)].map((_, i) => (
               <tr key={i}>
                 <td className="px-6 py-4">
                   <div className="w-12 h-12 bg-cream-dark/40 animate-pulse rounded-lg" />

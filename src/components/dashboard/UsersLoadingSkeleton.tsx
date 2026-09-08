@@ -14,7 +14,7 @@ export default function UsersLoadingSkeleton() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(10)].map((_, i) => (
               <tr key={i}>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">

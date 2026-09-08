@@ -66,13 +66,13 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
                 </DialogDescription>
                 <button
                   onClick={() => handleCopy(order.orderNumber, 'orderNumber', 'Order number')}
-                  className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/orderno:opacity-100 focus:opacity-100 cursor-pointer"
+                  className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/orderno:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                   title="Copy order number"
                 >
                   {copiedKey === 'orderNumber' ? (
-                    <Check className="w-3 h-3 text-green-600" />
+                    <Check className="w-3.5 h-3.5 text-green-600" />
                   ) : (
-                    <Copy className="w-3 h-3" />
+                    <Copy className="w-3.5 h-3.5" />
                   )}
                 </button>
               </div>
@@ -108,13 +108,13 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
                   {customerName !== 'N/A' && (
                     <button
                       onClick={() => handleCopy(customerName, 'name', 'Customer name')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/name:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/name:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                       title="Copy customer name"
                     >
                       {copiedKey === 'name' ? (
-                        <Check className="w-3 h-3 text-green-600" />
+                        <Check className="w-3.5 h-3.5 text-green-600" />
                       ) : (
-                        <Copy className="w-3 h-3" />
+                        <Copy className="w-3.5 h-3.5" />
                       )}
                     </button>
                   )}
@@ -126,13 +126,13 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
                   {customerPhone !== 'N/A' && (
                     <button
                       onClick={() => handleCopy(customerPhone, 'phone', 'Customer phone')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/phone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/phone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                       title="Copy customer phone"
                     >
                       {copiedKey === 'phone' ? (
-                        <Check className="w-3 h-3 text-green-600" />
+                        <Check className="w-3.5 h-3.5 text-green-600" />
                       ) : (
-                        <Copy className="w-3 h-3" />
+                        <Copy className="w-3.5 h-3.5" />
                       )}
                     </button>
                   )}
@@ -144,13 +144,13 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
                   {fullAddress !== 'N/A' && (
                     <button
                       onClick={() => handleCopy(fullAddress, 'address', 'Delivery address')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/address:opacity-100 focus:opacity-100 cursor-pointer shrink-0 mt-0.5"
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/address:opacity-100 focus:opacity-100 cursor-pointer shrink-0 mt-0.5"
                       title="Copy delivery address"
                     >
                       {copiedKey === 'address' ? (
-                        <Check className="w-3 h-3 text-green-600" />
+                        <Check className="w-3.5 h-3.5 text-green-600" />
                       ) : (
-                        <Copy className="w-3 h-3" />
+                        <Copy className="w-3.5 h-3.5" />
                       )}
                     </button>
                   )}

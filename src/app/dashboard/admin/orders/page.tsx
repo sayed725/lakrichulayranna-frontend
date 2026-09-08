@@ -414,13 +414,13 @@ export default function AdminOrdersPage() {
                             <span className="font-medium text-charcoal">{order.user.name}</span>
                             <button
                               onClick={() => handleCopyText(order.user.name, order.id, "Account Name")}
-                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/accname:opacity-100 focus:opacity-100"
+                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/accname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                               title="Copy account name"
                             >
                               {copiedTextId === `${order.id}-Account Name` ? (
-                                <Check className="w-3 h-3 text-green-600" />
+                                <Check className="w-3.5 h-3.5 text-green-600" />
                               ) : (
-                                <Copy className="w-3 h-3" />
+                                <Copy className="w-3.5 h-3.5" />
                               )}
                             </button>
                           </div>
@@ -429,13 +429,13 @@ export default function AdminOrdersPage() {
                             {order.user.phone && (
                               <button
                                 onClick={() => handleCopyText(order.user.phone, order.id, "Account Phone")}
-                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/accphone:opacity-100 focus:opacity-100"
+                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/accphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                                 title="Copy account phone"
                               >
                                 {copiedTextId === `${order.id}-Account Phone` ? (
-                                  <Check className="w-3 h-3 text-green-600" />
+                                  <Check className="w-3.5 h-3.5 text-green-600" />
                                 ) : (
-                                  <Copy className="w-3 h-3" />
+                                  <Copy className="w-3.5 h-3.5" />
                                 )}
                               </button>
                             )}
@@ -453,13 +453,13 @@ export default function AdminOrdersPage() {
                         {order.customerName && (
                           <button
                             onClick={() => handleCopyText(order.customerName, order.id, "Customer Name")}
-                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/name:opacity-100 focus:opacity-100"
+                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/name:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                             title="Copy customer name"
                           >
                             {copiedTextId === `${order.id}-Customer Name` ? (
-                              <Check className="w-3 h-3 text-green-600" />
+                              <Check className="w-3.5 h-3.5 text-green-600" />
                             ) : (
-                              <Copy className="w-3 h-3" />
+                              <Copy className="w-3.5 h-3.5" />
                             )}
                           </button>
                         )}
@@ -469,13 +469,13 @@ export default function AdminOrdersPage() {
                         {(order.deliveryAddress?.phone || order.customerPhone) && (
                           <button
                             onClick={() => handleCopyText(order.deliveryAddress?.phone || order.customerPhone || "", order.id, "Customer Phone")}
-                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/phone:opacity-100 focus:opacity-100"
+                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/phone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                             title="Copy customer phone"
                           >
                             {copiedTextId === `${order.id}-Customer Phone` ? (
-                              <Check className="w-3 h-3 text-green-600" />
+                              <Check className="w-3.5 h-3.5 text-green-600" />
                             ) : (
-                              <Copy className="w-3 h-3" />
+                              <Copy className="w-3.5 h-3.5" />
                             )}
                           </button>
                         )}

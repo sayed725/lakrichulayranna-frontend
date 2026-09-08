@@ -352,13 +352,13 @@ export default function AdminUsersPage() {
                           {user.name && (
                             <button
                               onClick={() => handleCopy(user.name, `tbl-name-${user.id}`, 'User name')}
-                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/username:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/username:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                               title="Copy user name"
                             >
                               {copiedKey === `tbl-name-${user.id}` ? (
-                                <Check className="w-3 h-3 text-green-600" />
+                                <Check className="w-3.5 h-3.5 text-green-600" />
                               ) : (
-                                <Copy className="w-3 h-3" />
+                                <Copy className="w-3.5 h-3.5" />
                               )}
                             </button>
                           )}
@@ -375,13 +375,13 @@ export default function AdminUsersPage() {
                         {user.email && (
                           <button
                             onClick={() => handleCopy(user.email, `tbl-email-${user.id}`, 'Email address')}
-                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/useremail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/useremail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                             title="Copy email address"
                           >
                             {copiedKey === `tbl-email-${user.id}` ? (
-                              <Check className="w-3 h-3 text-green-600" />
+                              <Check className="w-3.5 h-3.5 text-green-600" />
                             ) : (
-                              <Copy className="w-3 h-3" />
+                              <Copy className="w-3.5 h-3.5" />
                             )}
                           </button>
                         )}
@@ -392,13 +392,13 @@ export default function AdminUsersPage() {
                           <span className="font-latin text-xs text-muted-foreground">{user.phone}</span>
                           <button
                             onClick={() => handleCopy(user.phone, `tbl-phone-${user.id}`, 'Phone number')}
-                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/userphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/userphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                             title="Copy phone number"
                           >
                             {copiedKey === `tbl-phone-${user.id}` ? (
-                              <Check className="w-3 h-3 text-green-600" />
+                              <Check className="w-3.5 h-3.5 text-green-600" />
                             ) : (
-                              <Copy className="w-3 h-3" />
+                              <Copy className="w-3.5 h-3.5" />
                             )}
                           </button>
                         </div>
@@ -535,7 +535,7 @@ export default function AdminUsersPage() {
                       {selectedUser.name && (
                         <button
                           onClick={() => handleCopy(selectedUser.name, 'modal-name', 'User name')}
-                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                           title="Copy user name"
                         >
                           {copiedKey === 'modal-name' ? (
@@ -551,7 +551,7 @@ export default function AdminUsersPage() {
                       {selectedUser.email && (
                         <button
                           onClick={() => handleCopy(selectedUser.email, 'modal-email', 'Email address')}
-                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                           title="Copy email address"
                         >
                           {copiedKey === 'modal-email' ? (
@@ -596,7 +596,7 @@ export default function AdminUsersPage() {
                   {selectedUser.phone && (
                     <button
                       onClick={() => handleCopy(selectedUser.phone, 'modal-phone', 'Phone number')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                       title="Copy phone number"
                     >
                       {copiedKey === 'modal-phone' ? (
@@ -618,7 +618,7 @@ export default function AdminUsersPage() {
                   {selectedUser.email && (
                     <button
                       onClick={() => handleCopy(selectedUser.email, 'modal-emailcard', 'Email address')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalemailcard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalemailcard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                       title="Copy email address"
                     >
                       {copiedKey === 'modal-emailcard' ? (
@@ -638,7 +638,7 @@ export default function AdminUsersPage() {
                   {selectedUser.address && (
                     <button
                       onClick={() => handleCopy(selectedUser.address, 'modal-address', 'Address')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modaladdr:opacity-100 focus:opacity-100 cursor-pointer shrink-0 mt-0.5"
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modaladdr:opacity-100 focus:opacity-100 cursor-pointer shrink-0 mt-0.5"
                       title="Copy address"
                     >
                       {copiedKey === 'modal-address' ? (

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Star, CheckCircle, Trash2, Search, Filter, RefreshCw, XCircle, Eye, MoreVertical } from "lucide-react";
+import { Star, CheckCircle, Trash2, Search, Filter, RefreshCw, XCircle, Eye, MoreVertical, Copy, Check, Mail } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,15 @@ export default function AdminReviewsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const handleCopy = (text: string, key: string, label: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    toast.success(`${label} copied!`);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
 
   const { data: reviewResponse, isLoading: reviewsLoading } = useQuery({
     queryKey: ["admin", "reviews", page, debouncedSearch, ratingFilter, statusFilter, sortBy, sortOrder],
@@ -402,7 +411,9 @@ export default function AdminReviewsPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
-                  <th className="px-6 py-4">Item & Customer</th>
+                  <th className="px-6 py-4">Item</th>
+                  <th className="px-6 py-4">Customer</th>
+                  <th className="px-6 py-4">Date</th>
                   <th className="px-6 py-4">Rating</th>
                   <th className="px-6 py-4">Comment</th>
                   <th className="px-6 py-4 text-center">Status</th>
@@ -411,67 +422,125 @@ export default function AdminReviewsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {reviews.map((review: any) => (
-                <tr key={review.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                  <td className="px-6 py-4">
-                    <div>
-                      <p className="font-bold text-charcoal font-bengali">{review.item?.name}</p>
-                      <p className="text-xs text-muted-foreground font-bengali">{review.user?.name} • {format(new Date(review.createdAt), "dd MMM, yy")}</p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1 text-warning">
-                      <Star size={16} fill="currentColor" />
-                      <span className="font-bold text-charcoal ml-1">{review.rating}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <p className="text-sm text-charcoal font-bengali max-w-xs truncate" title={review.comment}>
-                      {review.comment || "-"}
-                    </p>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <Switch
-                      checked={review.isApproved}
-                      onCheckedChange={() => handleToggleStatus(review.id, review.isApproved)}
-                      disabled={updateReviewStatusMutation.isPending}
-                       className={"data-checked:bg-green-500"}
-                    />
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <Switch
-                      checked={review.isFeatured || false}
-                      onCheckedChange={() => handleToggleFeatured(review.id, review.isFeatured || false)}
-                      disabled={updateReviewStatusMutation.isPending}
-                      className={"data-checked:bg-amber-500"}
-                    />
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
-                        <MoreVertical size={18} />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleViewReview(review)}>
-                          <Eye size={16} className="mr-2" />
-                          View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(review.id)}
-                          className="text-destructive focus:text-destructive"
-                          disabled={deleteMutation.isPending}
-                        >
-                          <Trash2 size={16} className="mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
+                {reviews.map((review: any) => {
+                  const customerName = review.user?.name || review.reviewerName || "Guest Reviewer";
+                  const customerEmail = review.user?.email || review.reviewerEmail || review.user?.phone || null;
+
+                  return (
+                    <tr key={review.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
+                      {/* Item */}
+                      <td className="px-6 py-4 align-middle">
+                        <p className="font-bold text-charcoal font-bengali truncate">{review.item?.name || "Unknown Item"}</p>
+                      </td>
+
+                      {/* Customer (Name & Email) */}
+                      <td className="px-6 py-4 align-middle">
+                        <div className="space-y-0.5 min-w-0">
+                          <div className="flex items-center gap-1 group/cname">
+                            <span className="font-medium text-charcoal font-bengali">{customerName}</span>
+                            {customerName && (
+                              <button
+                                onClick={() => handleCopy(customerName, `cname-${review.id}`, 'Customer name')}
+                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                                title="Copy customer name"
+                              >
+                                {copiedKey === `cname-${review.id}` ? (
+                                  <Check className="w-3.5 h-3.5 text-green-600" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 group/cemail text-xs text-muted-foreground font-latin">
+                            <Mail size={12} className="shrink-0" />
+                            <span className="truncate">{customerEmail || "No email"}</span>
+                            {customerEmail && (
+                              <button
+                                onClick={() => handleCopy(customerEmail, `cemail-${review.id}`, 'Customer email')}
+                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                                title="Copy customer email"
+                              >
+                                {copiedKey === `cemail-${review.id}` ? (
+                                  <Check className="w-3.5 h-3.5 text-green-600" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Date & Time */}
+                      <td className="px-6 py-4 align-middle text-xs whitespace-nowrap font-latin">
+                        <div className="font-medium text-charcoal">{format(new Date(review.createdAt), "dd MMM, yyyy")}</div>
+                        <div className="text-[11px] text-muted-foreground mt-0.5">{format(new Date(review.createdAt), "hh:mm a")}</div>
+                      </td>
+
+                      {/* Rating */}
+                      <td className="px-6 py-4 align-middle">
+                        <div className="flex items-center gap-1 text-warning">
+                          <Star size={16} fill="currentColor" />
+                          <span className="font-bold text-charcoal ml-1">{review.rating}</span>
+                        </div>
+                      </td>
+
+                      {/* Comment */}
+                      <td className="px-6 py-4 align-middle">
+                        <p className="text-sm text-charcoal font-bengali max-w-xs truncate" title={review.comment}>
+                          {review.comment || "-"}
+                        </p>
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-6 py-4 text-center align-middle">
+                        <Switch
+                          checked={review.isApproved}
+                          onCheckedChange={() => handleToggleStatus(review.id, review.isApproved)}
+                          disabled={updateReviewStatusMutation.isPending}
+                          className={"data-checked:bg-green-500"}
+                        />
+                      </td>
+
+                      {/* Featured */}
+                      <td className="px-6 py-4 text-center align-middle">
+                        <Switch
+                          checked={review.isFeatured || false}
+                          onCheckedChange={() => handleToggleFeatured(review.id, review.isFeatured || false)}
+                          disabled={updateReviewStatusMutation.isPending}
+                          className={"data-checked:bg-amber-500"}
+                        />
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-4 text-right align-middle">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                            <MoreVertical size={18} />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleViewReview(review)}>
+                              <Eye size={16} className="mr-2" />
+                              View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(review.id)}
+                              className="text-destructive focus:text-destructive"
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 size={16} className="mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  );
+                })}
               {reviews.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
+                  <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">
                     No reviews found.
                   </td>
                 </tr>
@@ -549,11 +618,43 @@ export default function AdminReviewsPage() {
               <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-fire/10 text-fire font-bold flex items-center justify-center font-bengali shrink-0">
-                    {selectedReview.user?.name?.charAt(0) || "U"}
+                    {(selectedReview.user?.name || selectedReview.reviewerName || "U").charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h4 className="font-bold text-charcoal font-bengali text-sm">{selectedReview.user?.name || "Anonymous User"}</h4>
-                    <p className="text-xs text-muted-foreground font-latin">{selectedReview.user?.email || selectedReview.user?.phone || "Customer"}</p>
+                    <div className="flex items-center gap-1 group/modalcname">
+                      <h4 className="font-bold text-charcoal font-bengali text-sm">
+                        {selectedReview.user?.name || selectedReview.reviewerName || "Guest Reviewer"}
+                      </h4>
+                      {(selectedReview.user?.name || selectedReview.reviewerName) && (
+                        <button
+                          onClick={() => handleCopy(selectedReview.user?.name || selectedReview.reviewerName, 'modal-cname', 'Customer name')}
+                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalcname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                          title="Copy customer name"
+                        >
+                          {copiedKey === 'modal-cname' ? (
+                            <Check className="w-3.5 h-3.5 text-green-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 group/modalcemail text-xs text-muted-foreground font-latin">
+                      <span>{selectedReview.user?.email || selectedReview.reviewerEmail || selectedReview.user?.phone || "No Email"}</span>
+                      {(selectedReview.user?.email || selectedReview.reviewerEmail) && (
+                        <button
+                          onClick={() => handleCopy(selectedReview.user?.email || selectedReview.reviewerEmail, 'modal-cemail', 'Customer email')}
+                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalcemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                          title="Copy customer email"
+                        >
+                          {copiedKey === 'modal-cemail' ? (
+                            <Check className="w-3.5 h-3.5 text-green-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
