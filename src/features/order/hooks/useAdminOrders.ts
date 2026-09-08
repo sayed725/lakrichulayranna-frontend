@@ -46,6 +46,7 @@ export const useAdminOrders = (params?: {
       const res = await api.get(url);
       return res.data;
     },
+    placeholderData: (previousData) => previousData,
   });
 };
 
@@ -57,12 +58,40 @@ export const useUpdateOrderStatus = () => {
       const res = await api.patch(`${API_ROUTES.ADMIN.ORDERS}/${orderId}/status`, { status });
       return res.data;
     },
+    onMutate: async ({ orderId, status }) => {
+      // Cancel any outgoing refetches so they don't overwrite optimistic update
+      await queryClient.cancelQueries({ queryKey: ["admin", "orders"] });
+
+      // Snapshot previous query data for rollback on failure
+      const previousQueriesData = queryClient.getQueriesData({ queryKey: ["admin", "orders"] });
+
+      // Optimistically update all cached admin orders lists instantly
+      queryClient.setQueriesData({ queryKey: ["admin", "orders"] }, (old: any) => {
+        if (!old || !old.data) return old;
+        return {
+          ...old,
+          data: old.data.map((order: any) =>
+            order.id === orderId ? { ...order, status } : order
+          ),
+        };
+      });
+
+      return { previousQueriesData };
+    },
+    onError: (error: any, _variables, context: any) => {
+      // Rollback to previous state on error
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach(([queryKey, data]: [any, any]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      toast.error(error.message || "স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে");
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
       toast.success("অর্ডারের স্ট্যাটাস আপডেট করা হয়েছে");
     },
-    onError: (error: any) => {
-      toast.error(error.message || "স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
     },
   });
 };
