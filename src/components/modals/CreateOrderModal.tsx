@@ -31,9 +31,10 @@ interface CreateOrderModalProps {
 }
 
 export function CreateOrderModal({ isOpen, onClose, onSubmit, isSubmitting }: CreateOrderModalProps) {
-  const { data: itemsResponse } = useAdminItems();
+  const { data: itemsResponse } = useAdminItems({ limit: 1000 });
   const { data: coupons } = useAdminCoupons();
   const items = itemsResponse?.data || [];
+  const availableItems = items.filter((it: any) => it.isAvailable === true);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [selectedCity, setSelectedCity] = useState("ঢাকা");
 
@@ -288,7 +289,7 @@ export function CreateOrderModal({ isOpen, onClose, onSubmit, isSubmitting }: Cr
                 <div className="bg-cream-dark/30 p-6 rounded-2xl">
                   <h3 className="text-lg font-bold font-bengali text-charcoal mb-4">আইটেম নির্বাচন করুন</h3>
                   <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {items?.map((item: any) => (
+                    {availableItems?.map((item: any) => (
                       <div
                         key={item.id}
                         onClick={() => handleAddItem(item)}

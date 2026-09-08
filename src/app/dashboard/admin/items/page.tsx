@@ -112,8 +112,8 @@ export default function AdminItemsPage() {
   });
 
   const { data: catResponse } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => getCategories(),
+    queryKey: ["categories", "all"],
+    queryFn: () => getCategories({ limit: 1000 }),
   });
 
   const items = itemResponse?.data || [];
@@ -510,22 +510,22 @@ export default function AdminItemsPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
-                  <th className="px-6 py-4 w-16">Image</th>
-                  <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Category</th>
-                  <th className="px-6 py-4 text-right">Price</th>
-                  <th className="px-6 py-4 text-center">Best Selling</th>
-                  <th className="px-6 py-4 text-center">Featured</th>
-                  <th className="px-6 py-4 text-center">Cat. Featured</th>
-                  <th className="px-6 py-4 text-center">New</th>
-                  <th className="px-6 py-4 text-center">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3 w-16">Image</th>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Category</th>
+                  <th className="px-4 py-3 text-right">Price</th>
+                  <th className="px-4 py-3 text-center">Best Selling</th>
+                  <th className="px-4 py-3 text-center">Featured</th>
+                  <th className="px-4 py-3 text-center">Cat. Featured</th>
+                  <th className="px-4 py-3 text-center">New</th>
+                  <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {items.map((item: any) => (
                 <tr key={item.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3">
                     {item.imageUrl || (item.images && item.images[0]) ? (
                       <img src={item.imageUrl || item.images[0]} alt={item.name} className="w-10 h-10 object-cover rounded-md border-border" />
                     ) : (
@@ -534,13 +534,13 @@ export default function AdminItemsPage() {
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3">
                     <div className="font-semibold">{item.name}</div>
                     <div className="text-xs text-muted-foreground">{item.weight} {item.isSpicy && '🌶️'}</div>
                   </td>
-                  <td className="px-6 py-4 text-muted-foreground">{item.category?.name || "-"}</td>
-                  <td className="px-6 py-4 text-right font-bold text-fire">{formatPrice(item.price)}</td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-3 text-muted-foreground">{item.category?.name || "-"}</td>
+                  <td className="px-4 py-3 text-right font-bold text-fire">{formatPrice(item.price)}</td>
+                  <td className="px-4 py-3 text-center">
                     <Switch
                       checked={item.isBestSelling}
                       onCheckedChange={(checked) => {
@@ -552,7 +552,7 @@ export default function AdminItemsPage() {
                       className="data-checked:bg-purple-500"
                     />
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     <Switch
                       checked={item.isFeatured}
                       onCheckedChange={(checked) => {
@@ -564,7 +564,7 @@ export default function AdminItemsPage() {
                       className="data-checked:bg-amber-500"
                     />
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     <Switch
                       checked={item.isCategoryFeatured}
                       onCheckedChange={(checked) => {
@@ -576,7 +576,7 @@ export default function AdminItemsPage() {
                       className="data-checked:bg-orange-500"
                     />
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     <Switch
                       checked={item.isNew}
                       onCheckedChange={(checked) => {
@@ -588,7 +588,7 @@ export default function AdminItemsPage() {
                       className="data-checked:bg-blue-500"
                     />
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     <Switch 
                       checked={item.isAvailable}
                       onCheckedChange={(checked) => {
@@ -600,7 +600,7 @@ export default function AdminItemsPage() {
                       className="data-checked:bg-green-500"
                     />
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-3 text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
                         <MoreVertical size={18} />

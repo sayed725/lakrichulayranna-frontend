@@ -442,14 +442,14 @@ export default function AdminReviewsPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
-                  <th className="px-6 py-4">Item</th>
-                  <th className="px-6 py-4">Customer</th>
-                  <th className="px-6 py-4">Date</th>
-                  <th className="px-6 py-4">Rating</th>
-                  <th className="px-6 py-4">Comment</th>
-                  <th className="px-6 py-4 text-center">Status</th>
-                  <th className="px-6 py-4 text-center">Featured</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3 font-bold">Item</th>
+                  <th className="px-4 py-3 font-bold">Customer</th>
+                  <th className="px-4 py-3 font-bold">Date</th>
+                  <th className="px-4 py-3 font-bold">Rating</th>
+                  <th className="px-4 py-3 font-bold">Comment</th>
+                  <th className="px-4 py-3 font-bold text-center">Status</th>
+                  <th className="px-4 py-3 font-bold text-center">Featured</th>
+                  <th className="px-4 py-3 font-bold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -460,15 +460,15 @@ export default function AdminReviewsPage() {
                   return (
                     <tr key={review.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
                       {/* Item */}
-                      <td className="px-6 py-4 align-middle">
+                      <td className="px-4 py-3 align-middle">
                         <p className="font-bold text-charcoal font-bengali truncate">{review.item?.name || "Unknown Item"}</p>
                       </td>
 
                       {/* Customer (Name & Email) */}
-                      <td className="px-6 py-4 align-middle">
+                      <td className="px-4 py-3 align-middle">
                         <div className="space-y-0.5 min-w-0">
                           <div className="flex items-center gap-1 group/cname">
-                            <span className="font-medium text-charcoal font-bengali">{customerName}</span>
+                            <span className="font-medium text-charcoal font-bengali text-sm">{customerName}</span>
                             {customerName && (
                               <button
                                 onClick={() => handleCopy(customerName, `cname-${review.id}`, 'Customer name')}
@@ -504,13 +504,13 @@ export default function AdminReviewsPage() {
                       </td>
 
                       {/* Date & Time */}
-                      <td className="px-6 py-4 align-middle text-xs whitespace-nowrap font-latin">
+                      <td className="px-4 py-3 align-middle text-xs whitespace-nowrap font-latin">
                         <div className="font-medium text-charcoal">{format(new Date(review.createdAt), "dd MMM, yyyy")}</div>
                         <div className="text-[11px] text-muted-foreground mt-0.5">{format(new Date(review.createdAt), "hh:mm a")}</div>
                       </td>
 
                       {/* Rating */}
-                      <td className="px-6 py-4 align-middle">
+                      <td className="px-4 py-3 align-middle">
                         <div className="flex items-center gap-1 text-warning">
                           <Star size={16} fill="currentColor" />
                           <span className="font-bold text-charcoal ml-1">{review.rating}</span>
@@ -518,14 +518,14 @@ export default function AdminReviewsPage() {
                       </td>
 
                       {/* Comment */}
-                      <td className="px-6 py-4 align-middle">
+                      <td className="px-4 py-3 align-middle">
                         <p className="text-sm text-charcoal font-bengali max-w-xs truncate" title={review.comment}>
                           {review.comment || "-"}
                         </p>
                       </td>
 
                       {/* Status */}
-                      <td className="px-6 py-4 text-center align-middle">
+                      <td className="px-4 py-3 text-center align-middle">
                         <Switch
                           checked={review.isApproved}
                           onCheckedChange={() => handleToggleStatus(review.id, review.isApproved)}
@@ -534,7 +534,7 @@ export default function AdminReviewsPage() {
                       </td>
 
                       {/* Featured */}
-                      <td className="px-6 py-4 text-center align-middle">
+                      <td className="px-4 py-3 text-center align-middle">
                         <Switch
                           checked={review.isFeatured || false}
                           onCheckedChange={() => handleToggleFeatured(review.id, review.isFeatured || false)}
@@ -543,7 +543,7 @@ export default function AdminReviewsPage() {
                       </td>
 
                       {/* Actions */}
-                      <td className="px-6 py-4 text-right align-middle">
+                      <td className="px-4 py-3 text-right align-middle">
                         <DropdownMenu>
                           <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
                             <MoreVertical size={18} />

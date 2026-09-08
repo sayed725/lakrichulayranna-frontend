@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, User, LogOut, ChevronRight } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { ADMIN_NAV_LINKS, DASHBOARD_NAV_LINKS } from "@/lib/constants";
+import { Logo } from "@/components/shared/logo/Logo";
 import { useSidebar } from "@/components/ui/sidebar";
 
 interface TopbarProps {
@@ -94,8 +95,14 @@ export function Topbar({ onMobileMenuToggle }: TopbarProps) {
         <Menu size={24} />
       </button>
 
-      {/* Breadcrumbs (Left Side) */}
-      <div className="flex-1 flex items-center overflow-hidden">
+      {/* Breadcrumbs (Desktop) / Mobile Logo (Mobile Center) */}
+      <div className="flex-1 flex items-center justify-center sm:justify-start overflow-hidden">
+        {/* Mobile Logo centered */}
+        <div className="sm:hidden">
+          <Logo size="sm" />
+        </div>
+
+        {/* Desktop Breadcrumbs */}
         <nav className="hidden sm:flex text-sm font-medium text-muted font-bengali" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-2">
             {breadcrumbs.map((crumb, index) => (

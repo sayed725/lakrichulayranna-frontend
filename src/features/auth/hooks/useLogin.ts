@@ -23,7 +23,7 @@ export const useLogin = (callbackUrl?: string) => {
         ? callbackUrl
         : user.role === "ADMIN"
         ? "/dashboard/admin"
-        : "/dashboard/customer";
+        : "/";
 
       window.location.href = redirectTo;
     },

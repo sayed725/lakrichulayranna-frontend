@@ -282,25 +282,25 @@ export default function AdminContactsPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
-                  <th className="px-6 py-4">Person</th>
-                  <th className="px-6 py-4">Contact</th>
-                  <th className="px-6 py-4">Subject</th>
-                  <th className="px-6 py-4">Message</th>
-                  <th className="px-6 py-4 text-center">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3 font-bold">Person</th>
+                  <th className="px-4 py-3 font-bold">Contact</th>
+                  <th className="px-4 py-3 font-bold">Subject</th>
+                  <th className="px-4 py-3 font-bold">Message</th>
+                  <th className="px-4 py-3 font-bold text-center">Status</th>
+                  <th className="px-4 py-3 font-bold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {contacts.map((contact: any) => (
                   <tr key={contact.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                    <td className="px-6 py-4 align-middle">
+                    <td className="px-4 py-3 align-middle">
                       <div className="flex items-center gap-3 group/contactname">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-fire to-terracotta flex items-center justify-center text-white font-bold shrink-0 shadow-xs">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-fire to-terracotta flex items-center justify-center text-white font-bold shrink-0 shadow-xs text-sm">
                           {contact.name?.charAt(0).toUpperCase() || "C"}
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1">
-                            <p className="font-bold text-charcoal font-bengali truncate">{contact.name}</p>
+                            <p className="font-bold text-charcoal font-bengali truncate text-sm">{contact.name}</p>
                             {contact.name && (
                               <button
                                 onClick={() => handleCopy(contact.name, `tbl-name-${contact.id}`, 'Contact name')}
@@ -315,14 +315,14 @@ export default function AdminContactsPage() {
                               </button>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground font-latin">{format(new Date(contact.createdAt), "dd MMM, yyyy")}</p>
+                          <p className="text-[11px] text-muted-foreground font-latin">{format(new Date(contact.createdAt), "dd MMM, yyyy")}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 align-middle">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1 group/contactemail min-h-[22px]">
-                          <Mail size={14} className="text-muted-foreground shrink-0 mr-1" />
+                    <td className="px-4 py-3 align-middle">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-1 group/contactemail min-h-[20px]">
+                          <Mail size={13} className="text-muted-foreground shrink-0 mr-1" />
                           <span className="font-latin truncate text-charcoal text-sm">{contact.email}</span>
                           {contact.email && (
                             <button
@@ -339,8 +339,8 @@ export default function AdminContactsPage() {
                           )}
                         </div>
                         {contact.phone && (
-                          <div className="flex items-center gap-1 group/contactphone min-h-[22px]">
-                            <Phone size={14} className="text-muted-foreground shrink-0 mr-1" />
+                          <div className="flex items-center gap-1 group/contactphone min-h-[20px]">
+                            <Phone size={13} className="text-muted-foreground shrink-0 mr-1" />
                             <span className="font-latin text-xs text-muted-foreground">{contact.phone}</span>
                             <button
                               onClick={() => handleCopy(contact.phone, `tbl-phone-${contact.id}`, 'Phone number')}
@@ -357,18 +357,18 @@ export default function AdminContactsPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <MessageSquare size={14} className="text-muted-foreground" />
                         <span className="text-sm text-charcoal font-bengali">{contact.subject}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                       <p className="text-sm text-charcoal font-bengali max-w-xs truncate">
                         {contact.message}
                       </p>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-2">
                         {contact.isRead ? (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success/10 text-success text-xs font-bold font-latin">

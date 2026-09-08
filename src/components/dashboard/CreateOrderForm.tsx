@@ -27,10 +27,12 @@ const CreateOrderForm: React.FC<CreateOrderFormProps> = ({ onSubmit, isPending, 
     notes: "",
   });
 
+  const availableItems = items.filter((it: any) => it.isAvailable !== false);
+
   const [orderItems, setOrderItems] = useState<{ itemId: string; quantity: number }[]>([]);
 
   const handleAddOrderItem = () => {
-    const firstItemId = items.length > 0 ? items[0].id : "";
+    const firstItemId = availableItems.length > 0 ? availableItems[0].id : "";
     setOrderItems([...orderItems, { itemId: firstItemId, quantity: 1 }]);
   };
 
@@ -192,13 +194,14 @@ const CreateOrderForm: React.FC<CreateOrderFormProps> = ({ onSubmit, isPending, 
                                       {oi.itemId && (() => {
                                           const item = items.find((it: any) => it.id === oi.itemId);
                                           if (!item) return "";
-                                          return <span className="truncate block">{item.name} - ৳{item.price}</span>;
+                                          const displayPrice = item.discountPrice ?? item.price;
+                                          return <span className="truncate block">{item.name} - ৳{displayPrice}</span>;
                                       })()}
                                   </SelectValue>
                               </SelectTrigger>
                               <SelectContent className="max-h-60 overflow-y-auto">
-                                  {items.map((it: any) => (
-                                      <SelectItem key={it.id} value={it.id}>{it.name} - ৳{it.price}</SelectItem>
+                                  {availableItems.map((it: any) => (
+                                      <SelectItem key={it.id} value={it.id}>{it.name} - ৳{it.discountPrice ?? it.price}</SelectItem>
                                   ))}
                               </SelectContent>
                           </Select>

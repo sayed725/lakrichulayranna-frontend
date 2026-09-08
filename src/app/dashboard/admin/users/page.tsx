@@ -359,25 +359,25 @@ export default function AdminUsersPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
-                  <th className="px-6 py-4">User</th>
-                  <th className="px-6 py-4">Contact</th>
-                  <th className="px-6 py-4">Role</th>
-                  <th className="px-6 py-4 text-center">Orders</th>
-                  <th className="px-6 py-4 text-center">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3 font-bold">User</th>
+                  <th className="px-4 py-3 font-bold">Contact</th>
+                  <th className="px-4 py-3 font-bold">Role</th>
+                  <th className="px-4 py-3 font-bold text-center">Orders</th>
+                  <th className="px-4 py-3 font-bold text-center">Status</th>
+                  <th className="px-4 py-3 font-bold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {users.map((user: any) => (
                 <tr key={user.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                  <td className="px-6 py-4 align-middle">
+                  <td className="px-4 py-3 align-middle">
                     <div className="flex items-center gap-3 group/username">
-                      <div className="w-10 h-10 rounded-full bg-fire/10 text-fire font-bold flex items-center justify-center font-bengali shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-fire/10 text-fire font-bold flex items-center justify-center font-bengali shrink-0 text-sm">
                         {user.name?.charAt(0).toUpperCase() || "U"}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1">
-                          <p className="font-bold text-charcoal font-bengali truncate">{user.name}</p>
+                          <p className="font-bold text-charcoal font-bengali truncate text-sm">{user.name}</p>
                           {user.name && (
                             <button
                               onClick={() => handleCopy(user.name, `tbl-name-${user.id}`, 'User name')}
@@ -392,15 +392,15 @@ export default function AdminUsersPage() {
                             </button>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground font-latin">{format(new Date(user.createdAt), "dd MMM, yyyy")}</p>
+                        <p className="text-[11px] text-muted-foreground font-latin">{format(new Date(user.createdAt), "dd MMM, yyyy")}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 align-middle">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-1 group/useremail min-h-[22px]">
-                        <Mail size={14} className="text-muted-foreground shrink-0 mr-1" />
-                        <span className="font-latin truncate text-charcoal">{user.email}</span>
+                  <td className="px-4 py-3 align-middle">
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-1 group/useremail min-h-[20px]">
+                        <Mail size={13} className="text-muted-foreground shrink-0 mr-1" />
+                        <span className="font-latin truncate text-charcoal text-sm">{user.email}</span>
                         {user.email && (
                           <button
                             onClick={() => handleCopy(user.email, `tbl-email-${user.id}`, 'Email address')}
@@ -416,8 +416,8 @@ export default function AdminUsersPage() {
                         )}
                       </div>
                       {user.phone && (
-                        <div className="flex items-center gap-1 group/userphone min-h-[22px]">
-                          <Phone size={14} className="text-muted-foreground shrink-0 mr-1" />
+                        <div className="flex items-center gap-1 group/userphone min-h-[20px]">
+                          <Phone size={13} className="text-muted-foreground shrink-0 mr-1" />
                           <span className="font-latin text-xs text-muted-foreground">{user.phone}</span>
                           <button
                             onClick={() => handleCopy(user.phone, `tbl-phone-${user.id}`, 'Phone number')}
@@ -434,22 +434,22 @@ export default function AdminUsersPage() {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 align-middle">
+                  <td className="px-4 py-3 align-middle">
                     <div className="flex items-center gap-2">
                       {user.role === "ADMIN" ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-fire/10 text-fire text-xs font-bold font-latin">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-fire/10 text-fire text-xs font-bold font-latin">
                           <Shield size={12} />
                           ADMIN
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-muted/40 text-charcoal text-xs font-bold font-latin">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-muted/40 text-charcoal text-xs font-bold font-latin">
                           CUSTOMER
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center align-middle">
-                    <span className="inline-flex items-center justify-center font-bold text-fire bg-fire/10 border border-fire/20 px-3 py-1 rounded-full text-xs font-bengali">
+                  <td className="px-4 py-3 text-center align-middle">
+                    <span className="inline-flex items-center justify-center font-bold text-fire bg-fire/10 border border-fire/20 px-2.5 py-0.5 rounded-full text-xs font-bengali">
                       {user._count?.orders || user.orders?.length || 0} টি
                     </span>
                   </td>

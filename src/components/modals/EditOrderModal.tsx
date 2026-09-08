@@ -20,7 +20,7 @@ interface EditOrderModalProps {
 }
 
 export function EditOrderModal({ isOpen, onClose, order, onSubmit, isSubmitting }: EditOrderModalProps) {
-  const { data: itemsResponse } = useAdminItems();
+  const { data: itemsResponse } = useAdminItems({ limit: 1000 });
   const items = itemsResponse?.data || [];
   const [formData, setFormData] = useState({
     customerName: "",
@@ -34,8 +34,13 @@ export function EditOrderModal({ isOpen, onClose, order, onSubmit, isSubmitting 
 
   const [orderItems, setOrderItems] = useState<{ itemId: string; quantity: number }[]>([]);
 
+  const availableItems = items.filter((it: any) => 
+    it.isAvailable === true || orderItems.some(oi => oi.itemId === it.id)
+  );
+
   const handleAddOrderItem = () => {
-    const firstItemId = items.length > 0 ? items[0].id : "";
+    const firstAvailable = items.find((it: any) => it.isAvailable === true) || items[0];
+    const firstItemId = firstAvailable ? firstAvailable.id : "";
     setOrderItems([...orderItems, { itemId: firstItemId, quantity: 1 }]);
   };
 
@@ -229,13 +234,16 @@ export function EditOrderModal({ isOpen, onClose, order, onSubmit, isSubmitting 
                                       {oi.itemId && (() => {
                                           const item = items.find((it: any) => it.id === oi.itemId);
                                           if (!item) return "";
-                                          return <span className="truncate block">{item.name} - ৳{item.price}</span>;
+                                          const displayPrice = item.discountPrice ?? item.price;
+                                          return <span className="truncate block">{item.name} - ৳{displayPrice}</span>;
                                       })()}
                                   </SelectValue>
                               </SelectTrigger>
                               <SelectContent className="max-h-60 overflow-y-auto">
-                                  {items.map((it: any) => (
-                                      <SelectItem key={it.id} value={it.id}>{it.name} - ৳{it.price}</SelectItem>
+                                  {availableItems.map((it: any) => (
+                                      <SelectItem key={it.id} value={it.id}>
+                                        {it.name} - ৳{it.discountPrice ?? it.price} {!it.isAvailable ? "(অনুপলব্ধ)" : ""}
+                                      </SelectItem>
                                   ))}
                               </SelectContent>
                           </Select>

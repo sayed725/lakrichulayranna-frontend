@@ -395,21 +395,21 @@ export default function AdminBannersPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
-                  <th className="px-6 py-4">Banner</th>
-                  <th className="px-6 py-4">Category</th>
-                  <th className="px-6 py-4">Order</th>
-                  <th className="px-6 py-4 text-center">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3 font-bold">Banner</th>
+                  <th className="px-4 py-3 font-bold">Category</th>
+                  <th className="px-4 py-3 font-bold">Order</th>
+                  <th className="px-4 py-3 font-bold text-center">Status</th>
+                  <th className="px-4 py-3 font-bold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {banners.map((banner: Banner) => (
                 <tr key={banner.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3">
                     <div className="flex items-center gap-4">
-                      <div className="relative w-32 h-16 rounded-lg overflow-hidden border border-border bg-cream shrink-0">
+                      <div className="relative w-28 h-14 rounded-lg overflow-hidden border border-border bg-cream shrink-0">
                         {banner.image ? (
-                          <Image src={banner.image} alt={banner.title || "Banner"} fill sizes="128px" className="object-cover" />
+                          <Image src={banner.image} alt={banner.title || "Banner"} fill sizes="112px" className="object-cover" />
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <ImageIcon className="w-4 h-4 text-muted-foreground" />
@@ -417,34 +417,26 @@ export default function AdminBannersPage() {
                         )}
                       </div>
                       <div>
-                        <div className="font-semibold">{banner.title || "Untitled Banner"}</div>
-                        {/* {banner.badge && (
-                          <span className="inline-block px-2 py-0.5 text-xs font-semibold bg-fire text-white rounded-full mb-1">
-                            {banner.badge}
-                          </span>
-                        )} */}
+                        <div className="font-semibold text-sm">{banner.title || "Untitled Banner"}</div>
                         {banner.subtitle && (
                           <div className="text-xs text-muted-foreground line-clamp-1">{banner.subtitle}</div>
                         )}
-                        {/* {banner.buttonText && (
-                          <div className="text-xs text-muted-foreground">Button: {banner.buttonText}</div>
-                        )} */}
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3">
                     {banner.category ? (
                       <span className="text-sm text-muted-foreground">{banner.category.name}</span>
                     ) : (
                       <span className="text-sm text-muted-foreground">-</span>
                     )}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full">
+                  <td className="px-4 py-3">
+                    <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full text-xs">
                       {banner.order}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     <Switch
                       checked={banner.isActive}
                       onCheckedChange={(checked) => {
@@ -456,7 +448,7 @@ export default function AdminBannersPage() {
                       className="data-checked:bg-green-500"
                     />
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-3 text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
                         <MoreVertical size={18} />

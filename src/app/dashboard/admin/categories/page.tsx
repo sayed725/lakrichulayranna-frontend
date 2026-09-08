@@ -386,18 +386,18 @@ export default function AdminCategoriesPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
-                  <th className="px-6 py-4 w-16">Image</th>
-                  <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Items</th>
-                  <th className="px-6 py-4 text-center">Featured</th>
-                  <th className="px-6 py-4 text-center">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3 w-16">Image</th>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Items</th>
+                  <th className="px-4 py-3 text-center">Featured</th>
+                  <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {categories.map((category: Category) => (
                 <tr key={category.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3">
                     {category.imageUrl ? (
                       <img src={category.imageUrl} alt={category.name} className="w-10 h-10 object-cover rounded-md border-border" />
                     ) : (
@@ -406,18 +406,18 @@ export default function AdminCategoriesPage() {
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3">
                     <div className="font-semibold">{category.name}</div>
                     {category.description && (
                       <div className="text-xs text-muted-foreground line-clamp-1">{category.description}</div>
                     )}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full">
+                  <td className="px-4 py-3">
+                    <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full text-xs">
                       {category._count?.items || 0}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     <Switch
                       checked={category.isFeatured}
                       onCheckedChange={(checked) => {
@@ -429,7 +429,7 @@ export default function AdminCategoriesPage() {
                       className="data-checked:bg-amber-500"
                     />
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     <Switch
                       checked={category.isActive}
                       onCheckedChange={(checked) => {
@@ -441,7 +441,7 @@ export default function AdminCategoriesPage() {
                       className="data-checked:bg-green-500"
                     />
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-3 text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
                         <MoreVertical size={18} />

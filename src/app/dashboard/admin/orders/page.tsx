@@ -100,8 +100,9 @@ export default function AdminOrdersPage() {
   const statusMutation = useUpdateOrderStatus();
   const updateOrderMutation = useUpdateOrder();
   const updateOrderItemsMutation = useUpdateOrderItems();
-  const { data: itemsResponse } = useAdminItems();
+  const { data: itemsResponse } = useAdminItems({ limit: 1000 });
   const items = itemsResponse?.data || [];
+  const availableItems = items.filter((it: any) => it.isAvailable === true);
 
   const resetFilters = () => {
     setSearch("");
@@ -186,7 +187,7 @@ export default function AdminOrdersPage() {
             onSubmit={(data) => createMutation.mutate(data)}
             isPending={createMutation.isPending}
             onCancel={() => setIsCreateOpen(false)}
-            items={items}
+            items={availableItems}
             buttonText="অর্ডার তৈরি করুন"
           />
         </DialogContent>
@@ -373,21 +374,21 @@ export default function AdminOrdersPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
-                  <th className="px-6 py-4">Order Number</th>
-                  <th className="px-6 py-4">Order From</th>
-                  <th className="px-6 py-4">Customer</th>
-                  <th className="px-6 py-4 text-right">Total</th>
-                  <th className="px-6 py-4 text-center">Payment</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-center">Invoice</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3 font-bold">Order Number</th>
+                  <th className="px-4 py-3 font-bold">Order From</th>
+                  <th className="px-4 py-3 font-bold">Customer</th>
+                  <th className="px-4 py-3 font-bold text-right">Total</th>
+                  <th className="px-4 py-3 font-bold text-center">Payment</th>
+                  <th className="px-4 py-3 font-bold text-center">Status</th>
+                  <th className="px-4 py-3 font-bold text-center">Invoice</th>
+                  <th className="px-4 py-3 font-bold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {orders.map((order: any) => (
                   <tr key={order.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1.5">
                         <div className="font-mono font-bold text-charcoal">#{order.orderNumber}</div>
                         <button
                           onClick={() => handleCopyOrderNumber(order.orderNumber, order.id)}
@@ -395,23 +396,23 @@ export default function AdminOrdersPage() {
                           title="Copy order number"
                         >
                           {copiedOrderId === order.id ? (
-                            <Check className="w-4 h-4 text-green-600" />
+                            <Check className="w-3.5 h-3.5 text-green-600" />
                           ) : (
-                            <Copy className="w-4 h-4" />
+                            <Copy className="w-3.5 h-3.5" />
                           )}
                         </button>
                       </div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-[11px] text-muted-foreground">
                         {format(new Date(order.createdAt), "dd MMM, yyyy 'at' HH:mm")}
                       </div>
                     </td>
                     
                     {/* Order From */}
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                       {order.user ? (
                         <>
                           <div className="flex items-center gap-1 group/accname">
-                            <span className="font-medium text-charcoal">{order.user.name}</span>
+                            <span className="font-medium text-charcoal text-sm">{order.user.name}</span>
                             <button
                               onClick={() => handleCopyText(order.user.name, order.id, "Account Name")}
                               className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/accname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
@@ -442,14 +443,14 @@ export default function AdminOrdersPage() {
                           </div>
                         </>
                       ) : (
-                        <span className="text-xs font-bold text-muted-foreground bg-cream-dark/30 px-2 py-1 rounded-full uppercase">Guest</span>
+                        <span className="text-[10px] font-bold text-muted-foreground bg-cream-dark/30 px-2 py-0.5 rounded-full uppercase">Guest</span>
                       )}
                     </td>
 
                     {/* Customer */}
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                       <div className="flex items-center gap-1 group/name">
-                        <span className="font-medium text-charcoal">{order.customerName || "Guest"}</span>
+                        <span className="font-medium text-charcoal text-sm">{order.customerName || "Guest"}</span>
                         {order.customerName && (
                           <button
                             onClick={() => handleCopyText(order.customerName, order.id, "Customer Name")}
@@ -481,21 +482,21 @@ export default function AdminOrdersPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right font-bold text-fire">
+                    <td className="px-4 py-3 text-right font-bold text-fire">
                       {formatPrice(order.total)}
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className="px-2 py-1 rounded-full text-xs font-bold bg-cream-dark/50 text-charcoal">
+                    <td className="px-4 py-3 text-center">
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cream-dark/50 text-charcoal">
                         {order.paymentMethod === "COD" ? "COD" : "ONLINE"}
                       </span>
                     </td>
-                    <td className="py-4 text-center">
+                    <td className="px-2 py-3 text-center">
                       <Select
                         value={order.status}
                         onValueChange={(val) => handleStatusChange(order.id, val)}
                         disabled={statusMutation.isPending || order.status === "DELIVERED" || order.status === "CANCELLED"}
                       >
-                        <SelectTrigger className="h-8 w-32 border-none font-bold justify-center">
+                        <SelectTrigger className="h-8 w-28 border-none font-bold justify-center text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -508,18 +509,18 @@ export default function AdminOrdersPage() {
                         </SelectContent>
                       </Select>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-4 py-3 text-center">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-success hover:text-success hover:bg-success/10 rounded-full"
+                        className="text-success hover:text-success hover:bg-success/10 rounded-full h-8 w-8"
                         onClick={async () => await generateInvoicePDF(order)}
                         title="Download Invoice"
                       >
-                        <Download className="w-5 h-5" />
+                        <Download className="w-4 h-4" />
                       </Button>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-4 py-3 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
                           <MoreVertical size={18} />

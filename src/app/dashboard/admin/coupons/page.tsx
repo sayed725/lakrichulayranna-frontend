@@ -378,28 +378,28 @@ export default function AdminCouponsPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
                 <tr>
-                  <th className="px-6 py-4">Code</th>
-                  <th className="px-6 py-4">Title</th>
-                  <th className="px-6 py-4">Discount</th>
-                  <th className="px-6 py-4">Usage</th>
-                  <th className="px-6 py-4">Expiry</th>
-                  <th className="px-6 py-4 text-center">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3 font-bold">Code</th>
+                  <th className="px-4 py-3 font-bold">Title</th>
+                  <th className="px-4 py-3 font-bold">Discount</th>
+                  <th className="px-4 py-3 font-bold">Usage</th>
+                  <th className="px-4 py-3 font-bold">Expiry</th>
+                  <th className="px-4 py-3 font-bold text-center">Status</th>
+                  <th className="px-4 py-3 font-bold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {coupons.map((coupon: any) => (
                   <tr key={coupon.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-charcoal font-mono bg-cream px-2 py-1 rounded-lg border border-border">
+                    <td className="px-4 py-3">
+                      <span className="font-bold text-charcoal font-mono bg-cream px-2 py-0.5 rounded-lg border border-border text-xs">
                         {coupon.code}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <p className="font-semibold text-charcoal font-bengali">{coupon.title}</p>
+                    <td className="px-4 py-3">
+                      <p className="font-semibold text-charcoal font-bengali text-sm">{coupon.title}</p>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1 font-bold text-fire">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1 font-bold text-fire text-sm">
                         {coupon.discountType === "PERCENTAGE" ? (
                           <>
                             {/* <Percent size={14} /> */}
@@ -413,17 +413,17 @@ export default function AdminCouponsPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-charcoal">
+                    <td className="px-4 py-3">
+                      <span className="text-xs text-charcoal">
                         {coupon.usedCount} / {coupon.usageLimit || "∞"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-muted-foreground">
+                    <td className="px-4 py-3">
+                      <span className="text-xs text-muted-foreground">
                         {format(new Date(coupon.expiryDate), "dd MMM, yyyy")}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-4 py-3 text-center">
                       <Switch
                         checked={coupon.isActive}
                         onCheckedChange={() => handleToggle(coupon.id, coupon.isActive)}
