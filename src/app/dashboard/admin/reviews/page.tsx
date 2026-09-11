@@ -433,151 +433,291 @@ export default function AdminReviewsPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Reviews List / Table */}
       {reviewsLoading ? (
         <ReviewsLoadingSkeleton />
       ) : (
-        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
-                <tr>
-                  <th className="px-4 py-3 font-bold">Item</th>
-                  <th className="px-4 py-3 font-bold">Customer</th>
-                  <th className="px-4 py-3 font-bold">Date</th>
-                  <th className="px-4 py-3 font-bold">Rating</th>
-                  <th className="px-4 py-3 font-bold">Comment</th>
-                  <th className="px-4 py-3 font-bold text-center">Status</th>
-                  <th className="px-4 py-3 font-bold text-center">Featured</th>
-                  <th className="px-4 py-3 font-bold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {reviews.map((review: any) => {
-                  const customerName = review.user?.name || review.reviewerName || "Guest Reviewer";
-                  const customerEmail = review.user?.email || review.reviewerEmail || review.user?.phone || null;
+        <>
+          {/* Mobile & Tablet Card View (<1024px) */}
+          <div className="lg:hidden space-y-3.5">
+            {reviews.map((review: any) => {
+              const customerName = review.user?.name || review.reviewerName || "Guest Reviewer";
+              const customerEmail = review.user?.email || review.reviewerEmail || review.user?.phone || null;
 
-                  return (
-                    <tr key={review.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                      {/* Item */}
-                      <td className="px-4 py-3 align-middle">
-                        <p className="font-bold text-charcoal font-bengali truncate">{review.item?.name || "Unknown Item"}</p>
-                      </td>
-
-                      {/* Customer (Name & Email) */}
-                      <td className="px-4 py-3 align-middle">
-                        <div className="space-y-0.5 min-w-0">
-                          <div className="flex items-center gap-1 group/cname">
-                            <span className="font-medium text-charcoal font-bengali text-sm">{customerName}</span>
-                            {customerName && (
-                              <button
-                                onClick={() => handleCopy(customerName, `cname-${review.id}`, 'Customer name')}
-                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                                title="Copy customer name"
-                              >
-                                {copiedKey === `cname-${review.id}` ? (
-                                  <Check className="w-3.5 h-3.5 text-green-600" />
-                                ) : (
-                                  <Copy className="w-3.5 h-3.5" />
-                                )}
-                              </button>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1 group/cemail text-xs text-muted-foreground font-latin">
-                            <Mail size={12} className="shrink-0" />
-                            <span className="truncate">{customerEmail || "No email"}</span>
-                            {customerEmail && (
-                              <button
-                                onClick={() => handleCopy(customerEmail, `cemail-${review.id}`, 'Customer email')}
-                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                                title="Copy customer email"
-                              >
-                                {copiedKey === `cemail-${review.id}` ? (
-                                  <Check className="w-3.5 h-3.5 text-green-600" />
-                                ) : (
-                                  <Copy className="w-3.5 h-3.5" />
-                                )}
-                              </button>
-                            )}
-                          </div>
+              return (
+                <div key={review.id} className="bg-card border border-border/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all space-y-3">
+                  {/* Top Bar: Item Name & Actions */}
+                  <div className="flex items-start justify-between gap-2 border-b border-border/50 pb-2.5">
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <p className="font-bold text-charcoal font-bengali text-base truncate">{review.item?.name || "Unknown Item"}</p>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <div className="flex items-center gap-1 text-warning bg-warning/10 px-2 py-0.5 rounded-md border border-warning/20">
+                          <Star size={13} fill="currentColor" />
+                          <span className="font-bold text-charcoal text-xs">{review.rating}</span>
                         </div>
-                      </td>
+                        <span className="text-[11px] text-muted-foreground font-latin">
+                          {format(new Date(review.createdAt), "dd MMM, yyyy • hh:mm a")}
+                        </span>
+                      </div>
+                    </div>
 
-                      {/* Date & Time */}
-                      <td className="px-4 py-3 align-middle text-xs whitespace-nowrap font-latin">
-                        <div className="font-medium text-charcoal">{format(new Date(review.createdAt), "dd MMM, yyyy")}</div>
-                        <div className="text-[11px] text-muted-foreground mt-0.5">{format(new Date(review.createdAt), "hh:mm a")}</div>
-                      </td>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="p-1.5 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground shrink-0">
+                        <MoreVertical size={18} />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="rounded-xl">
+                        <DropdownMenuItem onClick={() => handleViewReview(review)}>
+                          <Eye size={16} className="mr-2" />
+                          View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(review.id)}
+                          className="text-destructive focus:text-destructive"
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 size={16} className="mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
 
-                      {/* Rating */}
-                      <td className="px-4 py-3 align-middle">
-                        <div className="flex items-center gap-1 text-warning">
-                          <Star size={16} fill="currentColor" />
-                          <span className="font-bold text-charcoal ml-1">{review.rating}</span>
+                  {/* Customer Info */}
+                  <div className="bg-muted/10 p-2.5 rounded-xl border border-border/40 space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1 min-w-0">
+                        <span className="font-medium text-charcoal font-bengali text-xs truncate">{customerName}</span>
+                      </div>
+                      {customerName && (
+                        <button
+                          onClick={() => handleCopy(customerName, `cname-m-${review.id}`, 'Customer name')}
+                          className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
+                          title="Copy name"
+                        >
+                          {copiedKey === `cname-m-${review.id}` ? (
+                            <Check className="w-3.5 h-3.5 text-green-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+
+                    {(customerEmail || review.user?.phone) && (
+                      <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground font-latin border-t border-border/30 pt-1.5">
+                        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                          {customerEmail && (
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Mail size={12} className="shrink-0" />
+                              <span className="truncate">{customerEmail}</span>
+                            </div>
+                          )}
+                          {review.user?.phone && (
+                            <span className="text-[11px] text-muted-foreground font-mono">
+                              • {review.user.phone}
+                            </span>
+                          )}
                         </div>
-                      </td>
+                        {customerEmail && (
+                          <button
+                            onClick={() => handleCopy(customerEmail, `cemail-m-${review.id}`, 'Customer email')}
+                            className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
+                            title="Copy email"
+                          >
+                            {copiedKey === `cemail-m-${review.id}` ? (
+                              <Check className="w-3.5 h-3.5 text-green-600" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
-                      {/* Comment */}
-                      <td className="px-4 py-3 align-middle">
-                        <p className="text-sm text-charcoal font-bengali max-w-xs truncate" title={review.comment}>
-                          {review.comment || "-"}
-                        </p>
-                      </td>
+                  {/* Comment */}
+                  {review.comment && (
+                    <p className="text-xs text-charcoal/90 font-bengali bg-cream/30 dark:bg-charcoal-light/20 p-2.5 rounded-xl border border-border/40 line-clamp-3 leading-relaxed">
+                      "{review.comment}"
+                    </p>
+                  )}
 
-                      {/* Status */}
-                      <td className="px-4 py-3 text-center align-middle">
-                        <Switch
-                          checked={review.isApproved}
-                          onCheckedChange={() => handleToggleStatus(review.id, review.isApproved)}
-                          className={"data-checked:bg-green-500"}
-                        />
-                      </td>
+                  {/* Status Toggles Bar */}
+                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-border/50">
+                    <div className="flex items-center justify-between bg-muted/10 px-3 py-2 rounded-xl border border-border/40">
+                      <span className="text-xs font-semibold text-charcoal font-bengali">Approved</span>
+                      <Switch
+                        checked={review.isApproved}
+                        onCheckedChange={() => handleToggleStatus(review.id, review.isApproved)}
+                        className="data-checked:bg-green-500"
+                        disabled={updateReviewStatusMutation.isPending}
+                      />
+                    </div>
 
-                      {/* Featured */}
-                      <td className="px-4 py-3 text-center align-middle">
-                        <Switch
-                          checked={review.isFeatured || false}
-                          onCheckedChange={() => handleToggleFeatured(review.id, review.isFeatured || false)}
-                          className={"data-checked:bg-amber-500"}
-                        />
-                      </td>
+                    <div className="flex items-center justify-between bg-muted/10 px-3 py-2 rounded-xl border border-border/40">
+                      <span className="text-xs font-semibold text-charcoal font-bengali">Featured</span>
+                      <Switch
+                        checked={review.isFeatured || false}
+                        onCheckedChange={() => handleToggleFeatured(review.id, review.isFeatured || false)}
+                        className="data-checked:bg-amber-500"
+                        disabled={updateReviewStatusMutation.isPending}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
 
-                      {/* Actions */}
-                      <td className="px-4 py-3 text-right align-middle">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
-                            <MoreVertical size={18} />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleViewReview(review)}>
-                              <Eye size={16} className="mr-2" />
-                              View
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleDelete(review.id)}
-                              className="text-destructive focus:text-destructive"
-                              disabled={deleteMutation.isPending}
-                            >
-                              <Trash2 size={16} className="mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  );
-                })}
-              {reviews.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">
-                    No reviews found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+            {reviews.length === 0 && (
+              <div className="bg-card border border-border rounded-2xl p-8 text-center text-muted-foreground font-bengali">
+                কোনো রিভিউ পাওয়া যায়নি।
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table View (>=1024px) */}
+          <div className="hidden lg:block border border-border bg-card rounded-xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
+                  <tr>
+                    <th className="px-4 py-3 font-bold">Item</th>
+                    <th className="px-4 py-3 font-bold">Customer</th>
+                    <th className="px-4 py-3 font-bold">Date</th>
+                    <th className="px-4 py-3 font-bold">Rating</th>
+                    <th className="px-4 py-3 font-bold">Comment</th>
+                    <th className="px-4 py-3 font-bold text-center">Status</th>
+                    <th className="px-4 py-3 font-bold text-center">Featured</th>
+                    <th className="px-4 py-3 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {reviews.map((review: any) => {
+                    const customerName = review.user?.name || review.reviewerName || "Guest Reviewer";
+                    const customerEmail = review.user?.email || review.reviewerEmail || review.user?.phone || null;
+
+                    return (
+                      <tr key={review.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
+                        {/* Item */}
+                        <td className="px-4 py-3 align-middle">
+                          <p className="font-bold text-charcoal font-bengali truncate">{review.item?.name || "Unknown Item"}</p>
+                        </td>
+
+                        {/* Customer (Name & Email) */}
+                        <td className="px-4 py-3 align-middle">
+                          <div className="space-y-0.5 min-w-0">
+                            <div className="flex items-center gap-1 group/cname">
+                              <span className="font-medium text-charcoal font-bengali text-sm">{customerName}</span>
+                              {customerName && (
+                                <button
+                                  onClick={() => handleCopy(customerName, `cname-${review.id}`, 'Customer name')}
+                                  className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                                  title="Copy customer name"
+                                >
+                                  {copiedKey === `cname-${review.id}` ? (
+                                    <Check className="w-3.5 h-3.5 text-green-600" />
+                                  ) : (
+                                    <Copy className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 group/cemail text-xs text-muted-foreground font-latin">
+                              <Mail size={12} className="shrink-0" />
+                              <span className="truncate">{customerEmail || "No email"}</span>
+                              {customerEmail && (
+                                <button
+                                  onClick={() => handleCopy(customerEmail, `cemail-${review.id}`, 'Customer email')}
+                                  className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                                  title="Copy customer email"
+                                >
+                                  {copiedKey === `cemail-${review.id}` ? (
+                                    <Check className="w-3.5 h-3.5 text-green-600" />
+                                  ) : (
+                                    <Copy className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Date & Time */}
+                        <td className="px-4 py-3 align-middle text-xs whitespace-nowrap font-latin">
+                          <div className="font-medium text-charcoal">{format(new Date(review.createdAt), "dd MMM, yyyy")}</div>
+                          <div className="text-[11px] text-muted-foreground mt-0.5">{format(new Date(review.createdAt), "hh:mm a")}</div>
+                        </td>
+
+                        {/* Rating */}
+                        <td className="px-4 py-3 align-middle">
+                          <div className="flex items-center gap-1 text-warning">
+                            <Star size={16} fill="currentColor" />
+                            <span className="font-bold text-charcoal ml-1">{review.rating}</span>
+                          </div>
+                        </td>
+
+                        {/* Comment */}
+                        <td className="px-4 py-3 align-middle">
+                          <p className="text-sm text-charcoal font-bengali max-w-xs truncate" title={review.comment}>
+                            {review.comment || "-"}
+                          </p>
+                        </td>
+
+                        {/* Status */}
+                        <td className="px-4 py-3 text-center align-middle">
+                          <Switch
+                            checked={review.isApproved}
+                            onCheckedChange={() => handleToggleStatus(review.id, review.isApproved)}
+                            className={"data-checked:bg-green-500"}
+                          />
+                        </td>
+
+                        {/* Featured */}
+                        <td className="px-4 py-3 text-center align-middle">
+                          <Switch
+                            checked={review.isFeatured || false}
+                            onCheckedChange={() => handleToggleFeatured(review.id, review.isFeatured || false)}
+                            className={"data-checked:bg-amber-500"}
+                          />
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-4 py-3 text-right align-middle">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                              <MoreVertical size={18} />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleViewReview(review)}>
+                                <Eye size={16} className="mr-2" />
+                                View
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDelete(review.id)}
+                                className="text-destructive focus:text-destructive"
+                                disabled={deleteMutation.isPending}
+                              >
+                                <Trash2 size={16} className="mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                {reviews.length === 0 && (
+                  <tr>
+                    <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground font-bengali">
+                      No reviews found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+        </>
       )}
 
       {/* Pagination */}
@@ -593,7 +733,7 @@ export default function AdminReviewsPage() {
 
       {/* View Review Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+        <DialogContent className="w-[95vw] sm:w-full sm:max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-3xl border-border shadow-2xl">
           <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
             <div className="flex items-center justify-between gap-4">
               <div>

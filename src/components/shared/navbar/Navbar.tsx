@@ -186,8 +186,8 @@ export function Navbar() {
       <div className="absolute inset-0 bg-gradient-to-r from-fire/[0.03] via-transparent to-terracotta/[0.03] pointer-events-none" />
 
       <Container className="relative z-10">
-        {/* Desktop Header */}
-        <div className="hidden lg:flex items-center justify-between w-full">
+        {/* Desktop & Tablet Header */}
+        <div className="hidden md:flex items-center justify-between w-full">
           {/* Logo */}
           <Logo size="sm" />
 
@@ -356,8 +356,8 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile & Tablet Header */}
-        <div className="flex lg:hidden items-center justify-between w-full">
+        {/* Mobile Only Header */}
+        <div className="flex md:hidden items-center justify-between w-full">
           {/* Left: Hamburger menu */}
           <div className="flex-1 flex justify-start">
             {mounted && (

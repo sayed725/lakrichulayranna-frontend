@@ -232,12 +232,12 @@ export default function AdminBannersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-card p-4 rounded-xl border">
+      <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
         <div>
-          <h1 className="text-2xl font-bold font-bengali text-charcoal">ব্যানারসমূহ</h1>
-          <p className="text-muted-foreground text-sm hidden md:block font-bengali">হোমপেজ স্লাইডার ব্যানার পরিচালনা করুন</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-bengali text-charcoal dark:text-cream">ব্যানারসমূহ</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm font-bengali mt-0.5">হোমপেজ স্লাইডার ব্যানার পরিচালনা করুন</p>
         </div>
-        <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="bg-fire text-white font-semibold hover:bg-fire-dark rounded-xl">
+        <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="bg-fire text-white font-semibold hover:bg-fire-dark rounded-xl h-11 px-4 self-stretch sm:self-auto">
           <Plus className="w-4 h-4 mr-2" /> নতুন ব্যানার
         </Button>
       </div>
@@ -250,7 +250,7 @@ export default function AdminBannersPage() {
             placeholder="Search banners..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="pl-9 pr-10 h-11 w-full bg-background border-border focus-visible:ring-fire/20 focus-visible:border-fire/50 rounded-xl"
+            className="pl-9 pr-10 h-11 w-full bg-background border-border focus-visible:ring-fire/20 focus-visible:border-fire/50 rounded-xl text-sm"
           />
           {search && (
             <button 
@@ -266,12 +266,12 @@ export default function AdminBannersPage() {
           {/* Mobile Filter Button */}
           <div className="lg:hidden">
             <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-              <Button variant="outline" className="w-auto gap-2 border-border hover:bg-cream hover:border-fire/30 hover:text-fire rounded-xl h-11 px-3 sm:px-4 transition-all" onClick={() => setIsFilterOpen(true)}>
+              <Button variant="outline" className="w-auto gap-2 border-border hover:bg-cream hover:border-fire/30 hover:text-fire rounded-xl h-11 px-3.5 transition-all" onClick={() => setIsFilterOpen(true)}>
                 <Filter className="h-4 w-4" />
-                <span className="hidden sm:inline">Filters</span>
+                <span className="hidden sm:inline text-xs font-semibold">Filters</span>
                 {isFiltered && <span className="flex h-2 w-2 rounded-full bg-fire" />}
               </Button>
-              <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col" showCloseButton={false}>
+              <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col" showCloseButton={false}>
                 <SheetHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0">
                   <SheetTitle className="text-xl font-bold flex items-center gap-2">
                     <Filter className="w-5 h-5 text-fire" /> Filters
@@ -339,37 +339,37 @@ export default function AdminBannersPage() {
 
           {/* Desktop Inline Filters */}
           <div className="hidden lg:flex flex-wrap gap-2 items-center">
-          <Select value={isActiveFilter} onValueChange={(v) => { setIsActiveFilter(v || "all"); setPage(1); }}>
-            <SelectTrigger className="w-[130px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-              <SelectValue placeholder="Status">
-                {isActiveFilter === "all" ? "All Status" :
-                 isActiveFilter === "active" ? "Active" :
-                 isActiveFilter === "inactive" ? "Inactive" : "Status"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select value={isActiveFilter} onValueChange={(v) => { setIsActiveFilter(v || "all"); setPage(1); }}>
+              <SelectTrigger className="w-[130px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
+                <SelectValue placeholder="Status">
+                  {isActiveFilter === "all" ? "All Status" :
+                   isActiveFilter === "active" ? "Active" :
+                   isActiveFilter === "inactive" ? "Inactive" : "Status"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select value={`${sortBy}-${sortOrder}`} onValueChange={(v) => {
-            const [by, order] = (v || "order-asc").split('-');
-            setSortBy(by);
-            setSortOrder(order as "asc" | "desc");
-            setPage(1);
-          }}>
-            <SelectTrigger className="w-[180px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-              <SelectValue placeholder="Sort By">{getSortLabel()}</SelectValue>
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="order-asc">Order: Low to High</SelectItem>
-              <SelectItem value="order-desc">Order: High to Low</SelectItem>
-              <SelectItem value="createdAt-desc">Newest First</SelectItem>
-              <SelectItem value="createdAt-asc">Oldest First</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select value={`${sortBy}-${sortOrder}`} onValueChange={(v) => {
+              const [by, order] = (v || "order-asc").split('-');
+              setSortBy(by);
+              setSortOrder(order as "asc" | "desc");
+              setPage(1);
+            }}>
+              <SelectTrigger className="w-[180px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
+                <SelectValue placeholder="Sort By">{getSortLabel()}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="order-asc">Order: Low to High</SelectItem>
+                <SelectItem value="order-desc">Order: High to Low</SelectItem>
+                <SelectItem value="createdAt-desc">Newest First</SelectItem>
+                <SelectItem value="createdAt-asc">Oldest First</SelectItem>
+              </SelectContent>
+            </Select>
 
             {isFiltered && (
               <Button 
@@ -386,111 +386,219 @@ export default function AdminBannersPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table & Cards */}
       {bannersLoading ? (
         <BannersLoadingSkeleton />
       ) : (
-        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
-                <tr>
-                  <th className="px-4 py-3 font-bold">Banner</th>
-                  <th className="px-4 py-3 font-bold">Category</th>
-                  <th className="px-4 py-3 font-bold">Order</th>
-                  <th className="px-4 py-3 font-bold text-center">Status</th>
-                  <th className="px-4 py-3 font-bold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {banners.map((banner: Banner) => (
-                <tr key={banner.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-4">
-                      <div className="relative w-28 h-14 rounded-lg overflow-hidden border border-border bg-cream shrink-0">
-                        {banner.image ? (
-                          <Image src={banner.image} alt={banner.title || "Banner"} fill sizes="112px" className="object-cover" />
+        <>
+          {/* Mobile & Tablet Card View (< lg) */}
+          <div className="lg:hidden space-y-3.5">
+            {banners.map((banner: Banner) => (
+              <div
+                key={banner.id}
+                className="bg-white dark:bg-charcoal border border-border/80 dark:border-white/10 rounded-2xl p-3.5 sm:p-4 space-y-3 shadow-xs hover:shadow-md transition-shadow"
+              >
+                {/* Header: Image & Details & Menu */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="relative w-20 h-12 sm:w-24 sm:h-14 rounded-xl overflow-hidden border border-border/60 bg-cream shrink-0 shadow-2xs">
+                      {banner.image ? (
+                        <Image src={banner.image} alt={banner.title || "Banner"} fill sizes="96px" className="object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-muted/60 flex items-center justify-center">
+                          <ImageIcon className="w-4 h-4 text-muted-foreground/70" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <h3 className="font-bold text-sm sm:text-base text-charcoal dark:text-cream leading-snug line-clamp-1">
+                        {banner.title || "Untitled Banner"}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
+                        {banner.category ? (
+                          <span className="inline-block truncate max-w-[120px] font-medium text-charcoal/80 dark:text-cream/80">
+                            {banner.category.name}
+                          </span>
                         ) : (
-                          <div className="w-full h-full bg-muted flex items-center justify-center">
-                            <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                          </div>
+                          <span className="text-muted-foreground text-xs">General Banner</span>
                         )}
-                      </div>
-                      <div>
-                        <div className="font-semibold text-sm">{banner.title || "Untitled Banner"}</div>
-                        {banner.subtitle && (
-                          <div className="text-xs text-muted-foreground line-clamp-1">{banner.subtitle}</div>
-                        )}
+                        <span className="font-latin text-[11px] px-2 py-0.5 rounded-full bg-cream dark:bg-white/10 text-charcoal dark:text-cream font-bold">
+                          Order: #{banner.order}
+                        </span>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    {banner.category ? (
-                      <span className="text-sm text-muted-foreground">{banner.category.name}</span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">-</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full text-xs">
-                      {banner.order}
+                  </div>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="p-1.5 hover:bg-cream-dark/50 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer text-muted-foreground shrink-0">
+                      <MoreVertical size={18} />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="rounded-xl">
+                      <DropdownMenuItem onClick={() => handleViewBanner(banner)}>
+                        <Eye size={16} className="mr-2" /> View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => openEdit(banner)}>
+                        <Edit2 size={16} className="mr-2" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          toast.error("Confirm Deletion", {
+                            description: `Are you sure you want to delete ${banner.title}?`,
+                            action: {
+                              label: "Delete",
+                              onClick: () => deleteMutation.mutate(banner.id),
+                            },
+                            cancel: { label: "Cancel", onClick: () => {} },
+                          });
+                        }}
+                        className="text-destructive focus:text-destructive"
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Trash2 size={16} className="mr-2" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* Status & Toggle Row */}
+                <div className="flex items-center justify-between gap-2 pt-2.5 border-t border-border/50 dark:border-white/5 text-xs">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="text-muted-foreground shrink-0 font-medium">Status:</span>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                      banner.isActive
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                        : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                    }`}>
+                      {banner.isActive ? "Active" : "Inactive"}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-center">
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-muted-foreground text-xs font-medium">Toggle:</span>
                     <Switch
                       checked={banner.isActive}
                       onCheckedChange={(checked) => {
                         toggleMutation.mutate({
                           id: banner.id,
-                          isActive: checked
+                          isActive: checked,
                         });
                       }}
-                      className="data-checked:bg-green-500"
+                      className="data-checked:bg-green-500 scale-90"
                     />
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
-                        <MoreVertical size={18} />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleViewBanner(banner)}>
-                          <Eye size={16} className="mr-2" />
-                          View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openEdit(banner)}>
-                          <Edit2 size={16} className="mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            toast.error("Confirm Deletion", {
-                              description: `Are you sure you want to delete ${banner.title}?`,
-                              action: {
-                                label: "Delete",
-                                onClick: () => deleteMutation.mutate(banner.id)
-                              },
-                              cancel: {
-                                label: "Cancel",
-                                onClick: () => { }
-                              }
-                            });
-                          }}
-                          className="text-destructive focus:text-destructive"
-                          disabled={deleteMutation.isPending}
-                        >
-                          <Trash2 size={16} className="mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {banners.length === 0 && (
+              <div className="p-8 text-center bg-card rounded-2xl border border-border text-muted-foreground">
+                কোনো ব্যানার পাওয়া যায়নি।
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table View (>= lg) */}
+          <div className="hidden lg:block border border-border bg-card rounded-xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
+                  <tr>
+                    <th className="px-4 py-3 font-bold">Banner</th>
+                    <th className="px-4 py-3 font-bold">Category</th>
+                    <th className="px-4 py-3 font-bold">Order</th>
+                    <th className="px-4 py-3 font-bold text-center">Status</th>
+                    <th className="px-4 py-3 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {banners.map((banner: Banner) => (
+                  <tr key={banner.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-4">
+                        <div className="relative w-28 h-14 rounded-lg overflow-hidden border border-border bg-cream shrink-0">
+                          {banner.image ? (
+                            <Image src={banner.image} alt={banner.title || "Banner"} fill sizes="112px" className="object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-muted flex items-center justify-center">
+                              <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-sm">{banner.title || "Untitled Banner"}</div>
+                          {banner.subtitle && (
+                            <div className="text-xs text-muted-foreground line-clamp-1">{banner.subtitle}</div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {banner.category ? (
+                        <span className="text-sm text-muted-foreground">{banner.category.name}</span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full text-xs">
+                        {banner.order}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <Switch
+                        checked={banner.isActive}
+                        onCheckedChange={(checked) => {
+                          toggleMutation.mutate({
+                            id: banner.id,
+                            isActive: checked
+                          });
+                        }}
+                        className="data-checked:bg-green-500"
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                          <MoreVertical size={18} />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleViewBanner(banner)}>
+                            <Eye size={16} className="mr-2" />
+                            View
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openEdit(banner)}>
+                            <Edit2 size={16} className="mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              toast.error("Confirm Deletion", {
+                                description: `Are you sure you want to delete ${banner.title}?`,
+                                action: {
+                                  label: "Delete",
+                                  onClick: () => deleteMutation.mutate(banner.id)
+                                },
+                                cancel: {
+                                  label: "Cancel",
+                                  onClick: () => { }
+                                }
+                              });
+                            }}
+                            className="text-destructive focus:text-destructive"
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 size={16} className="mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      </>
       )}
 
       {/* Pagination */}
@@ -508,7 +616,7 @@ export default function AdminBannersPage() {
       <Dialog open={isCreateOpen} onOpenChange={(open) => { if (!open) resetForm(); setIsCreateOpen(open); }}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-bengali">নতুন ব্যানার যোগ করুন</DialogTitle>
+            <DialogTitle className="font-bengali text-lg sm:text-xl">নতুন ব্যানার যোগ করুন</DialogTitle>
           </DialogHeader>
           <AddBannerForm
             formData={formData}
@@ -525,7 +633,7 @@ export default function AdminBannersPage() {
       <Dialog open={isEditOpen} onOpenChange={(open) => { if (!open) resetForm(); setIsEditOpen(open); }}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-bengali">ব্যানার এডিট করুন</DialogTitle>
+            <DialogTitle className="font-bengali text-lg sm:text-xl">ব্যানার এডিট করুন</DialogTitle>
           </DialogHeader>
           <AddBannerForm
             formData={formData}
@@ -540,7 +648,7 @@ export default function AdminBannersPage() {
 
       {/* View Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+        <DialogContent className="w-[95vw] sm:w-full sm:max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-3xl border-border shadow-2xl">
           <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
             <div className="flex items-center justify-between gap-4">
               <div>

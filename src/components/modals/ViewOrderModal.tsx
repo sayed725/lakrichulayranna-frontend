@@ -37,7 +37,7 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
 
   const customerName = order.customerName || parsedAddress.fullName || order.user?.name || 'N/A';
   const customerPhone = order.customerPhone || parsedAddress.phone || order.user?.phone || 'N/A';
-  const fullAddress = parsedAddress.address || [parsedAddress.street, parsedAddress.area, parsedAddress.city].filter(Boolean).join(', ') || 'N/A';
+  const fullAddress = parsedAddress.address || [parsedAddress.street, parsedAddress.area].filter(Boolean).join(', ') || 'N/A';
 
   const handleCopy = (text: string, key: string, label: string) => {
     if (!text || text === 'N/A') return;

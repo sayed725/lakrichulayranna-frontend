@@ -377,59 +377,70 @@ export default function AdminCategoriesPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table & Mobile Cards */}
       {categoriesLoading ? (
         <CategoriesLoadingSkeleton />
       ) : (
-        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
-                <tr>
-                  <th className="px-4 py-3 w-16">Image</th>
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Items</th>
-                  <th className="px-4 py-3 text-center">Featured</th>
-                  <th className="px-4 py-3 text-center">Status</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {categories.map((category: Category) => (
-                <tr key={category.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                  <td className="px-4 py-3">
+        <>
+          {/* Mobile & Tablet Card View (< lg) */}
+          <div className="lg:hidden space-y-3">
+            {categories.map((category: Category) => (
+              <div
+                key={category.id}
+                className="bg-white dark:bg-charcoal border border-border/80 dark:border-white/10 rounded-2xl p-3.5 space-y-3 shadow-xs"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     {category.imageUrl ? (
-                      <img src={category.imageUrl} alt={category.name} className="w-10 h-10 object-cover rounded-md border-border" />
+                      <img src={category.imageUrl} alt={category.name} className="w-12 h-12 object-cover rounded-xl border border-border/60 shrink-0" />
                     ) : (
-                      <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center border-border">
-                        <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                      <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center border border-border/60 shrink-0">
+                        <ImageIcon className="w-5 h-5 text-muted-foreground" />
                       </div>
                     )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="font-semibold">{category.name}</div>
-                    {category.description && (
-                      <div className="text-xs text-muted-foreground line-clamp-1">{category.description}</div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-bold text-charcoal bg-cream px-3 py-1 rounded-full text-xs">
-                      {category._count?.items || 0}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <Switch
-                      checked={category.isFeatured}
-                      onCheckedChange={(checked) => {
-                        updateMutation.mutate({
-                          id: category.id,
-                          payload: { isFeatured: checked }
-                        });
-                      }}
-                      className="data-checked:bg-amber-500"
-                    />
-                  </td>
-                  <td className="px-4 py-3 text-center">
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-sm text-charcoal dark:text-cream truncate">{category.name}</h3>
+                      <p className="text-xs text-muted-foreground truncate">{category.description || "No description"}</p>
+                    </div>
+                  </div>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="p-1.5 hover:bg-cream-dark/50 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer text-muted-foreground shrink-0">
+                      <MoreVertical size={18} />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="rounded-xl">
+                      <DropdownMenuItem onClick={() => handleViewCategory(category)}>
+                        <Eye size={16} className="mr-2" /> View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => openEdit(category)}>
+                        <Pencil size={16} className="mr-2" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          toast.error("Confirm Deletion", {
+                            description: `Are you sure you want to delete ${category.name}?`,
+                            action: {
+                              label: "Delete",
+                              onClick: () => deleteMutation.mutate(category.id)
+                            },
+                            cancel: {
+                              label: "Cancel",
+                              onClick: () => { }
+                            }
+                          });
+                        }}
+                        className="text-destructive focus:text-destructive"
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Trash2 size={16} className="mr-2" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-border/50 dark:border-white/5 text-xs">
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground">Active:</span>
                     <Switch
                       checked={category.isActive}
                       onCheckedChange={(checked) => {
@@ -438,52 +449,133 @@ export default function AdminCategoriesPage() {
                           payload: { isActive: checked }
                         });
                       }}
-                      className="data-checked:bg-green-500"
+                      className="data-checked:bg-green-500 scale-90"
                     />
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
-                        <MoreVertical size={18} />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleViewCategory(category)}>
-                          <Eye size={16} className="mr-2" />
-                          View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openEdit(category)}>
-                          <Pencil size={16} className="mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            toast.error("Confirm Deletion", {
-                              description: `Are you sure you want to delete ${category.name}?`,
-                              action: {
-                                label: "Delete",
-                                onClick: () => deleteMutation.mutate(category.id)
-                              },
-                              cancel: {
-                                label: "Cancel",
-                                onClick: () => { }
-                              }
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground">Featured:</span>
+                    <Switch
+                      checked={category.isFeatured}
+                      onCheckedChange={(checked) => {
+                        updateMutation.mutate({
+                          id: category.id,
+                          payload: { isFeatured: checked }
+                        });
+                      }}
+                      className="data-checked:bg-fire scale-90"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {categories.length === 0 && (
+              <div className="p-8 text-center bg-card rounded-2xl border border-border text-muted-foreground">
+                কোনো ক্যাটাগরি পাওয়া যায়নি।
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table View (>= lg) */}
+          <div className="hidden lg:block border border-border bg-card rounded-xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
+                  <tr>
+                    <th className="px-6 py-4">Image</th>
+                    <th className="px-6 py-4">Name</th>
+                    <th className="px-6 py-4">Description</th>
+                    <th className="px-6 py-4">Active Status</th>
+                    <th className="px-6 py-4">Featured</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {categories.map((category: Category) => (
+                    <tr key={category.id} className="hover:bg-cream/20 dark:hover:bg-charcoal-light/20 transition-colors">
+                      <td className="px-6 py-4">
+                        {category.imageUrl ? (
+                          <img src={category.imageUrl} alt={category.name} className="w-10 h-10 object-cover rounded-lg border" />
+                        ) : (
+                          <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center border">
+                            <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 font-semibold text-charcoal dark:text-cream">{category.name}</td>
+                      <td className="px-6 py-4 text-muted-foreground max-w-xs truncate">{category.description || "-"}</td>
+                      <td className="px-6 py-4">
+                        <Switch
+                          checked={category.isActive}
+                          onCheckedChange={(checked) => {
+                            updateMutation.mutate({
+                              id: category.id,
+                              payload: { isActive: checked }
                             });
                           }}
-                          className="text-destructive focus:text-destructive"
-                          disabled={deleteMutation.isPending}
-                        >
-                          <Trash2 size={16} className="mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                          className="data-checked:bg-green-500"
+                        />
+                      </td>
+                      <td className="px-6 py-4">
+                        <Switch
+                          checked={category.isFeatured}
+                          onCheckedChange={(checked) => {
+                            updateMutation.mutate({
+                              id: category.id,
+                              payload: { isFeatured: checked }
+                            });
+                          }}
+                          className="data-checked:bg-fire"
+                        />
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="p-1.5 hover:bg-cream-dark/50 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                            <MoreVertical size={18} />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="rounded-xl">
+                            <DropdownMenuItem onClick={() => handleViewCategory(category)}>
+                              <Eye size={16} className="mr-2" /> View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openEdit(category)}>
+                              <Pencil size={16} className="mr-2" /> Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                toast.error("Confirm Deletion", {
+                                  description: `Are you sure you want to delete ${category.name}?`,
+                                  action: {
+                                    label: "Delete",
+                                    onClick: () => deleteMutation.mutate(category.id)
+                                  },
+                                  cancel: {
+                                    label: "Cancel",
+                                    onClick: () => { }
+                                  }
+                                });
+                              }}
+                              className="text-destructive focus:text-destructive"
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 size={16} className="mr-2" /> Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                  {categories.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
+                        কোনো ক্যাটাগরি পাওয়া যায়নি।
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Pagination */}
@@ -532,13 +624,13 @@ export default function AdminCategoriesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* View Dialog */}
+      {/* View Category Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+        <DialogContent className="w-[95vw] sm:w-full sm:max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-3xl border-border shadow-2xl">
           <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <DialogTitle className="text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
+            <div className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-lg sm:text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
                   <Eye className="w-5 h-5 text-fire shrink-0" />
                   <span>ক্যাটাগরি বিস্তারিত</span>
                 </DialogTitle>
@@ -547,7 +639,7 @@ export default function AdminCategoriesPage() {
                 </DialogDescription>
               </div>
               {selectedCategory && (
-                <span className={`px-3 py-1 rounded-full text-xs font-bold font-bengali ${
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-bengali shrink-0 ${
                   selectedCategory.isActive 
                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
                     : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
@@ -559,11 +651,11 @@ export default function AdminCategoriesPage() {
           </DialogHeader>
 
           {selectedCategory && (
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* Category Header Card */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:p-5 bg-card rounded-2xl border border-border/70 shadow-xs">
+              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 p-4 sm:p-5 bg-card rounded-2xl border border-border/70 shadow-xs">
                 {selectedCategory.imageUrl ? (
-                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border border-border/60 shrink-0 bg-muted/30 shadow-xs">
+                  <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border border-border/60 shrink-0 bg-muted/30 shadow-xs">
                     <Image
                       src={selectedCategory.imageUrl}
                       alt={selectedCategory.name}
@@ -572,39 +664,39 @@ export default function AdminCategoriesPage() {
                     />
                   </div>
                 ) : (
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-muted/30 flex items-center justify-center shrink-0 border border-border/60">
-                    <ImageIcon className="w-10 h-10 text-muted-foreground/60" />
+                  <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-muted/30 flex items-center justify-center shrink-0 border border-border/60">
+                    <ImageIcon className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground/60" />
                   </div>
                 )}
 
-                <div className="space-y-2 min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
+                <div className="space-y-2 min-w-0 flex-1 text-center sm:text-left">
+                  <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
                     <span className="px-2.5 py-0.5 rounded-md bg-fire/10 text-fire text-xs font-bold font-latin">
                       {selectedCategory._count?.items || 0} Total Items
                     </span>
                     {selectedCategory.isFeatured && (
-                      <span className="px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-600 text-xs font-bold">
+                      <span className="px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-600 text-xs font-bold font-latin">
                         Featured
                       </span>
                     )}
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-charcoal font-bengali leading-snug">{selectedCategory.name}</h3>
+                  <h3 className="text-lg sm:text-2xl font-bold text-charcoal font-bengali leading-snug break-words">{selectedCategory.name}</h3>
                 </div>
               </div>
 
               {/* Status & Featured Metrics Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="p-3.5 sm:p-4 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
                   <span className="text-xs text-muted-foreground block font-bengali">স্ট্যাটাস</span>
-                  <span className={`text-sm font-bold px-3 py-0.5 rounded-md inline-block ${
+                  <span className={`text-xs sm:text-sm font-bold px-2.5 sm:px-3 py-0.5 rounded-md inline-block ${
                     selectedCategory.isActive ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"
                   }`}>
                     {selectedCategory.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
-                <div className="p-4 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                <div className="p-3.5 sm:p-4 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
                   <span className="text-xs text-muted-foreground block font-bengali">ফিচার্ড ক্যাটাগরি</span>
-                  <span className={`text-sm font-bold px-3 py-0.5 rounded-md inline-block ${
+                  <span className={`text-xs sm:text-sm font-bold px-2.5 sm:px-3 py-0.5 rounded-md inline-block ${
                     selectedCategory.isFeatured ? "bg-amber-500/10 text-amber-600" : "text-muted-foreground bg-muted/30"
                   }`}>
                     {selectedCategory.isFeatured ? "Yes" : "No"}
@@ -623,13 +715,13 @@ export default function AdminCategoriesPage() {
               )}
 
               {/* Footer Meta */}
-              <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
-                <div>
+              <div className="p-3.5 sm:p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
+                <div className="min-w-0">
                   <span className="font-semibold text-charcoal mr-1">তৈরি করা হয়েছে:</span>
                   <span>{format(new Date(selectedCategory.createdAt), "dd MMM, yyyy 'at' HH:mm")}</span>
                 </div>
                 {selectedCategory.updatedAt && (
-                  <div>
+                  <div className="min-w-0">
                     <span className="font-semibold text-charcoal mr-1">সর্বশেষ আপডেট:</span>
                     <span>{format(new Date(selectedCategory.updatedAt), "dd MMM, yyyy 'at' HH:mm")}</span>
                   </div>

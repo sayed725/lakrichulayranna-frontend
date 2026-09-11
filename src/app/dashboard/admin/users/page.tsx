@@ -350,64 +350,31 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Users List / Table */}
       {usersLoading ? (
         <UsersLoadingSkeleton />
       ) : (
-        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
-                <tr>
-                  <th className="px-4 py-3 font-bold">User</th>
-                  <th className="px-4 py-3 font-bold">Contact</th>
-                  <th className="px-4 py-3 font-bold">Role</th>
-                  <th className="px-4 py-3 font-bold text-center">Orders</th>
-                  <th className="px-4 py-3 font-bold text-center">Status</th>
-                  <th className="px-4 py-3 font-bold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {users.map((user: any) => (
-                <tr key={user.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                  <td className="px-4 py-3 align-middle">
-                    <div className="flex items-center gap-3 group/username">
-                      <div className="w-9 h-9 rounded-full bg-fire/10 text-fire font-bold flex items-center justify-center font-bengali shrink-0 text-sm">
-                        {user.name?.charAt(0).toUpperCase() || "U"}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1">
-                          <p className="font-bold text-charcoal font-bengali truncate text-sm">{user.name}</p>
-                          {user.name && (
-                            <button
-                              onClick={() => handleCopy(user.name, `tbl-name-${user.id}`, 'User name')}
-                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/username:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                              title="Copy user name"
-                            >
-                              {copiedKey === `tbl-name-${user.id}` ? (
-                                <Check className="w-3.5 h-3.5 text-green-600" />
-                              ) : (
-                                <Copy className="w-3.5 h-3.5" />
-                              )}
-                            </button>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-muted-foreground font-latin">{format(new Date(user.createdAt), "dd MMM, yyyy")}</p>
-                      </div>
+        <>
+          {/* Mobile & Tablet Card View (<1024px) */}
+          <div className="lg:hidden space-y-3.5">
+            {users.map((user: any) => (
+              <div key={user.id} className="bg-card border border-border/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all space-y-3">
+                {/* Top Bar: User Name, Avatar, Joined Date & Actions */}
+                <div className="flex items-center justify-between gap-3 border-b border-border/50 pb-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="w-10 h-10 rounded-full bg-fire/10 text-fire font-bold flex items-center justify-center font-bengali shrink-0 text-base">
+                      {user.name?.charAt(0).toUpperCase() || "U"}
                     </div>
-                  </td>
-                  <td className="px-4 py-3 align-middle">
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-1 group/useremail min-h-[20px]">
-                        <Mail size={13} className="text-muted-foreground shrink-0 mr-1" />
-                        <span className="font-latin truncate text-charcoal text-sm">{user.email}</span>
-                        {user.email && (
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1">
+                        <p className="font-bold text-charcoal font-bengali text-base truncate">{user.name}</p>
+                        {user.name && (
                           <button
-                            onClick={() => handleCopy(user.email, `tbl-email-${user.id}`, 'Email address')}
-                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/useremail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                            title="Copy email address"
+                            onClick={() => handleCopy(user.name, `card-name-${user.id}`, 'User name')}
+                            className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
+                            title="Copy name"
                           >
-                            {copiedKey === `tbl-email-${user.id}` ? (
+                            {copiedKey === `card-name-${user.id}` ? (
                               <Check className="w-3.5 h-3.5 text-green-600" />
                             ) : (
                               <Copy className="w-3.5 h-3.5" />
@@ -415,45 +382,96 @@ export default function AdminUsersPage() {
                           </button>
                         )}
                       </div>
-                      {user.phone && (
-                        <div className="flex items-center gap-1 group/userphone min-h-[20px]">
-                          <Phone size={13} className="text-muted-foreground shrink-0 mr-1" />
-                          <span className="font-latin text-xs text-muted-foreground">{user.phone}</span>
-                          <button
-                            onClick={() => handleCopy(user.phone, `tbl-phone-${user.id}`, 'Phone number')}
-                            className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/userphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                            title="Copy phone number"
-                          >
-                            {copiedKey === `tbl-phone-${user.id}` ? (
-                              <Check className="w-3.5 h-3.5 text-green-600" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                        </div>
-                      )}
+                      <p className="text-xs text-muted-foreground font-latin">
+                        Joined {format(new Date(user.createdAt), "dd MMM, yyyy")}
+                      </p>
                     </div>
-                  </td>
-                  <td className="px-4 py-3 align-middle">
-                    <div className="flex items-center gap-2">
-                      {user.role === "ADMIN" ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-fire/10 text-fire text-xs font-bold font-latin">
-                          <Shield size={12} />
-                          ADMIN
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-muted/40 text-charcoal text-xs font-bold font-latin">
-                          CUSTOMER
-                        </span>
-                      )}
+                  </div>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="p-1.5 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground shrink-0">
+                      <MoreVertical size={18} />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="rounded-xl">
+                      <DropdownMenuItem onClick={() => handleViewUser(user)}>
+                        <Eye size={16} className="mr-2" />
+                        View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(user.id)}
+                        className="text-destructive focus:text-destructive"
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Trash2 size={16} className="mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* Contact Box */}
+                <div className="bg-muted/10 p-2.5 rounded-xl border border-border/40 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground font-latin">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <Mail size={13} className="shrink-0 text-muted-foreground" />
+                      <span className="truncate text-charcoal font-medium">{user.email}</span>
                     </div>
-                  </td>
-                  <td className="px-4 py-3 text-center align-middle">
+                    {user.email && (
+                      <button
+                        onClick={() => handleCopy(user.email, `card-email-${user.id}`, 'Email address')}
+                        className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
+                        title="Copy email"
+                      >
+                        {copiedKey === `card-email-${user.id}` ? (
+                          <Check className="w-3.5 h-3.5 text-green-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+
+                  {user.phone && (
+                    <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground font-latin border-t border-border/30 pt-1.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Phone size={13} className="shrink-0 text-muted-foreground" />
+                        <span className="truncate text-charcoal font-medium">{user.phone}</span>
+                      </div>
+                      <button
+                        onClick={() => handleCopy(user.phone, `card-phone-${user.id}`, 'Phone number')}
+                        className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
+                        title="Copy phone"
+                      >
+                        {copiedKey === `card-phone-${user.id}` ? (
+                          <Check className="w-3.5 h-3.5 text-green-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer Bar: Role, Orders Count & Status */}
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/50">
+                  <div className="flex items-center gap-2">
+                    {user.role === "ADMIN" ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-fire/10 text-fire text-xs font-bold font-latin">
+                        <Shield size={12} />
+                        ADMIN
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-muted/40 text-charcoal text-xs font-bold font-latin">
+                        CUSTOMER
+                      </span>
+                    )}
+
                     <span className="inline-flex items-center justify-center font-bold text-fire bg-fire/10 border border-fire/20 px-2.5 py-0.5 rounded-full text-xs font-bengali">
                       {user._count?.orders || user.orders?.length || 0} টি
                     </span>
-                  </td>
-                  <td className="px-6 py-4 text-center align-middle">
+                  </div>
+
+                  <div>
                     {user.role === "ADMIN" ? (
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold font-latin border border-emerald-500/20">
                         Active
@@ -463,7 +481,7 @@ export default function AdminUsersPage() {
                         value={user.status}
                         onValueChange={(value) => handleStatusChange(user.id, value)}
                       >
-                        <SelectTrigger className="w-[110px] h-8 text-xs font-semibold justify-center bg-background rounded-lg mx-auto">
+                        <SelectTrigger className="w-[105px] h-8 text-xs font-semibold justify-center bg-background rounded-lg">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl">
@@ -473,42 +491,175 @@ export default function AdminUsersPage() {
                         </SelectContent>
                       </Select>
                     )}
-                  </td>
-                  <td className="px-6 py-4 text-right align-middle">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
-                        <MoreVertical size={18} />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleViewUser(user)}>
-                          <Eye size={16} className="mr-2" />
-                          View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(user.id)}
-                          className="text-destructive focus:text-destructive"
-                          disabled={deleteMutation.isPending}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {users.length === 0 && (
+              <div className="bg-card border border-border rounded-2xl p-8 text-center text-muted-foreground font-bengali">
+                কোনো ইউজার পাওয়া যায়নি।
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table View (>=1024px) */}
+          <div className="hidden lg:block border border-border bg-card rounded-xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
+                  <tr>
+                    <th className="px-4 py-3 font-bold">User</th>
+                    <th className="px-4 py-3 font-bold">Contact</th>
+                    <th className="px-4 py-3 font-bold">Role</th>
+                    <th className="px-4 py-3 font-bold text-center">Orders</th>
+                    <th className="px-4 py-3 font-bold text-center">Status</th>
+                    <th className="px-4 py-3 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {users.map((user: any) => (
+                  <tr key={user.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
+                    <td className="px-4 py-3 align-middle">
+                      <div className="flex items-center gap-3 group/username">
+                        <div className="w-9 h-9 rounded-full bg-fire/10 text-fire font-bold flex items-center justify-center font-bengali shrink-0 text-sm">
+                          {user.name?.charAt(0).toUpperCase() || "U"}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1">
+                            <p className="font-bold text-charcoal font-bengali truncate text-sm">{user.name}</p>
+                            {user.name && (
+                              <button
+                                onClick={() => handleCopy(user.name, `tbl-name-${user.id}`, 'User name')}
+                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/username:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                                title="Copy user name"
+                              >
+                                {copiedKey === `tbl-name-${user.id}` ? (
+                                  <Check className="w-3.5 h-3.5 text-green-600" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-muted-foreground font-latin">{format(new Date(user.createdAt), "dd MMM, yyyy")}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-1 group/useremail min-h-[20px]">
+                          <Mail size={13} className="text-muted-foreground shrink-0 mr-1" />
+                          <span className="font-latin truncate text-charcoal text-sm">{user.email}</span>
+                          {user.email && (
+                            <button
+                              onClick={() => handleCopy(user.email, `tbl-email-${user.id}`, 'Email address')}
+                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/useremail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                              title="Copy email address"
+                            >
+                              {copiedKey === `tbl-email-${user.id}` ? (
+                                <Check className="w-3.5 h-3.5 text-green-600" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                          )}
+                        </div>
+                        {user.phone && (
+                          <div className="flex items-center gap-1 group/userphone min-h-[20px]">
+                            <Phone size={13} className="text-muted-foreground shrink-0 mr-1" />
+                            <span className="font-latin text-xs text-muted-foreground">{user.phone}</span>
+                            <button
+                              onClick={() => handleCopy(user.phone, `tbl-phone-${user.id}`, 'Phone number')}
+                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/userphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                              title="Copy phone number"
+                            >
+                              {copiedKey === `tbl-phone-${user.id}` ? (
+                                <Check className="w-3.5 h-3.5 text-green-600" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <div className="flex items-center gap-2">
+                        {user.role === "ADMIN" ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-fire/10 text-fire text-xs font-bold font-latin">
+                            <Shield size={12} />
+                            ADMIN
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-muted/40 text-charcoal text-xs font-bold font-latin">
+                            CUSTOMER
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center align-middle">
+                      <span className="inline-flex items-center justify-center font-bold text-fire bg-fire/10 border border-fire/20 px-2.5 py-0.5 rounded-full text-xs font-bengali">
+                        {user._count?.orders || user.orders?.length || 0} টি
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center align-middle">
+                      {user.role === "ADMIN" ? (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold font-latin border border-emerald-500/20">
+                          Active
+                        </span>
+                      ) : (
+                        <Select
+                          value={user.status}
+                          onValueChange={(value) => handleStatusChange(user.id, value)}
                         >
-                          <Trash2 size={16} className="mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-              {users.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
-                    No users found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                          <SelectTrigger className="w-[110px] h-8 text-xs font-semibold justify-center bg-background rounded-lg mx-auto">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl">
+                            <SelectItem value="ACTIVE">Active</SelectItem>
+                            <SelectItem value="INACTIVE">Inactive</SelectItem>
+                            <SelectItem value="BANNED">Banned</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right align-middle">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                          <MoreVertical size={18} />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleViewUser(user)}>
+                            <Eye size={16} className="mr-2" />
+                            View
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(user.id)}
+                            className="text-destructive focus:text-destructive"
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 size={16} className="mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                ))}
+                {users.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground font-bengali">
+                      No users found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    )}
+        </>
+      )}
 
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (
@@ -523,11 +674,11 @@ export default function AdminUsersPage() {
 
       {/* View User Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+        <DialogContent className="w-[95vw] sm:w-full sm:max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-3xl border-border shadow-2xl">
           <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <DialogTitle className="text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
+            <div className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-lg sm:text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
                   <Eye className="w-5 h-5 text-fire shrink-0" />
                   <span>ব্যবহারকারী তথ্য</span>
                 </DialogTitle>
@@ -536,7 +687,7 @@ export default function AdminUsersPage() {
                 </DialogDescription>
               </div>
               {selectedUser && (
-                <span className={`px-3 py-1 rounded-full text-xs font-bold font-latin ${
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-latin shrink-0 ${
                   selectedUser.status === "ACTIVE" 
                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
                     : selectedUser.status === "BANNED"
@@ -550,20 +701,20 @@ export default function AdminUsersPage() {
           </DialogHeader>
 
           {selectedUser && (
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* User Profile Header Card */}
-              <div className="p-5 bg-card rounded-2xl border border-border/70 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-fire/10 text-fire font-bold flex items-center justify-center text-2xl font-bengali shrink-0 border border-fire/20">
+              <div className="p-4 sm:p-5 bg-card rounded-2xl border border-border/70 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-fire/10 text-fire font-bold flex items-center justify-center text-xl sm:text-2xl font-bengali shrink-0 border border-fire/20">
                     {selectedUser.name?.charAt(0).toUpperCase() || "U"}
                   </div>
-                  <div className="space-y-1 min-w-0">
+                  <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-1 group/modalname">
-                      <h3 className="font-bold text-charcoal font-bengali text-xl leading-tight truncate">{selectedUser.name}</h3>
+                      <h3 className="font-bold text-charcoal font-bengali text-base sm:text-xl leading-tight truncate">{selectedUser.name}</h3>
                       {selectedUser.name && (
                         <button
                           onClick={() => handleCopy(selectedUser.name, 'modal-name', 'User name')}
-                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 sm:opacity-0 sm:group-hover/modalname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                           title="Copy user name"
                         >
                           {copiedKey === 'modal-name' ? (
@@ -579,7 +730,7 @@ export default function AdminUsersPage() {
                       {selectedUser.email && (
                         <button
                           onClick={() => handleCopy(selectedUser.email, 'modal-email', 'Email address')}
-                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 sm:opacity-0 sm:group-hover/modalemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                           title="Copy email address"
                         >
                           {copiedKey === 'modal-email' ? (
@@ -590,7 +741,7 @@ export default function AdminUsersPage() {
                         </button>
                       )}
                     </div>
-                    <div className="pt-1">
+                    <div className="pt-0.5">
                       {selectedUser.role === "ADMIN" ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-fire/10 text-fire text-xs font-bold font-latin">
                           <Shield size={12} /> ADMIN
@@ -604,27 +755,27 @@ export default function AdminUsersPage() {
                   </div>
                 </div>
 
-                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 text-center sm:text-right shrink-0">
-                  <span className="text-xs text-muted-foreground block mb-1 font-bengali">মোট অর্ডার</span>
-                  <span className="font-bold text-fire text-lg font-bengali">
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 flex sm:flex-col items-center justify-between sm:justify-center text-left sm:text-right shrink-0">
+                  <span className="text-xs text-muted-foreground font-bengali">মোট অর্ডার</span>
+                  <span className="font-bold text-fire text-base sm:text-lg font-bengali">
                     {selectedUser._count?.orders || selectedUser.orders?.length || 0} টি
                   </span>
                 </div>
               </div>
 
               {/* Detailed Specs Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-1 group/modalphone flex items-center justify-between gap-2">
-                  <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="p-3.5 sm:p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-1 group/modalphone flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 font-bengali">
-                      <Phone size={14} className="text-fire" /> ফোন নম্বর
+                      <Phone size={14} className="text-fire shrink-0" /> ফোন নম্বর
                     </p>
-                    <p className="text-charcoal font-latin font-medium text-sm">{selectedUser.phone || "N/A"}</p>
+                    <p className="text-charcoal font-latin font-medium text-sm truncate">{selectedUser.phone || "N/A"}</p>
                   </div>
                   {selectedUser.phone && (
                     <button
                       onClick={() => handleCopy(selectedUser.phone, 'modal-phone', 'Phone number')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 sm:opacity-0 sm:group-hover/modalphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                       title="Copy phone number"
                     >
                       {copiedKey === 'modal-phone' ? (
@@ -636,20 +787,20 @@ export default function AdminUsersPage() {
                   )}
                 </div>
 
-                <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-1 group/modalemailcard flex items-center justify-between gap-2">
+                <div className="p-3.5 sm:p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-1 group/modalemailcard flex items-center justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 font-bengali">
-                      <Mail size={14} className="text-fire" /> ইমেইল ঠিকানা
+                      <Mail size={14} className="text-fire shrink-0" /> ইমেইল ঠিকানা
                     </p>
                     <p className="text-charcoal font-latin font-medium text-sm truncate">{selectedUser.email || "N/A"}</p>
                   </div>
                   {selectedUser.email && (
                     <button
                       onClick={() => handleCopy(selectedUser.email, 'modal-emailcard', 'Email address')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalemailcard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 sm:opacity-0 sm:group-hover/modalemailcard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
                       title="Copy email address"
                     >
-                      {copiedKey === 'modal-emailcard' ? (
+                      {copiedKey === `modal-emailcard` ? (
                         <Check className="w-3.5 h-3.5 text-green-600" />
                       ) : (
                         <Copy className="w-3.5 h-3.5" />
@@ -658,7 +809,7 @@ export default function AdminUsersPage() {
                   )}
                 </div>
 
-                <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-1 sm:col-span-2 group/modaladdr flex items-start justify-between gap-2">
+                <div className="p-3.5 sm:p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-1 sm:col-span-2 group/modaladdr flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold text-muted-foreground font-bengali">ঠিকানা</p>
                     <p className="text-charcoal font-bengali text-sm leading-relaxed break-words">{selectedUser.address || "N/A"}</p>
@@ -666,7 +817,7 @@ export default function AdminUsersPage() {
                   {selectedUser.address && (
                     <button
                       onClick={() => handleCopy(selectedUser.address, 'modal-address', 'Address')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modaladdr:opacity-100 focus:opacity-100 cursor-pointer shrink-0 mt-0.5"
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 sm:opacity-0 sm:group-hover/modaladdr:opacity-100 focus:opacity-100 cursor-pointer shrink-0 mt-0.5"
                       title="Copy address"
                     >
                       {copiedKey === 'modal-address' ? (
@@ -680,7 +831,7 @@ export default function AdminUsersPage() {
               </div>
 
               {/* Footer Timestamps */}
-              <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
+              <div className="p-3.5 sm:p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
                 <div>
                   <span className="font-semibold text-charcoal mr-1">যোগদানের তারিখ:</span>
                   <span className="font-latin">{format(new Date(selectedUser.createdAt), "dd MMM, yyyy 'at' HH:mm")}</span>

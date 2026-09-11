@@ -182,12 +182,12 @@ export default function AdminCouponsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-card p-4 rounded-xl border">
+      <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
         <div>
-          <h1 className="text-2xl font-bold font-bengali text-charcoal">কুপনসমূহ</h1>
-          <p className="text-muted-foreground text-sm hidden md:block font-bengali">ডিসকাউন্ট কুপন তৈরি ও পরিচালনা করুন</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-bengali text-charcoal dark:text-cream">কুপনসমূহ</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm font-bengali mt-0.5">ডিসকাউন্ট কুপন তৈরি ও পরিচালনা করুন</p>
         </div>
-        <Button onClick={handleOpenCreateDialog} className="bg-fire text-white font-semibold hover:bg-fire-dark rounded-xl">
+        <Button onClick={handleOpenCreateDialog} className="bg-fire text-white font-semibold hover:bg-fire-dark rounded-xl h-11 px-4 self-stretch sm:self-auto">
           <Plus className="w-4 h-4 mr-2" /> নতুন কুপন
         </Button>
       </div>
@@ -200,7 +200,7 @@ export default function AdminCouponsPage() {
             placeholder="Search coupons..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="pl-9 pr-10 h-11 w-full bg-background border-border focus-visible:ring-fire/20 focus-visible:border-fire/50 rounded-xl"
+            className="pl-9 pr-10 h-11 w-full bg-background border-border focus-visible:ring-fire/20 focus-visible:border-fire/50 rounded-xl text-sm"
           />
           {search && (
             <button
@@ -216,12 +216,12 @@ export default function AdminCouponsPage() {
           {/* Mobile Filter Button */}
           <div className="lg:hidden">
             <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-              <Button variant="outline" className="w-auto gap-2 border-border hover:bg-cream hover:border-fire/30 hover:text-fire rounded-xl h-11 px-3 sm:px-4 transition-all" onClick={() => setIsFilterOpen(true)}>
+              <Button variant="outline" className="w-auto gap-2 border-border hover:bg-cream hover:border-fire/30 hover:text-fire rounded-xl h-11 px-3.5 transition-all" onClick={() => setIsFilterOpen(true)}>
                 <Filter className="h-4 w-4" />
-                <span className="hidden sm:inline">Filters</span>
+                <span className="hidden sm:inline text-xs font-semibold">Filters</span>
                 {isFiltered && <span className="flex h-2 w-2 rounded-full bg-fire" />}
               </Button>
-              <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col" showCloseButton={false}>
+              <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col" showCloseButton={false}>
                 <SheetHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0">
                   <SheetTitle className="text-xl font-bold flex items-center gap-2">
                     <Filter className="w-5 h-5 text-fire" /> Filters
@@ -369,105 +369,195 @@ export default function AdminCouponsPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table & Mobile Cards */}
       {couponsLoading ? (
         <CouponsLoadingSkeleton />
       ) : (
-        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
-                <tr>
-                  <th className="px-4 py-3 font-bold">Code</th>
-                  <th className="px-4 py-3 font-bold">Title</th>
-                  <th className="px-4 py-3 font-bold">Discount</th>
-                  <th className="px-4 py-3 font-bold">Usage</th>
-                  <th className="px-4 py-3 font-bold">Expiry</th>
-                  <th className="px-4 py-3 font-bold text-center">Status</th>
-                  <th className="px-4 py-3 font-bold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {coupons.map((coupon: any) => (
-                  <tr key={coupon.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="font-bold text-charcoal font-mono bg-cream px-2 py-0.5 rounded-lg border border-border text-xs">
+        <>
+          {/* Mobile & Tablet Card View (< lg) */}
+          <div className="lg:hidden space-y-3.5">
+            {coupons.map((coupon: any) => (
+              <div
+                key={coupon.id}
+                className="bg-white dark:bg-charcoal border border-border/80 dark:border-white/10 rounded-2xl p-3.5 sm:p-4 space-y-3 shadow-xs hover:shadow-md transition-shadow"
+              >
+                {/* Header: Code Badge, Title, Discount Value & Menu */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-charcoal font-mono bg-cream dark:bg-white/10 px-2.5 py-1 rounded-lg border border-border text-xs tracking-wide">
                         {coupon.code}
                       </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="font-semibold text-charcoal font-bengali text-sm">{coupon.title}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1 font-bold text-fire text-sm">
-                        {coupon.discountType === "PERCENTAGE" ? (
-                          <>
-                            {/* <Percent size={14} /> */}
-                            <span>{coupon.discountValue}%</span>
-                          </>
-                        ) : (
-                          <>
-                            {/* <DollarSign size={14} /> */}
-                            <span>{formatPrice(coupon.discountValue)}</span>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs text-charcoal">
-                        {coupon.usedCount} / {coupon.usageLimit || "∞"}
+                      <span className="font-bold text-fire text-xs sm:text-sm font-latin bg-fire/10 px-2 py-0.5 rounded-md border border-fire/20">
+                        {coupon.discountType === "PERCENTAGE" ? `${coupon.discountValue}% OFF` : formatPrice(coupon.discountValue)}
                       </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs text-muted-foreground">
-                        {format(new Date(coupon.expiryDate), "dd MMM, yyyy")}
+                    </div>
+                    <h3 className="font-bold pt-2 text-sm sm:text-base text-charcoal dark:text-cream leading-snug line-clamp-1">
+                      {coupon.title}
+                    </h3>
+                  </div>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="p-1.5 hover:bg-cream-dark/50 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer text-muted-foreground shrink-0">
+                      <MoreVertical size={18} />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="rounded-xl">
+                      <DropdownMenuItem onClick={() => handleViewCoupon(coupon)}>
+                        <Eye size={16} className="mr-2" /> View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleOpenEditDialog(coupon)}>
+                        <Edit2 size={16} className="mr-2" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(coupon.id)}
+                        className="text-destructive focus:text-destructive"
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Trash2 size={16} className="mr-2" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* Info Badges (Usage, Expiry & Toggle Status) */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2.5 border-t border-border/50 dark:border-white/5 text-xs">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-muted-foreground text-[11px]">Usage:</span>
+                    <span className="font-semibold text-charcoal dark:text-cream text-xs truncate">
+                      {coupon.usedCount} / {coupon.usageLimit || "∞"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-muted-foreground text-[11px]">Expires:</span>
+                    <span className="font-latin text-[11px] text-muted-foreground truncate">
+                      {format(new Date(coupon.expiryDate), "dd MMM, yyyy")}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between sm:justify-end gap-2 col-span-2 sm:col-span-1 pt-1 sm:pt-0 border-t sm:border-t-0 border-border/40">
+                    <span className="text-muted-foreground text-[11px] sm:hidden">Status:</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        coupon.isActive ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"
+                      }`}>
+                        {coupon.isActive ? "Active" : "Inactive"}
                       </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
                       <Switch
                         checked={coupon.isActive}
                         onCheckedChange={() => handleToggle(coupon.id, coupon.isActive)}
-                        className={"data-checked:bg-green-500"}
+                        className="data-checked:bg-green-500 scale-90"
                       />
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
-                          <MoreVertical size={18} />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleViewCoupon(coupon)}>
-                            <Eye size={16} className="mr-2" />
-                            View
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleOpenEditDialog(coupon)}>
-                            <Edit2 size={16} className="mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={() => handleDelete(coupon.id)}
-                            className="text-destructive focus:text-destructive"
-                            disabled={deleteMutation.isPending}
-                          >
-                            <Trash2 size={16} className="mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
-                  </tr>
-                ))}
-                {coupons.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
-                      No coupons found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {coupons.length === 0 && (
+              <div className="p-8 text-center bg-card rounded-2xl border border-border text-muted-foreground">
+                No coupons found.
+              </div>
+            )}
           </div>
-        </div>
+
+          {/* Desktop Table View (>= lg) */}
+          <div className="hidden lg:block border border-border bg-card rounded-xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
+                  <tr>
+                    <th className="px-4 py-3 font-bold">Code</th>
+                    <th className="px-4 py-3 font-bold">Title</th>
+                    <th className="px-4 py-3 font-bold">Discount</th>
+                    <th className="px-4 py-3 font-bold">Usage</th>
+                    <th className="px-4 py-3 font-bold">Expiry</th>
+                    <th className="px-4 py-3 font-bold text-center">Status</th>
+                    <th className="px-4 py-3 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {coupons.map((coupon: any) => (
+                    <tr key={coupon.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
+                      <td className="px-4 py-3">
+                        <span className="font-bold text-charcoal font-mono bg-cream px-2 py-0.5 rounded-lg border border-border text-xs">
+                          {coupon.code}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="font-semibold text-charcoal font-bengali text-sm">{coupon.title}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1 font-bold text-fire text-sm">
+                          {coupon.discountType === "PERCENTAGE" ? (
+                            <>
+                              {/* <Percent size={14} /> */}
+                              <span>{coupon.discountValue}%</span>
+                            </>
+                          ) : (
+                            <>
+                              {/* <DollarSign size={14} /> */}
+                              <span>{formatPrice(coupon.discountValue)}</span>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-charcoal">
+                          {coupon.usedCount} / {coupon.usageLimit || "∞"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-muted-foreground">
+                          {format(new Date(coupon.expiryDate), "dd MMM, yyyy")}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Switch
+                          checked={coupon.isActive}
+                          onCheckedChange={() => handleToggle(coupon.id, coupon.isActive)}
+                          className={"data-checked:bg-green-500"}
+                        />
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                            <MoreVertical size={18} />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleViewCoupon(coupon)}>
+                              <Eye size={16} className="mr-2" />
+                              View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleOpenEditDialog(coupon)}>
+                              <Edit2 size={16} className="mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDelete(coupon.id)}
+                              className="text-destructive focus:text-destructive"
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 size={16} className="mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                  {coupons.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
+                        No coupons found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Pagination */}
@@ -648,11 +738,11 @@ export default function AdminCouponsPage() {
 
       {/* View Coupon Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-border shadow-2xl">
+        <DialogContent className="w-[95vw] sm:w-full sm:max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-3xl border-border shadow-2xl">
           <DialogHeader className="p-4 sm:p-6 border-b border-border/60 bg-muted/10 pr-12">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <DialogTitle className="text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
+            <div className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-lg sm:text-xl font-bold font-bengali text-charcoal flex items-center gap-2">
                   <Eye className="w-5 h-5 text-fire shrink-0" />
                   <span>কুপন বিস্তারিত</span>
                 </DialogTitle>
@@ -661,7 +751,7 @@ export default function AdminCouponsPage() {
                 </DialogDescription>
               </div>
               {selectedCoupon && (
-                <span className={`px-3 py-1 rounded-full text-xs font-bold font-bengali ${
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-bengali shrink-0 ${
                   selectedCoupon.isActive 
                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
                     : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
@@ -673,24 +763,24 @@ export default function AdminCouponsPage() {
           </DialogHeader>
 
           {selectedCoupon && (
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* Coupon Hero Card */}
-              <div className="p-5 bg-card rounded-2xl border border-border/70 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-charcoal font-mono text-xl sm:text-2xl bg-fire/10 text-fire px-4 py-2 rounded-xl border border-fire/20 tracking-wider">
+              <div className="p-4 sm:p-5 bg-card rounded-2xl border border-border/70 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                <div className="space-y-2 min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold text-charcoal font-mono text-lg sm:text-2xl bg-fire/10 text-fire px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-fire/20 tracking-wider break-all">
                       {selectedCoupon.code}
                     </span>
-                    <span className="px-2.5 py-1 rounded-md bg-muted/40 text-muted-foreground text-xs font-semibold">
+                    <span className="px-2.5 py-1 rounded-md bg-muted/40 text-muted-foreground text-xs font-semibold shrink-0">
                       {selectedCoupon.discountType}
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold text-charcoal font-bengali pt-1">{selectedCoupon.title}</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-charcoal font-bengali pt-1 truncate">{selectedCoupon.title}</h3>
                 </div>
 
-                <div className="text-left sm:text-right shrink-0">
-                  <span className="text-xs text-muted-foreground block mb-1">ডিসকাউন্ট পরিমাণ</span>
-                  <span className="font-bold text-fire text-2xl font-latin">
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 flex sm:flex-col items-center justify-between sm:justify-center text-left sm:text-right shrink-0">
+                  <span className="text-xs text-muted-foreground font-bengali">ডিসকাউন্ট পরিমাণ</span>
+                  <span className="font-bold text-fire text-xl sm:text-2xl font-latin">
                     {selectedCoupon.discountType === "PERCENTAGE" 
                       ? `${selectedCoupon.discountValue}%` 
                       : formatPrice(selectedCoupon.discountValue)}
@@ -699,28 +789,28 @@ export default function AdminCouponsPage() {
               </div>
 
               {/* Usage & Limits Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
                   <span className="text-xs text-muted-foreground block font-bengali">সর্বনিম্ন অর্ডার</span>
-                  <span className="text-xs font-bold text-charcoal font-latin">
+                  <span className="text-xs font-bold text-charcoal font-latin truncate block">
                     {selectedCoupon.minOrderAmount ? formatPrice(selectedCoupon.minOrderAmount) : "No Limit"}
                   </span>
                 </div>
-                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
                   <span className="text-xs text-muted-foreground block font-bengali">সর্বোচ্চ ছাড়</span>
-                  <span className="text-xs font-bold text-charcoal font-latin">
+                  <span className="text-xs font-bold text-charcoal font-latin truncate block">
                     {selectedCoupon.maxDiscountAmount ? formatPrice(selectedCoupon.maxDiscountAmount) : "No Limit"}
                   </span>
                 </div>
-                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
                   <span className="text-xs text-muted-foreground block font-bengali">মোট লিমিট</span>
-                  <span className="text-xs font-bold text-charcoal font-latin">
+                  <span className="text-xs font-bold text-charcoal font-latin truncate block">
                     {selectedCoupon.usageLimit || "Unlimited"}
                   </span>
                 </div>
-                <div className="p-3.5 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
+                <div className="p-3 bg-muted/10 rounded-xl border border-border/50 text-center space-y-1">
                   <span className="text-xs text-muted-foreground block font-bengali">ব্যবহৃত হয়েছে</span>
-                  <span className="text-xs font-bold text-fire font-latin">
+                  <span className="text-xs font-bold text-fire font-latin truncate block">
                     {selectedCoupon.usedCount} times
                   </span>
                 </div>
@@ -737,14 +827,14 @@ export default function AdminCouponsPage() {
               )}
 
               {/* Footer Timestamps & Expiry */}
-              <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
-                <div>
+              <div className="p-3.5 sm:p-4 bg-muted/10 rounded-2xl border border-border/50 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground font-bengali">
+                <div className="min-w-0">
                   <span className="font-semibold text-charcoal mr-1">মেয়াদ শেষ:</span>
                   <span className="font-latin text-fire font-semibold">
                     {format(new Date(selectedCoupon.expiryDate), "dd MMM, yyyy 'at' HH:mm")}
                   </span>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <span className="font-semibold text-charcoal mr-1">তৈরি করা হয়েছে:</span>
                   <span>{format(new Date(selectedCoupon.createdAt), "dd MMM, yyyy 'at' HH:mm")}</span>
                 </div>

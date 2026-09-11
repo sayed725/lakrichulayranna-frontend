@@ -267,10 +267,10 @@ export default function AdminItemsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-card p-4 rounded-xl border">
+      <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
         <div>
-          <h1 className="text-2xl font-bold font-bengali text-charcoal">আইটেমসমূহ</h1>
-          <p className="text-muted-foreground text-sm hidden md:block font-bengali">মেনুর সকল খাবার পরিচালনা করুন</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-bengali text-charcoal dark:text-cream">আইটেমসমূহ</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm font-bengali mt-0.5">মেনুর সকল খাবার পরিচালনা করুন</p>
         </div>
         <Dialog
           open={isCreateOpen}
@@ -285,13 +285,13 @@ export default function AdminItemsPage() {
             setIsCreateOpen(val);
           }}
         >
-          <Button className="bg-fire text-white font-semibold hover:bg-fire-dark" onClick={() => setIsCreateOpen(true)}>
+          <Button className="bg-fire text-white font-semibold hover:bg-fire-dark rounded-xl h-11 px-4 self-stretch sm:self-auto" onClick={() => setIsCreateOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
             নতুন আইটেম
           </Button>
           <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>নতুন আইটেম তৈরি করুন</DialogTitle>
+              <DialogTitle className="text-lg sm:text-xl font-bold font-bengali">নতুন আইটেম তৈরি করুন</DialogTitle>
             </DialogHeader>
             
             <AddItemForm
@@ -315,7 +315,7 @@ export default function AdminItemsPage() {
             placeholder="খাবারের নাম খুঁজুন..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="pl-9 pr-10 h-11 w-full bg-background border-border focus-visible:ring-fire/20 focus-visible:border-fire/50 rounded-xl font-bengali"
+            className="pl-9 pr-10 h-11 w-full bg-background border-border focus-visible:ring-fire/20 focus-visible:border-fire/50 rounded-xl font-bengali text-sm"
           />
           {search && (
             <button 
@@ -328,16 +328,15 @@ export default function AdminItemsPage() {
         </div>
 
         <div className="flex items-center gap-2 w-auto">
-          
           {/* Mobile/Tablet Filter Drawer */}
           <div className="lg:hidden">
             <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-              <Button variant="outline" className="w-auto gap-2 border-border hover:bg-cream hover:border-fire/30 hover:text-fire rounded-xl h-11 px-3 sm:px-4 transition-all" onClick={() => setIsFilterOpen(true)}>
+              <Button variant="outline" className="w-auto gap-2 border-border hover:bg-cream hover:border-fire/30 hover:text-fire rounded-xl h-11 px-3.5 transition-all" onClick={() => setIsFilterOpen(true)}>
                 <Filter className="h-4 w-4" />
-                <span className="hidden sm:inline">Filters</span>
+                <span className="hidden sm:inline text-xs font-semibold">Filters</span>
                 {isFiltered && <span className="flex h-2 w-2 rounded-full bg-fire" />}
               </Button>
-              <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col" showCloseButton={false}>
+              <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col" showCloseButton={false}>
                 <SheetHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0">
                   <SheetTitle className="text-xl font-bold flex items-center gap-2">
                     <Filter className="w-5 h-5 text-fire" /> Filters
@@ -488,7 +487,7 @@ export default function AdminItemsPage() {
             </Select>
 
             {isFiltered && (
-              <Button 
+            <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={resetFilters} 
@@ -505,151 +504,318 @@ export default function AdminItemsPage() {
       {itemsLoading ? (
         <ItemsLoadingSkeleton />
       ) : (
-        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
-                <tr>
-                  <th className="px-4 py-3 w-16">Image</th>
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Category</th>
-                  <th className="px-4 py-3 text-right">Price</th>
-                  <th className="px-4 py-3 text-center">Best Selling</th>
-                  <th className="px-4 py-3 text-center">Featured</th>
-                  <th className="px-4 py-3 text-center">Cat. Featured</th>
-                  <th className="px-4 py-3 text-center">New</th>
-                  <th className="px-4 py-3 text-center">Status</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {items.map((item: any) => (
-                <tr key={item.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
-                  <td className="px-4 py-3">
+        <>
+          {/* Mobile & Tablet Card View (< lg) */}
+          <div className="lg:hidden space-y-3.5">
+            {items.map((item: any) => (
+              <div
+                key={item.id}
+                className="bg-white dark:bg-charcoal border border-border/80 dark:border-white/10 rounded-2xl p-3.5 sm:p-4 space-y-3 shadow-xs hover:shadow-md transition-shadow"
+              >
+                {/* Header: Image, Title, Category, Price & Menu */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     {item.imageUrl || (item.images && item.images[0]) ? (
-                      <img src={item.imageUrl || item.images[0]} alt={item.name} className="w-10 h-10 object-cover rounded-md border-border" />
+                      <img
+                        src={item.imageUrl || item.images[0]}
+                        alt={item.name}
+                        className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-border/60 shrink-0 shadow-2xs"
+                      />
                     ) : (
-                      <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center border-border">
-                        <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-muted/60 rounded-xl flex items-center justify-center border border-border/60 shrink-0">
+                        <ImageIcon className="w-5 h-5 text-muted-foreground/70" />
                       </div>
                     )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="font-semibold">{item.name}</div>
-                    <div className="text-xs text-muted-foreground">{item.weight} {item.isSpicy && '🌶️'}</div>
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">{item.category?.name || "-"}</td>
-                  <td className="px-4 py-3 text-right font-bold text-fire">{formatPrice(item.price)}</td>
-                  <td className="px-4 py-3 text-center">
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <h3 className="font-bold text-sm sm:text-base text-charcoal dark:text-cream leading-snug line-clamp-1">
+                        {item.name}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
+                        <span className="inline-block truncate max-w-[120px] font-medium text-charcoal/80 dark:text-cream/80">
+                          {item.category?.name || "General"}
+                        </span>
+                        {item.weight && (
+                          <span className="font-latin text-[11px] shrink-0 text-muted-foreground">
+                            • {item.weight}
+                          </span>
+                        )}
+                        {item.isSpicy && <span className="shrink-0 text-xs" title="Spicy">🌶️</span>}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-extrabold text-fire text-sm sm:text-base font-latin whitespace-nowrap">
+                        {formatPrice(item.discountPrice ?? item.price)}
+                      </span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="p-1 hover:bg-cream-dark/50 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer text-muted-foreground -mr-1">
+                          <MoreVertical size={18} />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="rounded-xl">
+                          <DropdownMenuItem onClick={() => handleViewItem(item)}>
+                            <Eye size={16} className="mr-2" /> View
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openEdit(item)}>
+                            <Edit2 size={16} className="mr-2" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              toast.error("Confirm Deletion", {
+                                description: `Are you sure you want to delete ${item.name}?`,
+                                action: {
+                                  label: "Delete",
+                                  onClick: () => deleteMutationHook.mutate(item.id),
+                                },
+                                cancel: { label: "Cancel", onClick: () => {} },
+                              });
+                            }}
+                            className="text-destructive focus:text-destructive"
+                            disabled={deleteMutationHook.isPending}
+                          >
+                            <Trash2 size={16} className="mr-2" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    {item.discountPrice && (
+                      <span className="text-[11px] text-muted-foreground line-through font-latin">
+                        {formatPrice(item.price)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick Toggle Controls */}
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2.5 border-t border-border/50 dark:border-white/5">
+                  <div className="flex items-center justify-between sm:flex-col sm:justify-between bg-cream/40 dark:bg-white/[0.03] p-2 rounded-xl border border-border/40 dark:border-white/5 min-h-[48px] sm:min-h-[58px]">
+                    <span className="text-muted-foreground font-medium text-[11px] truncate px-1">Available</span>
+                    <Switch
+                      checked={item.isAvailable}
+                      onCheckedChange={(checked) => {
+                        updateMutation.mutate({
+                          id: item.id,
+                          payload: { isAvailable: checked },
+                        });
+                      }}
+                      className="data-checked:bg-green-500 scale-90"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between sm:flex-col sm:justify-between bg-cream/40 dark:bg-white/[0.03] p-2 rounded-xl border border-border/40 dark:border-white/5 min-h-[48px] sm:min-h-[58px]">
+                    <span className="text-muted-foreground font-medium text-[11px] truncate px-1">Best Seller</span>
                     <Switch
                       checked={item.isBestSelling}
                       onCheckedChange={(checked) => {
                         updateMutation.mutate({
                           id: item.id,
-                          payload: { isBestSelling: checked }
+                          payload: { isBestSelling: checked },
                         });
                       }}
-                      className="data-checked:bg-purple-500"
+                      className="data-checked:bg-purple-500 scale-90"
                     />
-                  </td>
-                  <td className="px-4 py-3 text-center">
+                  </div>
+
+                  <div className="flex items-center justify-between sm:flex-col sm:justify-between bg-cream/40 dark:bg-white/[0.03] p-2 rounded-xl border border-border/40 dark:border-white/5 min-h-[48px] sm:min-h-[58px]">
+                    <span className="text-muted-foreground font-medium text-[11px] truncate px-1">Featured</span>
                     <Switch
                       checked={item.isFeatured}
                       onCheckedChange={(checked) => {
                         updateMutation.mutate({
                           id: item.id,
-                          payload: { isFeatured: checked }
+                          payload: { isFeatured: checked },
                         });
                       }}
-                      className="data-checked:bg-amber-500"
+                      className="data-checked:bg-amber-500 scale-90"
                     />
-                  </td>
-                  <td className="px-4 py-3 text-center">
+                  </div>
+
+                  <div className="flex items-center justify-between sm:flex-col sm:justify-between bg-cream/40 dark:bg-white/[0.03] p-2 rounded-xl border border-border/40 dark:border-white/5 min-h-[48px] sm:min-h-[58px]">
+                    <span className="text-muted-foreground font-medium text-[11px] truncate px-1">Cat. Feat.</span>
                     <Switch
                       checked={item.isCategoryFeatured}
                       onCheckedChange={(checked) => {
                         updateMutation.mutate({
                           id: item.id,
-                          payload: { isCategoryFeatured: checked }
+                          payload: { isCategoryFeatured: checked },
                         });
                       }}
-                      className="data-checked:bg-orange-500"
+                      className="data-checked:bg-orange-500 scale-90"
                     />
-                  </td>
-                  <td className="px-4 py-3 text-center">
+                  </div>
+
+                  <div className="flex items-center justify-between sm:flex-col sm:justify-between bg-cream/40 dark:bg-white/[0.03] p-2 rounded-xl border border-border/40 dark:border-white/5 min-h-[48px] sm:min-h-[58px] col-span-2 sm:col-span-1">
+                    <span className="text-muted-foreground font-medium text-[11px] truncate px-1">New Item</span>
                     <Switch
                       checked={item.isNew}
                       onCheckedChange={(checked) => {
                         updateMutation.mutate({
                           id: item.id,
-                          payload: { isNew: checked }
+                          payload: { isNew: checked },
                         });
                       }}
-                      className="data-checked:bg-blue-500"
+                      className="data-checked:bg-blue-500 scale-90"
                     />
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <Switch 
-                      checked={item.isAvailable}
-                      onCheckedChange={(checked) => {
-                        updateMutation.mutate({
-                          id: item.id,
-                          payload: { isAvailable: checked }
-                        });
-                      }}
-                      className="data-checked:bg-green-500"
-                    />
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
-                        <MoreVertical size={18} />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleViewItem(item)}>
-                          <Eye size={16} className="mr-2" />
-                          View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openEdit(item)}>
-                          <Edit2 size={16} className="mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            toast.error("Confirm Deletion", {
-                              description: `Are you sure you want to delete ${item.name}?`,
-                              action: {
-                                label: "Delete",
-                                onClick: () => deleteMutationHook.mutate(item.id)
-                              },
-                              cancel: {
-                                label: "Cancel",
-                                onClick: () => { }
-                              }
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {items.length === 0 && (
+              <div className="p-8 text-center bg-card rounded-2xl border border-border text-muted-foreground">
+                কোনো খাবার পাওয়া যায়নি।
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table View (>= lg) */}
+          <div className="hidden lg:block border border-border bg-card rounded-xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-cream/50 dark:bg-charcoal-light/30 text-charcoal dark:text-cream text-xs uppercase font-bengali">
+                  <tr>
+                    <th className="px-4 py-3 w-16">Image</th>
+                    <th className="px-4 py-3">Name</th>
+                    <th className="px-4 py-3">Category</th>
+                    <th className="px-4 py-3 text-right">Price</th>
+                    <th className="px-4 py-3 text-center">Best Selling</th>
+                    <th className="px-4 py-3 text-center">Featured</th>
+                    <th className="px-4 py-3 text-center">Cat. Featured</th>
+                    <th className="px-4 py-3 text-center">New</th>
+                    <th className="px-4 py-3 text-center">Status</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {items.map((item: any) => (
+                    <tr key={item.id} className="hover:bg-cream/30 dark:hover:bg-charcoal-light/20 transition-colors">
+                      <td className="px-4 py-3">
+                        {item.imageUrl || (item.images && item.images[0]) ? (
+                          <img src={item.imageUrl || item.images[0]} alt={item.name} className="w-10 h-10 object-cover rounded-md border-border" />
+                        ) : (
+                          <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center border-border">
+                            <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-semibold">{item.name}</div>
+                        <div className="text-xs text-muted-foreground">{item.weight} {item.isSpicy && '🌶️'}</div>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">{item.category?.name || "-"}</td>
+                      <td className="px-4 py-3 text-right font-bold text-fire">{formatPrice(item.price)}</td>
+                      <td className="px-4 py-3 text-center">
+                        <Switch
+                          checked={item.isBestSelling}
+                          onCheckedChange={(checked) => {
+                            updateMutation.mutate({
+                              id: item.id,
+                              payload: { isBestSelling: checked }
                             });
                           }}
-                          className="text-destructive focus:text-destructive"
-                          disabled={deleteMutationHook.isPending}
-                        >
-                          <Trash2 size={16} className="mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-              {items.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
-                    No items found. Time to add some tasty snacks!
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                          className="data-checked:bg-purple-500"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Switch
+                          checked={item.isFeatured}
+                          onCheckedChange={(checked) => {
+                            updateMutation.mutate({
+                              id: item.id,
+                              payload: { isFeatured: checked }
+                            });
+                          }}
+                          className="data-checked:bg-amber-500"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Switch
+                          checked={item.isCategoryFeatured}
+                          onCheckedChange={(checked) => {
+                            updateMutation.mutate({
+                              id: item.id,
+                              payload: { isCategoryFeatured: checked }
+                            });
+                          }}
+                          className="data-checked:bg-orange-500"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Switch
+                          checked={item.isNew}
+                          onCheckedChange={(checked) => {
+                            updateMutation.mutate({
+                              id: item.id,
+                              payload: { isNew: checked }
+                            });
+                          }}
+                          className="data-checked:bg-blue-500"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Switch 
+                          checked={item.isAvailable}
+                          onCheckedChange={(checked) => {
+                            updateMutation.mutate({
+                              id: item.id,
+                              payload: { isAvailable: checked }
+                            });
+                          }}
+                          className="data-checked:bg-green-500"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="p-2 hover:bg-fire/10 hover:text-fire rounded-lg transition-colors cursor-pointer text-muted-foreground">
+                            <MoreVertical size={18} />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleViewItem(item)}>
+                              <Eye size={16} className="mr-2" />
+                              View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openEdit(item)}>
+                              <Edit2 size={16} className="mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                toast.error("Confirm Deletion", {
+                                  description: `Are you sure you want to delete ${item.name}?`,
+                                  action: {
+                                    label: "Delete",
+                                    onClick: () => deleteMutationHook.mutate(item.id)
+                                  },
+                                  cancel: {
+                                    label: "Cancel",
+                                    onClick: () => { }
+                                  }
+                                });
+                              }}
+                              className="text-destructive focus:text-destructive"
+                              disabled={deleteMutationHook.isPending}
+                            >
+                              <Trash2 size={16} className="mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                  {items.length === 0 && (
+                    <tr>
+                      <td colSpan={10} className="px-6 py-8 text-center text-muted-foreground">
+                        কোনো খাবার পাওয়া যায়নি।
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       {meta && meta.totalPage > 1 && (
