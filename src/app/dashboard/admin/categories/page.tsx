@@ -194,13 +194,13 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-card p-4 rounded-xl border">
+      <div className="flex justify-between items-center bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
         <div>
-          <h1 className="text-2xl font-bold font-bengali text-charcoal">ক্যাটাগরিসমূহ</h1>
-          <p className="text-muted-foreground text-sm hidden md:block font-bengali">মেনুর ক্যাটাগরি তৈরি এবং পরিচালনা করুন</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-bengali text-charcoal dark:text-cream">ক্যাটাগরিসমূহ</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm font-bengali mt-0.5 hidden lg:block">মেনুর ক্যাটাগরি তৈরি এবং পরিচালনা করুন</p>
         </div>
-        <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="bg-fire text-white font-semibold hover:bg-fire-dark rounded-xl">
-          <Plus className="w-4 h-4 mr-2" /> নতুন ক্যাটাগরি
+        <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="bg-fire text-white font-semibold hover:bg-fire-dark rounded-xl h-9 sm:h-11 px-3 sm:px-4 text-xs sm:text-sm">
+          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> নতুন ক্যাটাগরি
         </Button>
       </div>
 

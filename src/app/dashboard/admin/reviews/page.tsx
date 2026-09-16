@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Star, CheckCircle, Trash2, Search, Filter, RefreshCw, XCircle, Eye, MoreVertical, Copy, Check, Mail } from "lucide-react";
+import { Star, Trash2, Search, Filter, RefreshCw, XCircle, Eye, MoreVertical, Mail } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,11 +18,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
+import { CopyButton } from "@/components/shared/CopyButton";
 import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
 import ReviewsLoadingSkeleton from "@/components/dashboard/ReviewsLoadingSkeleton";
 import USPagination from "@/components/shared/USPagination";
-
 
 export default function AdminReviewsPage() {
   const queryClient = useQueryClient();
@@ -36,15 +37,7 @@ export default function AdminReviewsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
-
-  const handleCopy = (text: string, key: string, label: string) => {
-    if (!text) return;
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    toast.success(`${label} copied!`);
-    setTimeout(() => setCopiedKey(null), 2000);
-  };
+  const { copiedKey, copy: handleCopy } = useCopyToClipboard();
 
   const { data: reviewResponse, isLoading: reviewsLoading } = useQuery({
     queryKey: ["admin", "reviews", page, debouncedSearch, ratingFilter, statusFilter, sortBy, sortOrder],
@@ -247,10 +240,10 @@ export default function AdminReviewsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-card p-4 rounded-xl border">
+      <div className="flex justify-between items-center bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
         <div>
-          <h1 className="text-2xl font-bold font-bengali text-charcoal">রিভিউসমূহ</h1>
-          <p className="text-muted-foreground text-sm hidden md:block font-bengali">গ্রাহকদের মতামত ও রেটিং পরিচালনা করুন</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-bengali text-charcoal dark:text-cream">রিভিউসমূহ</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm font-bengali mt-0.5 hidden lg:block">গ্রাহকদের মতামত ও রেটিং পরিচালনা করুন</p>
         </div>
       </div>
 
@@ -488,19 +481,15 @@ export default function AdminReviewsPage() {
                       <div className="flex items-center gap-1 min-w-0">
                         <span className="font-medium text-charcoal font-bengali text-xs truncate">{customerName}</span>
                       </div>
-                      {customerName && (
-                        <button
-                          onClick={() => handleCopy(customerName, `cname-m-${review.id}`, 'Customer name')}
-                          className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
-                          title="Copy name"
-                        >
-                          {copiedKey === `cname-m-${review.id}` ? (
-                            <Check className="w-3.5 h-3.5 text-green-600" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5" />
-                          )}
-                        </button>
-                      )}
+                      <CopyButton
+                        text={customerName}
+                        copiedKey={copiedKey}
+                        targetKey={`cname-m-${review.id}`}
+                        label="Customer name"
+                        onCopy={handleCopy}
+                        className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
+                        iconSize={14}
+                      />
                     </div>
 
                     {(customerEmail || review.user?.phone) && (
@@ -518,19 +507,15 @@ export default function AdminReviewsPage() {
                             </span>
                           )}
                         </div>
-                        {customerEmail && (
-                          <button
-                            onClick={() => handleCopy(customerEmail, `cemail-m-${review.id}`, 'Customer email')}
-                            className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
-                            title="Copy email"
-                          >
-                            {copiedKey === `cemail-m-${review.id}` ? (
-                              <Check className="w-3.5 h-3.5 text-green-600" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                        )}
+                        <CopyButton
+                          text={customerEmail}
+                          copiedKey={copiedKey}
+                          targetKey={`cemail-m-${review.id}`}
+                          label="Customer email"
+                          onCopy={handleCopy}
+                          className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
+                          iconSize={14}
+                        />
                       </div>
                     )}
                   </div>
@@ -608,36 +593,26 @@ export default function AdminReviewsPage() {
                           <div className="space-y-0.5 min-w-0">
                             <div className="flex items-center gap-1 group/cname">
                               <span className="font-medium text-charcoal font-bengali text-sm">{customerName}</span>
-                              {customerName && (
-                                <button
-                                  onClick={() => handleCopy(customerName, `cname-${review.id}`, 'Customer name')}
-                                  className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                                  title="Copy customer name"
-                                >
-                                  {copiedKey === `cname-${review.id}` ? (
-                                    <Check className="w-3.5 h-3.5 text-green-600" />
-                                  ) : (
-                                    <Copy className="w-3.5 h-3.5" />
-                                  )}
-                                </button>
-                              )}
+                              <CopyButton
+                                text={customerName}
+                                copiedKey={copiedKey}
+                                targetKey={`cname-${review.id}`}
+                                label="Customer name"
+                                onCopy={handleCopy}
+                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                              />
                             </div>
                             <div className="flex items-center gap-1 group/cemail text-xs text-muted-foreground font-latin">
                               <Mail size={12} className="shrink-0" />
                               <span className="truncate">{customerEmail || "No email"}</span>
-                              {customerEmail && (
-                                <button
-                                  onClick={() => handleCopy(customerEmail, `cemail-${review.id}`, 'Customer email')}
-                                  className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                                  title="Copy customer email"
-                                >
-                                  {copiedKey === `cemail-${review.id}` ? (
-                                    <Check className="w-3.5 h-3.5 text-green-600" />
-                                  ) : (
-                                    <Copy className="w-3.5 h-3.5" />
-                                  )}
-                                </button>
-                              )}
+                              <CopyButton
+                                text={customerEmail}
+                                copiedKey={copiedKey}
+                                targetKey={`cemail-${review.id}`}
+                                label="Customer email"
+                                onCopy={handleCopy}
+                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/cemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                              />
                             </div>
                           </div>
                         </td>
@@ -794,35 +769,25 @@ export default function AdminReviewsPage() {
                       <h4 className="font-bold text-charcoal font-bengali text-sm">
                         {selectedReview.user?.name || selectedReview.reviewerName || "Guest Reviewer"}
                       </h4>
-                      {(selectedReview.user?.name || selectedReview.reviewerName) && (
-                        <button
-                          onClick={() => handleCopy(selectedReview.user?.name || selectedReview.reviewerName, 'modal-cname', 'Customer name')}
-                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalcname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                          title="Copy customer name"
-                        >
-                          {copiedKey === 'modal-cname' ? (
-                            <Check className="w-3.5 h-3.5 text-green-600" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5" />
-                          )}
-                        </button>
-                      )}
+                      <CopyButton
+                        text={selectedReview.user?.name || selectedReview.reviewerName}
+                        copiedKey={copiedKey}
+                        targetKey="modal-cname"
+                        label="Customer name"
+                        onCopy={handleCopy}
+                        className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalcname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      />
                     </div>
                     <div className="flex items-center gap-1 group/modalcemail text-xs text-muted-foreground font-latin">
                       <span>{selectedReview.user?.email || selectedReview.reviewerEmail || selectedReview.user?.phone || "No Email"}</span>
-                      {(selectedReview.user?.email || selectedReview.reviewerEmail) && (
-                        <button
-                          onClick={() => handleCopy(selectedReview.user?.email || selectedReview.reviewerEmail, 'modal-cemail', 'Customer email')}
-                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalcemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                          title="Copy customer email"
-                        >
-                          {copiedKey === 'modal-cemail' ? (
-                            <Check className="w-3.5 h-3.5 text-green-600" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5" />
-                          )}
-                        </button>
-                      )}
+                      <CopyButton
+                        text={selectedReview.user?.email || selectedReview.reviewerEmail}
+                        copiedKey={copiedKey}
+                        targetKey="modal-cemail"
+                        label="Customer email"
+                        onCopy={handleCopy}
+                        className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/modalcemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      />
                     </div>
                   </div>
                 </div>

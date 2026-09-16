@@ -232,13 +232,13 @@ export default function AdminBannersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
+      <div className="flex justify-between items-center bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold font-bengali text-charcoal dark:text-cream">ব্যানারসমূহ</h1>
-          <p className="text-muted-foreground text-xs sm:text-sm font-bengali mt-0.5">হোমপেজ স্লাইডার ব্যানার পরিচালনা করুন</p>
+          <p className="text-muted-foreground text-xs sm:text-sm font-bengali mt-0.5 hidden lg:block">হোমপেজ স্লাইডার ব্যানার পরিচালনা করুন</p>
         </div>
-        <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="bg-fire text-white font-semibold hover:bg-fire-dark rounded-xl h-11 px-4 self-stretch sm:self-auto">
-          <Plus className="w-4 h-4 mr-2" /> নতুন ব্যানার
+        <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="bg-fire text-white font-semibold hover:bg-fire-dark rounded-xl h-9 sm:h-11 px-3 sm:px-4 text-xs sm:text-sm">
+          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> নতুন ব্যানার
         </Button>
       </div>
 

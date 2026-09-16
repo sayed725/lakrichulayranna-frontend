@@ -37,7 +37,6 @@ export function Logo({ className, size = "md", variant = "default" }: LogoProps)
         alt="লাকড়ি চুলায় রান্না লোগো"
         width={width}
         height={height}
-        priority
         className="object-contain shrink-0 h-auto"
       />
       <div className={cn("inline-flex items-baseline gap-1", sizeClasses[size])}>

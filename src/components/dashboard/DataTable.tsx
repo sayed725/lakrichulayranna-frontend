@@ -23,11 +23,11 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   if (isLoading) {
     return (
-      <div className="w-full bg-white rounded-2xl border border-border overflow-hidden">
+      <div className="w-full bg-card rounded-2xl border border-border overflow-hidden">
         <div className="animate-pulse flex flex-col">
-          <div className="h-14 bg-cream-dark/50 border-b border-border" />
+          <div className="h-14 bg-cream-dark/50 dark:bg-charcoal-light/30 border-b border-border" />
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-white border-b border-border" />
+            <div key={i} className="h-16 bg-card border-b border-border" />
           ))}
         </div>
       </div>
@@ -36,21 +36,21 @@ export function DataTable<T>({
 
   if (!data || data.length === 0) {
     return (
-      <div className="w-full bg-white rounded-2xl border border-border p-12 text-center">
-        <p className="text-muted font-bengali font-medium">{emptyMessage}</p>
+      <div className="w-full bg-card rounded-2xl border border-border p-12 text-center">
+        <p className="text-muted-foreground font-bengali font-medium">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-white rounded-2xl border border-border overflow-x-auto">
+    <div className="w-full bg-card rounded-2xl border border-border overflow-x-auto shadow-sm">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="bg-cream-dark/30 border-b border-border">
+          <tr className="bg-cream/50 dark:bg-charcoal-light/30 border-b border-border">
             {columns.map((col, index) => (
               <th
                 key={index}
-                className={`p-4 text-sm font-bold font-bengali text-charcoal whitespace-nowrap ${
+                className={`p-4 text-xs uppercase font-bold font-bengali text-charcoal dark:text-cream whitespace-nowrap ${
                   col.className || ""
                 }`}
               >
@@ -64,14 +64,14 @@ export function DataTable<T>({
             <tr
               key={rowIndex}
               onClick={() => onRowClick?.(row)}
-              className={`hover:bg-cream-dark/10 transition-colors ${
+              className={`hover:bg-cream/20 dark:hover:bg-charcoal-light/20 transition-colors ${
                 onRowClick ? "cursor-pointer" : ""
               }`}
             >
               {columns.map((col, colIndex) => (
                 <td
                   key={colIndex}
-                  className={`p-4 text-sm text-charcoal ${
+                  className={`p-4 text-sm text-charcoal dark:text-cream ${
                     col.className || ""
                   }`}
                 >

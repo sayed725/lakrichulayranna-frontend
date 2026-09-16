@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Mail, Phone, MessageSquare, CheckCircle, Clock, Search, Filter, RefreshCw, Eye, Trash2, XCircle, MoreVertical, Copy, Check } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Mail, Phone, MessageSquare, CheckCircle, Clock, Search, Filter, RefreshCw, Eye, Trash2, XCircle, MoreVertical } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,9 +14,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
+import { CopyButton } from "@/components/shared/CopyButton";
 import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
 import { useAdminContacts } from "@/features/contact/hooks/useAdminContacts";
@@ -35,17 +37,7 @@ export default function AdminContactsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
-
-  const handleCopy = (text: string, key: string, label: string) => {
-    if (!text) return;
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    toast.success(`${label} copied!`, {
-      description: `${text} copied to clipboard`,
-    });
-    setTimeout(() => setCopiedKey(null), 2000);
-  };
+  const { copiedKey, copy: handleCopy } = useCopyToClipboard();
 
   const { data: contactResponse, isLoading: contactsLoading } = useAdminContacts({
     page,
@@ -126,10 +118,10 @@ export default function AdminContactsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-card p-4 rounded-xl border">
+      <div className="flex justify-between items-center bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
         <div>
-          <h1 className="text-2xl font-bold font-bengali text-charcoal">যোগাযোগ বার্তা</h1>
-          <p className="text-muted-foreground text-sm hidden md:block font-bengali">গ্রাহকদের থেকে প্রাপ্ত সকল যোগাযোগ বার্তার তালিকা</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-bengali text-charcoal dark:text-cream">যোগাযোগ বার্তা</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm font-bengali mt-0.5 hidden lg:block">গ্রাহকদের থেকে প্রাপ্ত সকল যোগাযোগ বার্তার তালিকা</p>
         </div>
       </div>
 
@@ -291,19 +283,13 @@ export default function AdminContactsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1">
                         <p className="font-bold text-charcoal font-bengali text-base truncate">{contact.name}</p>
-                        {contact.name && (
-                          <button
-                            onClick={() => handleCopy(contact.name, `card-name-${contact.id}`, 'Contact name')}
-                            className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
-                            title="Copy name"
-                          >
-                            {copiedKey === `card-name-${contact.id}` ? (
-                              <Check className="w-3.5 h-3.5 text-green-600" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                        )}
+                        <CopyButton
+                          text={contact.name}
+                          copiedKey={copiedKey}
+                          targetKey={`card-name-${contact.id}`}
+                          label="Contact name"
+                          onCopy={handleCopy}
+                        />
                       </div>
                       <p className="text-xs text-muted-foreground font-latin">
                         {format(new Date(contact.createdAt), "dd MMM, yyyy • hh:mm a")}
@@ -339,19 +325,13 @@ export default function AdminContactsPage() {
                       <Mail size={13} className="shrink-0 text-muted-foreground" />
                       <span className="truncate text-charcoal font-medium">{contact.email}</span>
                     </div>
-                    {contact.email && (
-                      <button
-                        onClick={() => handleCopy(contact.email, `card-email-${contact.id}`, 'Email address')}
-                        className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
-                        title="Copy email"
-                      >
-                        {copiedKey === `card-email-${contact.id}` ? (
-                          <Check className="w-3.5 h-3.5 text-green-600" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5" />
-                        )}
-                      </button>
-                    )}
+                    <CopyButton
+                      text={contact.email}
+                      copiedKey={copiedKey}
+                      targetKey={`card-email-${contact.id}`}
+                      label="Email address"
+                      onCopy={handleCopy}
+                    />
                   </div>
 
                   {contact.phone && (
@@ -360,17 +340,13 @@ export default function AdminContactsPage() {
                         <Phone size={13} className="shrink-0 text-muted-foreground" />
                         <span className="truncate text-charcoal font-medium">{contact.phone}</span>
                       </div>
-                      <button
-                        onClick={() => handleCopy(contact.phone, `card-phone-${contact.id}`, 'Phone number')}
-                        className="text-muted-foreground hover:text-fire p-1 rounded hover:bg-cream/50 transition-colors shrink-0"
-                        title="Copy phone"
-                      >
-                        {copiedKey === `card-phone-${contact.id}` ? (
-                          <Check className="w-3.5 h-3.5 text-green-600" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5" />
-                        )}
-                      </button>
+                      <CopyButton
+                        text={contact.phone}
+                        copiedKey={copiedKey}
+                        targetKey={`card-phone-${contact.id}`}
+                        label="Phone number"
+                        onCopy={handleCopy}
+                      />
                     </div>
                   )}
                 </div>
@@ -436,19 +412,14 @@ export default function AdminContactsPage() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1">
                               <p className="font-bold text-charcoal font-bengali truncate text-sm">{contact.name}</p>
-                              {contact.name && (
-                                <button
-                                  onClick={() => handleCopy(contact.name, `tbl-name-${contact.id}`, 'Contact name')}
-                                  className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/contactname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                                  title="Copy contact name"
-                                >
-                                  {copiedKey === `tbl-name-${contact.id}` ? (
-                                    <Check className="w-3 h-3 text-green-600" />
-                                  ) : (
-                                    <Copy className="w-3 h-3" />
-                                  )}
-                                </button>
-                              )}
+                              <CopyButton
+                                text={contact.name}
+                                copiedKey={copiedKey}
+                                targetKey={`tbl-name-${contact.id}`}
+                                label="Contact name"
+                                onCopy={handleCopy}
+                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/contactname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                              />
                             </div>
                             <p className="text-[11px] text-muted-foreground font-latin">{format(new Date(contact.createdAt), "dd MMM, yyyy")}</p>
                           </div>
@@ -459,35 +430,27 @@ export default function AdminContactsPage() {
                           <div className="flex items-center gap-1 group/contactemail min-h-[20px]">
                             <Mail size={13} className="text-muted-foreground shrink-0 mr-1" />
                             <span className="font-latin truncate text-charcoal text-sm">{contact.email}</span>
-                            {contact.email && (
-                              <button
-                                onClick={() => handleCopy(contact.email, `tbl-email-${contact.id}`, 'Email address')}
-                                className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/contactemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                                title="Copy email address"
-                              >
-                                {copiedKey === `tbl-email-${contact.id}` ? (
-                                  <Check className="w-3 h-3 text-green-600" />
-                                ) : (
-                                  <Copy className="w-3 h-3" />
-                                )}
-                              </button>
-                            )}
+                            <CopyButton
+                              text={contact.email}
+                              copiedKey={copiedKey}
+                              targetKey={`tbl-email-${contact.id}`}
+                              label="Email address"
+                              onCopy={handleCopy}
+                              className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/contactemail:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                            />
                           </div>
                           {contact.phone && (
                             <div className="flex items-center gap-1 group/contactphone min-h-[20px]">
                               <Phone size={13} className="text-muted-foreground shrink-0 mr-1" />
                               <span className="font-latin text-xs text-muted-foreground">{contact.phone}</span>
-                              <button
-                                onClick={() => handleCopy(contact.phone, `tbl-phone-${contact.id}`, 'Phone number')}
+                              <CopyButton
+                                text={contact.phone}
+                                copiedKey={copiedKey}
+                                targetKey={`tbl-phone-${contact.id}`}
+                                label="Phone number"
+                                onCopy={handleCopy}
                                 className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-100 lg:opacity-0 lg:group-hover/contactphone:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                                title="Copy phone number"
-                              >
-                                {copiedKey === `tbl-phone-${contact.id}` ? (
-                                  <Check className="w-3 h-3 text-green-600" />
-                                ) : (
-                                  <Copy className="w-3 h-3" />
-                                )}
-                              </button>
+                              />
                             </div>
                           )}
                         </div>
@@ -607,19 +570,14 @@ export default function AdminContactsPage() {
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-1 group/modalcontactname">
                       <h3 className="font-bold text-charcoal font-bengali text-xl leading-tight truncate">{selectedContact.name}</h3>
-                      {selectedContact.name && (
-                        <button
-                          onClick={() => handleCopy(selectedContact.name, 'modal-name', 'Contact name')}
-                          className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalcontactname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                          title="Copy contact name"
-                        >
-                          {copiedKey === 'modal-name' ? (
-                            <Check className="w-3.5 h-3.5 text-green-600" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5" />
-                          )}
-                        </button>
-                      )}
+                      <CopyButton
+                        text={selectedContact.name}
+                        copiedKey={copiedKey}
+                        targetKey="modal-name"
+                        label="Contact name"
+                        onCopy={handleCopy}
+                        className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalcontactname:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                      />
                     </div>
                     <p className="text-xs text-muted-foreground font-latin">{format(new Date(selectedContact.createdAt), "dd MMM, yyyy 'at' HH:mm")}</p>
                   </div>
@@ -636,19 +594,14 @@ export default function AdminContactsPage() {
                     </p>
                     <p className="text-charcoal font-latin font-medium text-sm truncate">{selectedContact.email || "N/A"}</p>
                   </div>
-                  {selectedContact.email && (
-                    <button
-                      onClick={() => handleCopy(selectedContact.email, 'modal-email', 'Email address')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalemailcard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                      title="Copy email address"
-                    >
-                      {copiedKey === 'modal-email' ? (
-                        <Check className="w-3.5 h-3.5 text-green-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
-                      )}
-                    </button>
-                  )}
+                  <CopyButton
+                    text={selectedContact.email}
+                    copiedKey={copiedKey}
+                    targetKey="modal-email"
+                    label="Email address"
+                    onCopy={handleCopy}
+                    className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalemailcard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                  />
                 </div>
 
                 {/* Phone Card */}
@@ -659,19 +612,14 @@ export default function AdminContactsPage() {
                     </p>
                     <p className="text-charcoal font-latin font-medium text-sm truncate">{selectedContact.phone || "N/A"}</p>
                   </div>
-                  {selectedContact.phone && (
-                    <button
-                      onClick={() => handleCopy(selectedContact.phone, 'modal-phone', 'Phone number')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalphonecard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                      title="Copy phone number"
-                    >
-                      {copiedKey === 'modal-phone' ? (
-                        <Check className="w-3.5 h-3.5 text-green-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
-                      )}
-                    </button>
-                  )}
+                  <CopyButton
+                    text={selectedContact.phone}
+                    copiedKey={copiedKey}
+                    targetKey="modal-phone"
+                    label="Phone number"
+                    onCopy={handleCopy}
+                    className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalphonecard:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                  />
                 </div>
 
                 {/* Subject */}
@@ -682,38 +630,28 @@ export default function AdminContactsPage() {
                     </p>
                     <p className="text-charcoal font-bengali font-semibold text-sm leading-relaxed break-words">{selectedContact.subject || "N/A"}</p>
                   </div>
-                  {selectedContact.subject && (
-                    <button
-                      onClick={() => handleCopy(selectedContact.subject, 'modal-subject', 'Subject')}
-                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalsubject:opacity-100 focus:opacity-100 cursor-pointer shrink-0 mt-0.5"
-                      title="Copy subject"
-                    >
-                      {copiedKey === 'modal-subject' ? (
-                        <Check className="w-3.5 h-3.5 text-green-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
-                      )}
-                    </button>
-                  )}
+                  <CopyButton
+                    text={selectedContact.subject}
+                    copiedKey={copiedKey}
+                    targetKey="modal-subject"
+                    label="Subject"
+                    onCopy={handleCopy}
+                    className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalsubject:opacity-100 focus:opacity-100 cursor-pointer shrink-0 mt-0.5"
+                  />
                 </div>
 
                 {/* Message Body */}
                 <div className="p-4 bg-muted/10 rounded-2xl border border-border/50 space-y-2 sm:col-span-2 group/modalmsg flex flex-col justify-between">
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-semibold text-muted-foreground font-bengali">বার্তা (Message)</p>
-                    {selectedContact.message && (
-                      <button
-                        onClick={() => handleCopy(selectedContact.message, 'modal-message', 'Message')}
-                        className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalmsg:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
-                        title="Copy message"
-                      >
-                        {copiedKey === 'modal-message' ? (
-                          <Check className="w-3.5 h-3.5 text-green-600" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5" />
-                        )}
-                      </button>
-                    )}
+                    <CopyButton
+                      text={selectedContact.message}
+                      copiedKey={copiedKey}
+                      targetKey="modal-message"
+                      label="Message"
+                      onCopy={handleCopy}
+                      className="text-muted-foreground hover:text-fire transition-colors p-1 rounded hover:bg-cream/50 opacity-0 group-hover/modalmsg:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                    />
                   </div>
                   <div className="p-4 bg-background/80 rounded-xl border border-border/60 text-charcoal font-bengali text-sm leading-relaxed whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto">
                     {selectedContact.message}
