@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { env } from "@/config/env";
+import { useAuthStore } from "@/store/auth.store";
 
 // Types for standardized error responses
 export interface ApiError {
@@ -39,19 +40,10 @@ const processQueue = (error: unknown, token: string | null = null) => {
 // Request interceptor — attach JWT token
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Try to get token from localStorage (Zustand persisted store)
     if (typeof window !== "undefined") {
-      try {
-        const authStorage = localStorage.getItem("auth-storage");
-        if (authStorage) {
-          const parsed = JSON.parse(authStorage);
-          const token = parsed?.state?.token;
-          if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-          }
-        }
-      } catch {
-        // Silently fail if localStorage is unavailable
+      const token = useAuthStore.getState().token;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;
@@ -91,19 +83,8 @@ api.interceptors.response.use(
 
         const { token } = response.data.data;
 
-        // Update token in Zustand localStorage
-        if (typeof window !== "undefined") {
-          try {
-            const authStorage = localStorage.getItem("auth-storage");
-            if (authStorage) {
-              const parsed = JSON.parse(authStorage);
-              parsed.state.token = token;
-              localStorage.setItem("auth-storage", JSON.stringify(parsed));
-            }
-          } catch {
-            // Silently fail
-          }
-        }
+        // Update token in Zustand store and cookies
+        useAuthStore.getState().setToken(token);
 
         processQueue(null, token);
         originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -111,10 +92,10 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
 
-        // Clear auth data on refresh failure
+        // Clear auth data in Zustand store, cookies & localStorage on refresh failure
+        useAuthStore.getState().logout();
+
         if (typeof window !== "undefined") {
-          localStorage.removeItem("auth-storage");
-          
           const pathname = window.location.pathname;
           const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/checkout");
           if (isProtected) {

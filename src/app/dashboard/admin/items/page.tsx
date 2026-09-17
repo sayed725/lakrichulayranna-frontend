@@ -55,6 +55,7 @@ import AddItemForm from "@/components/dashboard/AddItemForm";
 import ItemsLoadingSkeleton from "@/components/dashboard/ItemsLoadingSkeleton";
 import { useDebounce } from "@/hooks/useDebounce";
 import USPagination from "@/components/shared/USPagination";
+import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
 import Image from "next/image";
 import { format } from "date-fns";
 import { useToggleItemAvailability, useDeleteItem } from "@/features/item/hooks/useAdminItems";
@@ -253,18 +254,6 @@ export default function AdminItemsPage() {
 
   const isFiltered = search !== "" || categoryNameFilter !== "all" || isAvailableFilter !== "all" || sortBy !== "createdAt" || sortOrder !== "desc";
 
-  const getSortLabel = () => {
-    const sortMap: Record<string, string> = {
-      "createdAt-desc": "Newest First",
-      "createdAt-asc": "Oldest First",
-      "price-desc": "Price: High to Low",
-      "price-asc": "Price: Low to High",
-      "name-desc": "Name: Z to A",
-      "name-asc": "Name: A to Z",
-    };
-    return sortMap[`${sortBy}-${sortOrder}`] || "Sort By";
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
@@ -308,198 +297,75 @@ export default function AdminItemsPage() {
       </div>
 
       {/* Filters and Search Header */}
-      <div className="flex flex-row gap-2 sm:gap-4 items-center">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="খাবারের নাম খুঁজুন..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="pl-9 pr-10 h-11 w-full bg-background border-border focus-visible:ring-fire/20 focus-visible:border-fire/50 rounded-xl font-bengali text-sm"
-          />
-          {search && (
-            <button 
-              onClick={() => { setSearch(""); setPage(1); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-fire transition-colors"
-            >
-              <XCircle className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2 w-auto">
-          {/* Mobile/Tablet Filter Drawer */}
-          <div className="lg:hidden">
-            <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-              <Button variant="outline" className="w-auto gap-2 border-border hover:bg-cream hover:border-fire/30 hover:text-fire rounded-xl h-11 px-3.5 transition-all" onClick={() => setIsFilterOpen(true)}>
-                <Filter className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs font-semibold">Filters</span>
-                {isFiltered && <span className="flex h-2 w-2 rounded-full bg-fire" />}
-              </Button>
-              <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col" showCloseButton={false}>
-                <SheetHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0">
-                  <SheetTitle className="text-xl font-bold flex items-center gap-2">
-                    <Filter className="w-5 h-5 text-fire" /> Filters
-                  </SheetTitle>
-                  <SheetClose className="rounded-xl p-2 hover:bg-cream dark:hover:bg-charcoal-light transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fire border border-transparent hover:border-fire/30">
-                    <XCircle className="h-5 w-5 text-muted-foreground hover:text-fire" />
-                  </SheetClose>
-                </SheetHeader>
-                
-                <div className="p-6 space-y-8 flex-1 overflow-y-auto">
-                  <SheetDescription className="sr-only">Filter and sort items catalog table</SheetDescription>
-                  
-                  {/* Category Filter */}
-                  <div className="space-y-3">
-                    <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Category</h3>
-                    <Select value={categoryNameFilter} onValueChange={(v) => { setCategoryNameFilter(v || "all"); setPage(1); }}>
-                      <SelectTrigger className="w-full h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                        <SelectValue placeholder="All Categories">
-                          {categoryNameFilter === "all" ? "All Categories" : categoryNameFilter}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl">
-                        <SelectItem value="all">All Categories</SelectItem>
-                        {categories.map((c: any) => (
-                          <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Status Filter */}
-                  <div className="space-y-3">
-                    <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Filter By</h3>
-                    <Select value={isAvailableFilter} onValueChange={(v) => { setIsAvailableFilter(v || "all"); setPage(1); }}>
-                      <SelectTrigger className="w-full h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                        <SelectValue placeholder="All Status">
-                          {isAvailableFilter === "all" ? "All Status" :
-                           isAvailableFilter === "bestSelling" ? "Best Selling" :
-                           isAvailableFilter === "featured" ? "Featured" :
-                           isAvailableFilter === "categoryFeatured" ? "Category Featured" :
-                           isAvailableFilter === "new" ? "New" :
-                           isAvailableFilter === "available" ? "Availability" : "Status"}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl">
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="bestSelling">Best Selling</SelectItem>
-                        <SelectItem value="featured">Featured</SelectItem>
-                        <SelectItem value="categoryFeatured">Category Featured</SelectItem>
-                        <SelectItem value="new">New</SelectItem>
-                        <SelectItem value="available">Availability</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Sort By */}
-                  <div className="space-y-3">
-                    <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Sort Items</h3>
-                    <Select value={`${sortBy}-${sortOrder}`} onValueChange={(v) => {
-                      const [by, order] = (v || "createdAt-desc").split('-');
-                      setSortBy(by);
-                      setSortOrder(order as "asc" | "desc");
-                      setPage(1);
-                    }}>
-                      <SelectTrigger className="w-full h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                        <SelectValue placeholder="Sort By">{getSortLabel()}</SelectValue>
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl">
-                        <SelectItem value="createdAt-desc">Newest First</SelectItem>
-                        <SelectItem value="createdAt-asc">Oldest First</SelectItem>
-                        <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                        <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                        <SelectItem value="name-asc">Name: A to Z</SelectItem>
-                        <SelectItem value="name-desc">Name: Z to A</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="p-6 border-t border-border bg-cream/50 dark:bg-charcoal-light/30">
-                  <Button 
-                    onClick={resetFilters} 
-                    variant="outline" 
-                    disabled={!isFiltered}
-                    className="w-full h-12 rounded-xl border-border hover:bg-fire hover:text-white hover:border-fire transition-all font-bold"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" /> Reset All Filters
-                  </Button>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-
-          {/* Desktop Inline Filters */}
-          <div className="hidden lg:flex flex-wrap gap-2 items-center">
-            <Select value={categoryNameFilter} onValueChange={(v) => { setCategoryNameFilter(v || "all"); setPage(1); }}>
-              <SelectTrigger className="w-[180px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                <SelectValue placeholder="Category">
-                  {categoryNameFilter === "all" ? "All Categories" : categoryNameFilter}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map((c: any) => (
-                  <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={isAvailableFilter} onValueChange={(v) => { setIsAvailableFilter(v || "all"); setPage(1); }}>
-              <SelectTrigger className="w-[130px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                <SelectValue placeholder="Status">
-                  {isAvailableFilter === "all" ? "All Status" : 
-                   isAvailableFilter === "bestSelling" ? "Best Selling" :
-                   isAvailableFilter === "featured" ? "Featured" :
-                   isAvailableFilter === "categoryFeatured" ? "Cat. Featured" :
-                   isAvailableFilter === "new" ? "New" :
-                   isAvailableFilter === "available" ? "Availability" : "Status"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="bestSelling">Best Selling</SelectItem>
-                <SelectItem value="featured">Featured</SelectItem>
-                <SelectItem value="categoryFeatured">Cat. Featured</SelectItem>
-                <SelectItem value="new">New</SelectItem>
-                <SelectItem value="available">Availability</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={`${sortBy}-${sortOrder}`} onValueChange={(v) => {
-              const [by, order] = (v || "createdAt-desc").split('-');
-              setSortBy(by);
-              setSortOrder(order as "asc" | "desc");
+      <DashboardFilterBar
+        search={{
+          placeholder: "খাবারের নাম দিয়ে খুঁজুন...",
+          value: search,
+          onChange: (val) => {
+            setSearch(val);
+            setPage(1);
+          },
+        }}
+        filters={[
+          {
+            key: "category",
+            label: "Category",
+            placeholder: "All Categories",
+            value: categoryNameFilter,
+            onChange: (v) => {
+              setCategoryNameFilter(v);
               setPage(1);
-            }}>
-              <SelectTrigger className="w-[180px] h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl">
-                <SelectValue placeholder="Sort By">{getSortLabel()}</SelectValue>
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="createdAt-desc">Newest First</SelectItem>
-                <SelectItem value="createdAt-asc">Oldest First</SelectItem>
-                <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="name-asc">Name: A to Z</SelectItem>
-                <SelectItem value="name-desc">Name: Z to A</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {isFiltered && (
-            <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={resetFilters} 
-                className="text-muted-foreground hover:text-fire hover:bg-cream h-10 px-2"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Reset
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
+            },
+            options: [
+              { label: "All Categories", value: "all" },
+              ...categories.map((c: any) => ({ label: c.name, value: c.name })),
+            ],
+            widthClass: "w-[180px]",
+          },
+          {
+            key: "filterBy",
+            label: "Filter By",
+            placeholder: "All Status",
+            value: isAvailableFilter,
+            onChange: (v) => {
+              setIsAvailableFilter(v);
+              setPage(1);
+            },
+            options: [
+              { label: "All Status", value: "all" },
+              { label: "Best Selling", value: "bestSelling" },
+              { label: "Featured", value: "featured" },
+              { label: "Cat. Featured", value: "categoryFeatured" },
+              { label: "New", value: "new" },
+              { label: "Availability", value: "available" },
+            ],
+            widthClass: "w-[130px]",
+          },
+        ]}
+        sort={{
+          sortBy,
+          sortOrder,
+          onChange: (by, order) => {
+            setSortBy(by);
+            setSortOrder(order);
+            setPage(1);
+          },
+          placeholder: "Sort Items",
+          widthClass: "w-[180px]",
+          options: [
+            { label: "Newest First", value: "createdAt-desc" },
+            { label: "Oldest First", value: "createdAt-asc" },
+            { label: "Price: High to Low", value: "price-desc" },
+            { label: "Price: Low to High", value: "price-asc" },
+            { label: "Name: A to Z", value: "name-asc" },
+            { label: "Name: Z to A", value: "name-desc" },
+          ],
+        }}
+        isFiltered={isFiltered}
+        onReset={resetFilters}
+        isFilterOpen={isFilterOpen}
+        setIsFilterOpen={setIsFilterOpen}
+      />
 
       {itemsLoading ? (
         <ItemsLoadingSkeleton />

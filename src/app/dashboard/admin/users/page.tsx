@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { SearchInput } from "@/components/shared/SearchInput";
-import { UserFilterControls } from "@/components/dashboard/users/UserFilterControls";
+import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
 import { UserCard } from "@/components/dashboard/users/UserCard";
 import { UserTableRow } from "@/components/dashboard/users/UserTableRow";
 import { UserViewDialog } from "@/components/dashboard/users/UserViewDialog";
@@ -157,96 +157,72 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Filters and Search Header */}
-      <div className="flex flex-row gap-2 sm:gap-4 items-center">
-        <SearchInput
-          placeholder="নাম, ইমেইল বা ফোন..."
-          value={search}
-          onChange={(val) => {
+      <DashboardFilterBar
+        search={{
+          placeholder: "নাম, ইমেইল বা ফোন...",
+          value: search,
+          onChange: (val) => {
             setSearch(val);
             setPage(1);
-          }}
-        />
-
-        <div className="flex items-center gap-2 w-auto">
-          {/* Mobile/Tablet Filter Drawer */}
-          <div className="lg:hidden">
-            <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-              <Button
-                variant="outline"
-                className="w-auto gap-2 border-border hover:bg-cream hover:border-fire/30 hover:text-fire rounded-xl h-11 px-3 sm:px-4 transition-all"
-                onClick={() => setIsFilterOpen(true)}
-              >
-                <Filter className="h-4 w-4" />
-                <span className="hidden sm:inline">Filters</span>
-                {isFiltered && <span className="flex h-2 w-2 rounded-full bg-fire" />}
-              </Button>
-              <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col" showCloseButton={false}>
-                <SheetHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0">
-                  <SheetTitle className="text-xl font-bold flex items-center gap-2">
-                    <Filter className="w-5 h-5 text-fire" /> Filters
-                  </SheetTitle>
-                  <SheetClose className="rounded-xl p-2 hover:bg-cream dark:hover:bg-charcoal-light transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fire border border-transparent hover:border-fire/30">
-                    <XCircle className="h-5 w-5 text-muted-foreground hover:text-fire" />
-                  </SheetClose>
-                </SheetHeader>
-
-                <div className="p-6 space-y-6 flex-1 overflow-y-auto">
-                  <SheetDescription className="sr-only">Filter and sort users table</SheetDescription>
-
-                  <UserFilterControls
-                    roleFilter={roleFilter}
-                    onRoleChange={(v) => { setRoleFilter(v); setPage(1); }}
-                    statusFilter={statusFilter}
-                    onStatusChange={(v) => { setStatusFilter(v); setPage(1); }}
-                    sortBy={sortBy}
-                    sortOrder={sortOrder}
-                    onSortChange={(by, order) => { setSortBy(by); setSortOrder(order); setPage(1); }}
-                    className="flex flex-col gap-6"
-                  />
-                </div>
-
-                <div className="p-6 border-t border-border bg-cream/50 dark:bg-charcoal-light/30">
-                  <Button
-                    onClick={() => { resetFilters(); setIsFilterOpen(false); }}
-                    variant="outline"
-                    disabled={!isFiltered}
-                    className="w-full h-12 rounded-xl border-border hover:bg-fire hover:text-white hover:border-fire transition-all font-bold"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" /> Reset All Filters
-                  </Button>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-
-          {/* Desktop Inline Filters */}
-          <div className="hidden lg:flex flex-wrap gap-2 items-center">
-            <UserFilterControls
-              roleFilter={roleFilter}
-              onRoleChange={(v) => { setRoleFilter(v); setPage(1); }}
-              statusFilter={statusFilter}
-              onStatusChange={(v) => { setStatusFilter(v); setPage(1); }}
-              sortBy={sortBy}
-              sortOrder={sortOrder}
-              onSortChange={(by, order) => { setSortBy(by); setSortOrder(order); setPage(1); }}
-              className="flex flex-row gap-2 items-center"
-              selectTriggerClassName="h-11 bg-background border-border focus:ring-fire/20 focus:border-fire/50 rounded-xl"
-            />
-
-            {isFiltered && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={resetFilters}
-                className="text-muted-foreground hover:text-fire hover:bg-cream h-10 px-2"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Reset
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
+          },
+        }}
+        filters={[
+          {
+            key: "role",
+            label: "Role",
+            placeholder: "All Roles",
+            value: roleFilter,
+            onChange: (v) => {
+              setRoleFilter(v);
+              setPage(1);
+            },
+            options: [
+              { label: "All Roles", value: "all" },
+              { label: "Admin", value: "ADMIN" },
+              { label: "Customer", value: "CUSTOMER" },
+            ],
+            widthClass: "w-[130px]",
+          },
+          {
+            key: "status",
+            label: "Status",
+            placeholder: "All Status",
+            value: statusFilter,
+            onChange: (v) => {
+              setStatusFilter(v);
+              setPage(1);
+            },
+            options: [
+              { label: "All Status", value: "all" },
+              { label: "Active", value: "ACTIVE" },
+              { label: "Inactive", value: "INACTIVE" },
+              { label: "Banned", value: "BANNED" },
+            ],
+            widthClass: "w-[130px]",
+          },
+        ]}
+        sort={{
+          sortBy,
+          sortOrder,
+          onChange: (by, order) => {
+            setSortBy(by);
+            setSortOrder(order);
+            setPage(1);
+          },
+          placeholder: "Sort By",
+          widthClass: "w-[170px]",
+          options: [
+            { label: "Newest First", value: "createdAt-desc" },
+            { label: "Oldest First", value: "createdAt-asc" },
+            { label: "Name: A to Z", value: "name-asc" },
+            { label: "Name: Z to A", value: "name-desc" },
+          ],
+        }}
+        isFiltered={isFiltered}
+        onReset={resetFilters}
+        isFilterOpen={isFilterOpen}
+        setIsFilterOpen={setIsFilterOpen}
+      />
 
       {/* Users List / Table */}
       {usersLoading ? (

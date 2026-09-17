@@ -3,6 +3,7 @@ import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { AuthProvider } from "@/providers/auth-provider";
 import "./globals.css";
 import { Geist, Hind_Siliguri, Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -70,10 +71,12 @@ export default function RootLayout({
         <ThemeProvider>
           <NextTopLoader color="oklch(0.65 0.20 45)" showSpinner={false} />
           <QueryProvider>
-            <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-fire text-white px-4 py-2 rounded-xl z-[100] font-bengali font-bold focus:outline-none focus:ring-4 focus:ring-fire/50">
-              মূল কন্টেন্টে যান
-            </a>
-            {children}
+            <AuthProvider>
+              <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-fire text-white px-4 py-2 rounded-xl z-[100] font-bengali font-bold focus:outline-none focus:ring-4 focus:ring-fire/50">
+                মূল কন্টেন্টে যান
+              </a>
+              {children}
+            </AuthProvider>
             <Toaster
               position="top-right"
               duration={4000}
