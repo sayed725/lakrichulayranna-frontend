@@ -21,7 +21,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/auth.store";
 import { useCustomerOrders } from "@/features/order/hooks/useCustomerOrders";
-import { StatusBadge } from "@/components/dashboard/StatusBadge";
+import { StatusBadge } from "@/components/dashboard";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 

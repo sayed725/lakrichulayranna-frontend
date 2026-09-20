@@ -19,7 +19,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import Link from "next/link";
-import { StatsCard } from "@/components/dashboard/StatsCard";
+import { StatsCard } from "@/components/dashboard";
 import { OrdersTable } from "@/components/tables/OrdersTable";
 import { useAdminOrders, useAdminDashboardStats } from "@/features/order/hooks/useAdminOrders";
 import { formatPrice } from "@/lib/utils";

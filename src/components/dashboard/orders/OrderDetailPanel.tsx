@@ -4,8 +4,7 @@ import { X, MapPin, Phone, User, FileText } from "lucide-react";
 import Image from "next/image";
 import { format } from "date-fns";
 import { formatPrice } from "@/lib/utils";
-import { StatusBadge } from "@/components/dashboard/StatusBadge";
-import { OrderStatusTimeline } from "@/components/dashboard/OrderStatusTimeline";
+import { StatusBadge, OrderStatusTimeline } from "@/components/dashboard";
 
 interface OrderDetailPanelProps {
   order: any;

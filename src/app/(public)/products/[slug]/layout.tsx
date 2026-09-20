@@ -1,12 +1,5 @@
 import { Metadata } from "next";
 
-// Define a type for what the API might return just for metadata
-interface ItemMeta {
-  name: string;
-  description: string;
-  imageUrl: string;
-}
-
 export async function generateMetadata({
   params,
 }: {

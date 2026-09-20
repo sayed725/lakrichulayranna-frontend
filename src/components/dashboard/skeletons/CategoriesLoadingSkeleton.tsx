@@ -2,7 +2,7 @@ import {
   SkeletonPulse,
   TableSkeleton,
   CardGridSkeleton,
-} from "@/components/dashboard/DashboardSkeleton";
+} from "./DashboardSkeleton";
 
 export default function CategoriesLoadingSkeleton() {
   const TABLE_HEADERS = ["Image", "Name", "Description", "Active Status", "Featured", "Actions"];

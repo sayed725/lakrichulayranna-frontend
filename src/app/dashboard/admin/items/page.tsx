@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getItems, createItem, updateItem, deleteItem } from "@/services/item.service";
+import { getItems, createItem, updateItem } from "@/services/item.service";
 import { getCategories } from "@/services/category.service";
 import { triggerRevalidation } from "@/lib/revalidate";
 
@@ -15,15 +15,13 @@ const decodeHtmlEntities = (str: string) => {
     .replace(/&amp;/g, '&');
 };
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Pencil, Trash2, ImageIcon, XCircle, Filter, Search, RefreshCw, Eye, MoreVertical, Edit2 } from "lucide-react";
+import { Plus, Trash2, ImageIcon, Eye, MoreVertical, Edit2 } from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
 import {
@@ -35,30 +33,12 @@ import {
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { formatPrice } from "@/lib/utils";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose,
-  SheetDescription,
-} from "@/components/ui/sheet";
-import AddItemForm from "@/components/dashboard/AddItemForm";
-import ItemsLoadingSkeleton from "@/components/dashboard/ItemsLoadingSkeleton";
+import { AddItemForm, ItemsLoadingSkeleton, DashboardFilterBar } from "@/components/dashboard";
 import { useDebounce } from "@/hooks/useDebounce";
 import USPagination from "@/components/shared/USPagination";
-import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
 import Image from "next/image";
 import { format } from "date-fns";
-import { useToggleItemAvailability, useDeleteItem } from "@/features/item/hooks/useAdminItems";
+import { useDeleteItem } from "@/features/item/hooks/useAdminItems";
 
 export default function AdminItemsPage() {
   const queryClient = useQueryClient();

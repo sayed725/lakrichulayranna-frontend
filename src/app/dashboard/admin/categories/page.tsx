@@ -18,10 +18,8 @@ import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { triggerRevalidation } from "@/lib/revalidate";
 import { getCategories, createCategory, updateCategory, deleteCategory as deleteCategoryApi, Category } from "@/services/category.service";
-import AddCategoryForm from "@/components/dashboard/AddCategoryForm";
-import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
+import { AddCategoryForm, DashboardFilterBar, CategoriesLoadingSkeleton } from "@/components/dashboard";
 import USPagination from "@/components/shared/USPagination";
-import CategoriesLoadingSkeleton from "@/components/dashboard/CategoriesLoadingSkeleton";
 
 export default function AdminCategoriesPage() {
   const queryClient = useQueryClient();

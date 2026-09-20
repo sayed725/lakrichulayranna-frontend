@@ -4,8 +4,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
-import { DataTable } from "@/components/dashboard/DataTable";
-import { StatusBadge } from "@/components/dashboard/StatusBadge";
+import { DataTable, StatusBadge } from "@/components/dashboard";
 import { formatPrice } from "@/lib/utils";
 import { useUpdateOrderStatus } from "@/features/order/hooks/useAdminOrders";
 

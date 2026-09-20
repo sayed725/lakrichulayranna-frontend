@@ -9,14 +9,14 @@ import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { SearchInput } from "@/components/shared/SearchInput";
-import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
+import { DashboardFilterBar } from "@/components/dashboard";
 import { UserCard } from "@/components/dashboard/users/UserCard";
 import { UserTableRow } from "@/components/dashboard/users/UserTableRow";
 import { UserViewDialog } from "@/components/dashboard/users/UserViewDialog";
 import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
 import USPagination from "@/components/shared/USPagination";
-import UsersLoadingSkeleton from "@/components/dashboard/UsersLoadingSkeleton";
+import { UsersLoadingSkeleton } from "@/components/dashboard";
 import { User } from "@/types/user";
 
 export default function AdminUsersPage() {

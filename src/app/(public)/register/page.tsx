@@ -41,8 +41,8 @@ export default function RegisterPage() {
 
   const onSubmit = (data: RegisterFormValues) => {
     // Exclude confirmPassword before sending to API
-    const { confirmPassword, ...registerData } = data;
-    registerUser.mutate(registerData);
+    const { name, email, phone, password } = data;
+    registerUser.mutate({ name, email, phone, password });
   };
 
   return (

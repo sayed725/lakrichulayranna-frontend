@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Search, SlidersHorizontal, PackageX, Flame, Sparkles, X, Filter, RefreshCw } from "lucide-react";
 import { Container } from "@/components/shared/container/Container";
 import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
@@ -40,7 +40,6 @@ export default function ProductsClient({
   urlMinPrice,
   urlMaxPrice,
 }: ProductsClientProps) {
-  const searchParams = useSearchParams();
   const router = useRouter();
   
   const [searchTerm, setSearchTerm] = useState("");

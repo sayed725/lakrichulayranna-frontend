@@ -7,7 +7,7 @@ import { Plus, Search, RefreshCw, XCircle, Filter, Download, Eye, Trash2, Edit2,
 import { toast } from "sonner";
 import { formatPrice } from "@/lib/utils";
 import { generateInvoicePDF } from "@/lib/generateInvoicePDF";
-import { StatusBadge } from "@/components/dashboard/StatusBadge";
+import { StatusBadge } from "@/components/dashboard";
 import {
   Select,
   SelectContent,
@@ -43,12 +43,10 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { format } from "date-fns";
 import { useAdminOrders, useCreateManualOrder, useDeleteOrder, useUpdateOrderStatus, useUpdateOrder, useUpdateOrderItems } from "@/features/order/hooks/useAdminOrders";
 import USPagination from "@/components/shared/USPagination";
-import CreateOrderForm from "@/components/dashboard/CreateOrderForm";
-import OrdersLoadingSkeleton from "@/components/dashboard/OrdersLoadingSkeleton";
-import { useAdminItems } from "@/features/item/hooks/useAdminItems";
+import { CreateOrderForm, OrdersLoadingSkeleton, DashboardFilterBar } from "@/components/dashboard";
 import { ViewOrderModal } from "@/components/modals/ViewOrderModal";
 import { EditOrderModal } from "@/components/modals/EditOrderModal";
-import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
+import { useAdminItems } from "@/features/item/hooks/useAdminItems";
 
 const ORDER_STATUSES = [
   { value: "all", label: "সকল অর্ডার" },

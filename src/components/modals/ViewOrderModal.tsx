@@ -5,8 +5,7 @@ import { format } from "date-fns";
 import { Download, MapPin, Phone, User, FileText, ShoppingBag, CreditCard, Calendar, Clock, Tag, Copy, Check } from "lucide-react";
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
-import { StatusBadge } from "@/components/dashboard/StatusBadge";
-import { OrderStatusTimeline } from "@/components/dashboard/OrderStatusTimeline";
+import { StatusBadge, OrderStatusTimeline } from "@/components/dashboard";
 import { generateInvoicePDF } from "@/lib/generateInvoicePDF";
 import { toast } from "sonner";
 import {

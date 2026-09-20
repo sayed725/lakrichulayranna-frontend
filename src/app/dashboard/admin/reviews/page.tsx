@@ -19,9 +19,8 @@ import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { CopyButton } from "@/components/shared/CopyButton";
 import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
-import ReviewsLoadingSkeleton from "@/components/dashboard/ReviewsLoadingSkeleton";
+import { ReviewsLoadingSkeleton, DashboardFilterBar } from "@/components/dashboard";
 import USPagination from "@/components/shared/USPagination";
-import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
 
 export default function AdminReviewsPage() {
   const queryClient = useQueryClient();

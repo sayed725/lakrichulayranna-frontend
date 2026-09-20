@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { ShoppingBag, Eye, Star, Clock, AlertCircle, Copy, Check } from "lucide-react";
 import Link from "next/link";
 import { usePublicOrder } from "@/features/order/hooks/useCustomerOrders";
-import { StatusBadge } from "@/components/dashboard/StatusBadge";
+import { StatusBadge } from "@/components/dashboard";
 import { formatPrice } from "@/lib/utils";
 import { ReviewModal } from "@/components/modals/ReviewModal";
 import { motion } from "framer-motion";

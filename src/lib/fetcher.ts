@@ -108,12 +108,22 @@ api.interceptors.response.use(
       }
     }
 
+    // Helper function for user-friendly error messages
+    let errorMessage = error.response?.data?.message;
+
+    if (!errorMessage) {
+      if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+        errorMessage = "সার্ভার প্রতিক্রিয়া জানাতে সময় নিচ্ছে। অনুগ্রহ করে আবার চেষ্টা করুন।";
+      } else if (error.message === "Network Error" || !error.response) {
+        errorMessage = "ইন্টারনেট সংযোগ বা সার্ভারে সমস্যা হচ্ছে। অনুগ্রহ করে আপনার নেটওয়ার্ক চেক করুন।";
+      } else {
+        errorMessage = error.message || "কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।";
+      }
+    }
+
     // Standardize error response
     const apiError: ApiError = {
-      message:
-        error.response?.data?.message ||
-        error.message ||
-        "Something went wrong",
+      message: errorMessage,
       statusCode: error.response?.status || 500,
       errors: error.response?.data?.errors,
     };

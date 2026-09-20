@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import api, { type ApiError } from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
@@ -8,7 +7,6 @@ import { useCouponStore } from "@/store/coupon.store";
 import { useAuthStore } from "@/store/auth.store";
 
 export const usePlaceOrder = () => {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const clearCart = useCartStore((state) => state.clearCart);
   const clearCoupon = useCouponStore((state) => state.clearCoupon);

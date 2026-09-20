@@ -1,6 +1,6 @@
 import { Container } from "@/components/shared/container/Container";
 import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
-import { RotateCcw, RefreshCcw, CheckCircle, AlertTriangle, Camera, Truck, Phone, Mail, FileText, Ban } from "lucide-react";
+import { RotateCcw, RefreshCcw, CheckCircle, AlertTriangle, Truck, Phone, Mail, FileText, Ban } from "lucide-react";
 
 export default function TermsPage() {
   return (

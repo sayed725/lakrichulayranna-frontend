@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { Logo } from "@/components/shared/logo/Logo";
-import { Topbar } from "@/components/dashboard/Topbar";
+import { Topbar } from "@/components/dashboard";
 import {
   Sidebar,
   SidebarContent,

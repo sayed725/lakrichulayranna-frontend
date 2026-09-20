@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Edit2, Trash2 } from "lucide-react";
-import { DataTable } from "@/components/dashboard/DataTable";
+import { DataTable } from "@/components/dashboard";
 import { formatPrice } from "@/lib/utils";
 import { useToggleItemAvailability, useDeleteItem } from "@/features/item/hooks/useAdminItems";
 

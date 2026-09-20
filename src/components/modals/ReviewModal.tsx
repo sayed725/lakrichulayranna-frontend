@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, MessageSquarePlus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { StarRating } from "@/components/dashboard/StarRating";
+import { StarRating } from "@/components/dashboard";
 import { useSubmitReview, useCustomerReviews } from "@/features/review/hooks/useCustomerReviews";
 import { useAuthStore } from "@/store/auth.store";
 

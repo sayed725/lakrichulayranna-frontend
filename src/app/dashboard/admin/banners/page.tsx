@@ -17,10 +17,8 @@ import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { triggerRevalidation } from "@/lib/revalidate";
 import { getBanners, createBanner, updateBanner, deleteBanner as deleteBannerApi, Banner } from "@/services/banner.service";
-import AddBannerForm from "@/components/dashboard/AddBannerForm";
-import BannersLoadingSkeleton from "@/components/dashboard/BannersLoadingSkeleton";
+import { AddBannerForm, BannersLoadingSkeleton, DashboardFilterBar } from "@/components/dashboard";
 import USPagination from "@/components/shared/USPagination";
-import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
 import { format } from "date-fns";
 
 export default function AdminBannersPage() {

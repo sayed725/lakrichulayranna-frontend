@@ -6,13 +6,11 @@ import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
 import { 
   Utensils, 
   Sparkles, 
-  Award, 
   ShieldCheck, 
   DollarSign, 
   ChefHat, 
   Leaf, 
-  Flame,
-  FileText
+  Flame
 } from "lucide-react";
 
 export default function AboutPage() {
@@ -38,30 +36,6 @@ export default function AboutPage() {
       },
     },
   };
-
-  const sisterBrands = [
-    {
-      year: "২০২২",
-      name: "খাঁটি খামার",
-      desc: "দেশের অন্যতম সেরা অর্গানিক ও ফ্রেশ ইনগ্রেডিয়েন্টস সরবরাহকারী প্রতিষ্ঠান। আমাদের রান্নায় ব্যবহৃত সকল মূল উপাদান এখান থেকেই সংগৃহীত হয়।",
-      icon: <Leaf className="w-6 h-6 text-emerald-500" />,
-      color: "border-emerald-500/20 bg-emerald-50/50"
-    },
-    {
-      year: "২০২৪",
-      name: "মশলা বাড়ি",
-      desc: "বাংলাদেশে সম্পূর্ণ প্রিজারভেটিভ-মুক্ত এবং হাতে ভাঙা খাঁটি মসলা নিয়ে ফোকাসড প্রথম বাংলাদেশি ব্র্যান্ড। আমাদের নিজস্ব রন্ধনশালার মসলার জোগান আসে এখান থেকে।",
-      icon: <Sparkles className="w-6 h-6 text-amber-500" />,
-      color: "border-amber-500/20 bg-amber-50/50"
-    },
-    {
-      year: "২০২৬",
-      name: "লাকড়ি চুলায় রান্না",
-      desc: "কাঠের চুলার আসল ঐতিহ্যবাহী স্বাদ এবং খাঁটি বাঙালির স্মৃতিকাতর রান্না ঘরের দোরগোড়ায় পৌঁছে দেওয়ার স্বপ্নের ভেঞ্চার, যা শুরু হয় মে ২০২৬ থেকে।",
-      icon: <Flame className="w-6 h-6 text-fire" />,
-      color: "border-fire/20 bg-fire-light/10"
-    }
-  ];
 
   const problems = [
     {
@@ -122,7 +96,7 @@ export default function AboutPage() {
                 <p className="text-fire-light text-sm font-semibold uppercase tracking-wider mb-4 font-latin">Founder & CEO</p>
                 <div className="w-full h-px bg-cream/10 my-4" />
                 <p className="text-cream/70 text-xs leading-relaxed">
-                  "খাঁটি দেশীয় ঐতিহ্য আর মাটির চুলার রান্নার প্রতি ভালোবাসা থেকেই এই উদ্যোগ। আমরা শুধু খাবার পরিবেশন করি না, আমরা স্মৃতির দুয়ার খুলে দেই।"
+                  &quot;খাঁটি দেশীয় ঐতিহ্য আর মাটির চুলার রান্নার প্রতি ভালোবাসা থেকেই এই উদ্যোগ। আমরা শুধু খাবার পরিবেশন করি না, আমরা স্মৃতির দুয়ার খুলে দেই।&quot;
                 </p>
                 {/* <div className="mt-6 flex items-center gap-2 text-xs bg-charcoal-light/50 px-4 py-2 rounded-full border border-cream/5">
                   <FileText className="w-4 h-4 text-fire" />
@@ -144,7 +118,7 @@ export default function AboutPage() {
               আসসালামু আলাইকুম। আবু সাঈদ খান বলছি—
             </h3>
             <p className="text-lg leading-relaxed text-charcoal/90">
-              লাকড়ি চুলায় রান্নার <strong className="text-fire font-bold">"ফাউন্ডার এন্ড সিইও"</strong> পদে আসীন আছি সেই প্রথমদিন থেকে ১লা মে ২০২৬ সাল ছিল যেই দিন-টা! কাঠের চুলার আসল রান্না আর মাটির চুলার চমৎকার গন্ধের অনুভূতি ভোজনরসিকদের মুখে তুলে দিতেই আমাদের যাত্রা শুরু হয়েছিল। ঢাকার নবাবগঞ্জ এর ঐতিহ্য ও ভালোবাসাকে সাথে নিয়ে পরম করুণাময় আল্লাহর অশেষ অনুগ্রহে আমরা আমাদের সেবাকে অনলাইনের মাধ্যমে আপামর বাঙালির দোরগোড়ায় পৌঁছে দিতে পেরেছি। 
+              লাকড়ি চুলায় রান্নার <strong className="text-fire font-bold">&quot;ফাউন্ডার এন্ড সিইও&quot;</strong> পদে আসীন আছি সেই প্রথমদিন থেকে ১লা মে ২০২৬ সাল ছিল যেই দিন-টা! কাঠের চুলার আসল রান্না আর মাটির চুলার চমৎকার গন্ধের অনুভূতি ভোজনরসিকদের মুখে তুলে দিতেই আমাদের যাত্রা শুরু হয়েছিল। ঢাকার নবাবগঞ্জ এর ঐতিহ্য ও ভালোবাসাকে সাথে নিয়ে পরম করুণাময় আল্লাহর অশেষ অনুগ্রহে আমরা আমাদের সেবাকে অনলাইনের মাধ্যমে আপামর বাঙালির দোরগোড়ায় পৌঁছে দিতে পেরেছি। 
             </p>
             {/* <p className="text-base leading-relaxed text-charcoal/80">
               আমাদের ব্যবসার স্বচ্ছতা নিশ্চিত করতে আমাদের ট্রেড লাইসেন্স নাম্বারটা জানিয়ে রাখি, যেকোনো সময় আমাদের ব্যাপারে যাচাই করে নিতে পারবেন ঢাকা দক্ষিণ সিটি কর্পোরেশন থেকেঃ <span className="font-latin text-fire font-semibold">TRAD/DSCC/482910/2026</span>। 

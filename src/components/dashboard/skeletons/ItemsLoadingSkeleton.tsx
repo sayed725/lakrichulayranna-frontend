@@ -2,7 +2,7 @@ import {
   SkeletonPulse,
   TableSkeleton,
   CardGridSkeleton,
-} from "@/components/dashboard/DashboardSkeleton";
+} from "./DashboardSkeleton";
 
 export default function ItemsLoadingSkeleton() {
   const TABLE_HEADERS = [

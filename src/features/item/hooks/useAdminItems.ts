@@ -4,8 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/fetcher";
 import { API_ROUTES } from "@/lib/constants";
 import { toast } from "sonner";
-import { getItems, createItem, updateItem, deleteItem } from "@/services/item.service";
-import { GetItemsParams, CreateItemPayload, UpdateItemPayload } from "@/services/item.service";
+import { getItems, GetItemsParams } from "@/services/item.service";
 
 export const useAdminItems = (params?: GetItemsParams) => {
   return useQuery({

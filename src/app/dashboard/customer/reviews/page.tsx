@@ -6,9 +6,10 @@ import { format } from "date-fns";
 import { Star, MessageSquarePlus, MessageCircle, Edit2, Trash2, X  } from "lucide-react";
 import { useCustomerReviews, useSubmitReview, useUpdateReview, useDeleteReview } from "@/features/review/hooks/useCustomerReviews";
 import { useCustomerOrders } from "@/features/order/hooks/useCustomerOrders";
-import { StarRating } from "@/components/dashboard/StarRating";
+
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { StarRating } from "@/components/dashboard";
 
 export default function CustomerReviewsPage() {
   const { data: reviews, isLoading: reviewsLoading } = useCustomerReviews();

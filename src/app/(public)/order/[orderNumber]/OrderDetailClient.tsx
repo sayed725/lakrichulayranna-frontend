@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import { formatPrice } from "@/lib/utils";
-import { StatusBadge } from "@/components/dashboard/StatusBadge";
+import { StatusBadge } from "@/components/dashboard";
 import { usePublicOrder } from "@/features/order/hooks/useCustomerOrders";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -30,6 +30,78 @@ interface OrderDetailClientProps {
   orderNumber: string;
   initialOrder: any;
 }
+
+const OrderTracking = ({ status }: { status: string }) => {
+  if (status === "CANCELLED") return null;
+
+  const steps = [
+    { status: "PENDING", label: "অপেক্ষমাণ", desc: "অর্ডারটি গ্রহণ করা হয়েছে" },
+    { status: "CONFIRMED", label: "নিশ্চিতকৃত", desc: "অর্ডারটি নিশ্চিত করা হয়েছে" },
+    { status: "PREPARING", label: "প্রস্তুত হচ্ছে", desc: "খাবার রান্না হচ্ছে" },
+    { status: "READY", label: "প্রস্তুত", desc: "ডেলিভারির জন্য প্রস্তুত" },
+    { status: "DELIVERED", label: "ডেলিভার্ড", desc: "অর্ডারটি পেয়ে গেছেন" },
+  ];
+
+  const currentStepIndex = steps.findIndex(s => s.status === status);
+
+  return (
+    <motion.div 
+      variants={fadeInUp} 
+      className="bg-white border border-border rounded-3xl p-4 sm:p-10 shadow-sm relative mb-8 overflow-hidden"
+    >
+      <div className="relative pt-2">
+        {/* Tracking Line */}
+        <div className="absolute top-7 sm:top-8 left-[10%] right-[10%] h-[3px] -translate-y-1/2 z-0">
+          <div className="absolute inset-0 bg-border rounded-full" />
+          <motion.div 
+            className="absolute top-0 left-0 h-full bg-fire rounded-full shadow-[0_0_10px_rgba(232,93,36,0.3)]"
+            initial={{ width: "0%" }}
+            animate={{ width: `${(Math.max(0, currentStepIndex) / (steps.length - 1)) * 100}%` }}
+            transition={{ duration: 1, ease: "easeInOut", delay: 0.5 }}
+          />
+        </div>
+
+        <div className="relative flex justify-between items-start z-10">
+          {steps.map((step, index) => {
+            const isCompleted = index <= currentStepIndex;
+
+            return (
+              <div key={step.status} className="flex flex-col items-center flex-1">
+                <motion.div
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.3 + (index * 0.1) }}
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-[4px] transition-all duration-500 shadow-md ${
+                    isCompleted 
+                      ? "bg-fire border-orange-100 text-white" 
+                      : "bg-white border-border text-muted"
+                  }`}
+                >
+                  {isCompleted ? (
+                    <Check className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3px]" />
+                  ) : (
+                    <div className="w-2.5 h-2.5 rounded-full bg-border" />
+                  )}
+                </motion.div>
+                
+                <div className="mt-4 text-center px-1">
+                  <p className={`text-[10px] sm:text-xs font-bold font-bengali mb-1.5 ${
+                    isCompleted ? "text-fire" : "text-muted"
+                  }`}>
+                    {step.label}
+                  </p>
+                  <p className="text-[9px] hidden sm:block sm:text-[11px] text-muted font-bengali max-w-[70px] sm:max-w-[120px] mx-auto leading-tight">
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 export default function OrderDetailClient({ orderNumber, initialOrder }: OrderDetailClientProps) {
   const { data: order } = usePublicOrder(orderNumber, {
@@ -65,78 +137,6 @@ export default function OrderDetailClient({ orderNumber, initialOrder }: OrderDe
   const parsedAddress = typeof order.deliveryAddress === 'string' 
     ? JSON.parse(order.deliveryAddress) 
     : order.deliveryAddress || {};
-
-  const OrderTracking = ({ status }: { status: string }) => {
-    if (status === "CANCELLED") return null;
-
-    const steps = [
-      { status: "PENDING", label: "অপেক্ষমাণ", desc: "অর্ডারটি গ্রহণ করা হয়েছে" },
-      { status: "CONFIRMED", label: "নিশ্চিতকৃত", desc: "অর্ডারটি নিশ্চিত করা হয়েছে" },
-      { status: "PREPARING", label: "প্রস্তুত হচ্ছে", desc: "খাবার রান্না হচ্ছে" },
-      { status: "READY", label: "প্রস্তুত", desc: "ডেলিভারির জন্য প্রস্তুত" },
-      { status: "DELIVERED", label: "ডেলিভার্ড", desc: "অর্ডারটি পেয়ে গেছেন" },
-    ];
-
-    const currentStepIndex = steps.findIndex(s => s.status === status);
-
-    return (
-      <motion.div 
-        variants={fadeInUp} 
-        className="bg-white border border-border rounded-3xl p-4 sm:p-10 shadow-sm relative mb-8 overflow-hidden"
-      >
-        <div className="relative pt-2">
-          {/* Tracking Line */}
-          <div className="absolute top-7 sm:top-8 left-[10%] right-[10%] h-[3px] -translate-y-1/2 z-0">
-            <div className="absolute inset-0 bg-border rounded-full" />
-            <motion.div 
-              className="absolute top-0 left-0 h-full bg-fire rounded-full shadow-[0_0_10px_rgba(232,93,36,0.3)]"
-              initial={{ width: "0%" }}
-              animate={{ width: `${(Math.max(0, currentStepIndex) / (steps.length - 1)) * 100}%` }}
-              transition={{ duration: 1, ease: "easeInOut", delay: 0.5 }}
-            />
-          </div>
-
-          <div className="relative flex justify-between items-start z-10">
-            {steps.map((step, index) => {
-              const isCompleted = index <= currentStepIndex;
-
-              return (
-                <div key={step.status} className="flex flex-col items-center flex-1">
-                  <motion.div
-                    initial={{ scale: 0.6, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.3 + (index * 0.1) }}
-                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-[4px] transition-all duration-500 shadow-md ${
-                      isCompleted 
-                        ? "bg-fire border-orange-100 text-white" 
-                        : "bg-white border-border text-muted"
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <Check className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3px]" />
-                    ) : (
-                      <div className="w-2.5 h-2.5 rounded-full bg-border" />
-                    )}
-                  </motion.div>
-                  
-                  <div className="mt-4 text-center px-1">
-                    <p className={`text-[10px] sm:text-xs font-bold font-bengali mb-1.5 ${
-                      isCompleted ? "text-fire" : "text-muted"
-                    }`}>
-                      {step.label}
-                    </p>
-                    <p className="text-[9px] hidden sm:block sm:text-[11px] text-muted font-bengali max-w-[70px] sm:max-w-[120px] mx-auto leading-tight">
-                      {step.desc}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </motion.div>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-cream py-12">

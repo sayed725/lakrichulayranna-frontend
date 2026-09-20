@@ -1,6 +1,6 @@
 import { Container } from "@/components/shared/container/Container";
 import { SectionTitle } from "@/components/shared/section-title/SectionTitle";
-import { Truck, Calendar, MapPin, Gift, AlertTriangle, RotateCcw, Phone, Mail, Clock, Zap } from "lucide-react";
+import { Truck, MapPin, Gift, AlertTriangle, RotateCcw, Phone, Mail, Clock, Zap } from "lucide-react";
 
 export default function ShippingPage() {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { Minus, Plus, ShoppingBag, ArrowLeft, Package, Flame, Star, Weight, ChevronLeft, ChevronRight } from "lucide-react";

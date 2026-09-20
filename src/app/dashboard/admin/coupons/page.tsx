@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { Plus, Edit2, Trash2, Eye, MoreVertical } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,8 +25,7 @@ import { useAdminCoupons, useToggleCoupon, useCreateCoupon, useUpdateCoupon } fr
 import { formatPrice } from "@/lib/utils";
 
 import USPagination from "@/components/shared/USPagination";
-import CouponsLoadingSkeleton from "@/components/dashboard/CouponsLoadingSkeleton";
-import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
+import { CouponsLoadingSkeleton, DashboardFilterBar } from "@/components/dashboard";
 
 export default function AdminCouponsPage() {
   const queryClient = useQueryClient();

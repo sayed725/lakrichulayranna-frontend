@@ -12,7 +12,7 @@ import {
   X
 } from "lucide-react";
 import { Logo } from "@/components/shared/logo/Logo";
-import { Topbar } from "@/components/dashboard/Topbar";
+import { Topbar } from "@/components/dashboard";
 import {
   Sidebar,
   SidebarContent,

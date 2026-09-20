@@ -21,8 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import USPagination from "@/components/shared/USPagination";
-import ContactsLoadingSkeleton from "@/components/dashboard/ContactsLoadingSkeleton";
-import { DashboardFilterBar } from "@/components/dashboard/DashboardFilterBar";
+import { ContactsLoadingSkeleton, DashboardFilterBar } from "@/components/dashboard";
 
 export default function AdminContactsPage() {
   const queryClient = useQueryClient();
