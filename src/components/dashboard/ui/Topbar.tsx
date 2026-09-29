@@ -9,11 +9,7 @@ import { ADMIN_NAV_LINKS, DASHBOARD_NAV_LINKS } from "@/lib/constants";
 import { Logo } from "@/components/shared/logo/Logo";
 import { useSidebar } from "@/components/ui/sidebar";
 
-interface TopbarProps {
-  onMobileMenuToggle?: () => void;
-}
-
-export function Topbar({ onMobileMenuToggle }: TopbarProps) {
+export function Topbar() {
   const { toggleSidebar } = useSidebar();
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
@@ -88,7 +84,7 @@ export function Topbar({ onMobileMenuToggle }: TopbarProps) {
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-white px-4 shadow-sm sm:gap-6 sm:px-6 lg:px-8">
       {/* Mobile & Tablet Menu Toggle */}
       <button
-        onClick={toggleSidebar || onMobileMenuToggle}
+        onClick={toggleSidebar}
         className="lg:hidden p-2 -ml-2 text-charcoal hover:bg-cream rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-fire/50"
         aria-label="Toggle Menu"
       >

@@ -26,6 +26,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Menu,
   LogOut,
@@ -42,8 +43,6 @@ import {
   Candy,
   Pizza,
   Coffee,
-  ChevronDown,
-  Utensils,
   Store,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
@@ -88,15 +87,27 @@ export function Navbar() {
     getServerSnapshot
   );
 
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, token, isAuthenticated, logout } = useAuthStore();
   const cartItemCount = useCartStore((s) =>
     s.items.reduce((sum, item) => sum + item.quantity, 0)
   );
   const { toggleCart } = useUIStore();
 
+  // Fetch current logged in user info if token exists
+  const { isLoading: isUserLoading } = useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: async () => {
+      const res = await api.get(API_ROUTES.AUTH.ME);
+      return res.data;
+    },
+    enabled: !!token && !user,
+    staleTime: 1000 * 60 * 15,
+  });
+
   const cartCount = mounted ? cartItemCount : 0;
   const isLoggedIn = mounted ? isAuthenticated() : false;
   const userRole = isLoggedIn && user ? user.role : null;
+  const isAuthFetching = !mounted || (!!token && !user && isUserLoading);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -295,8 +306,8 @@ export function Navbar() {
               )}
             </Button>
 
-            {!mounted ? (
-              <div className="h-10 w-10 bg-cream-dark rounded-full animate-pulse" />
+            {isAuthFetching ? (
+              <Skeleton className="h-10 w-10 rounded-full" />
             ) : isLoggedIn && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger
@@ -462,7 +473,15 @@ export function Navbar() {
 
                     {/* Divider + Account Section */}
                     <div className="mt-auto border-t border-border pt-4 space-y-3 shrink-0">
-                      {isLoggedIn && user ? (
+                      {isAuthFetching ? (
+                        <div className="flex items-center gap-3 p-4 rounded-2xl bg-cream-dark/20 border border-border">
+                          <Skeleton className="h-11 w-11 rounded-full shrink-0" />
+                          <div className="space-y-2 flex-1">
+                            <Skeleton className="h-4 w-28" />
+                            <Skeleton className="h-3 w-36" />
+                          </div>
+                        </div>
+                      ) : isLoggedIn && user ? (
                         <>
                           {/* User Profile Card */}
                           <div className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-fire/5 to-terracotta/5 border border-border">
