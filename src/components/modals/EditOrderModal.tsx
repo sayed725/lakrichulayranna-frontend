@@ -96,14 +96,14 @@ export function EditOrderModal({ isOpen, onClose, order, onSubmit, isSubmitting 
   useEffect(() => {
     if (order && isOpen) {
       const parsedAddress = typeof order.deliveryAddress === 'string' 
-        ? JSON.parse(order.deliveryAddress) 
+        ? (() => { try { return JSON.parse(order.deliveryAddress); } catch { return {}; } })()
         : order.deliveryAddress || {};
 
       setFormData({
         customerName: order.customerName || "",
         customerPhone: order.customerPhone || "",
         customerEmail: order.customerEmail || "",
-        deliveryAddress: parsedAddress.street || "",
+        deliveryAddress: parsedAddress.address || parsedAddress.street || (typeof order.deliveryAddress === 'string' ? order.deliveryAddress : ""),
         deliveryCity: order.isInsideDhaka ? "dhaka" : "outside",
         paymentStatus: order.paymentMethod === "ONLINE" ? "PAID" : "UNPAID",
         notes: order.notes || "",
@@ -142,9 +142,7 @@ export function EditOrderModal({ isOpen, onClose, order, onSubmit, isSubmitting 
       customerEmail: formData.customerEmail || undefined,
       deliveryAddress: {
         area: isInsideDhaka ? "Dhaka" : "Outside Dhaka",
-        city: formData.deliveryCity === "dhaka" ? "dhaka" : "other",
-        street: formData.deliveryAddress,
-        country: "Bangladesh",
+        address: formData.deliveryAddress,
       },
       isInsideDhaka,
       deliveryCharge,

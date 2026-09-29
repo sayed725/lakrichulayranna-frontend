@@ -55,23 +55,34 @@ export function OrderDetailPanel({ order, isOpen, onClose }: OrderDetailPanelPro
             {/* Delivery Info */}
             <div className="bg-white p-6 rounded-2xl border border-border">
               <h3 className="font-bold font-bengali text-charcoal mb-4 flex items-center gap-2 border-b border-border pb-3">
-                <MapPin size={18} className="text-fire" />
+                <MapPin size={18} className="text-fire shrink-0" />
                 ডেলিভারি ঠিকানা
               </h3>
-              <div className="space-y-3 font-bengali text-sm">
-                <p className="flex items-center gap-2">
-                  <User size={16} className="text-muted" />
-                  <span className="font-semibold">{order.deliveryAddress.fullName}</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <Phone size={16} className="text-muted" />
-                  <span className="font-latin">{order.deliveryAddress.phone}</span>
-                </p>
-                <p className="flex items-start gap-2 text-muted leading-relaxed">
-                  <span className="shrink-0 mt-1"><MapPin size={16} /></span>
-                  {order.deliveryAddress.address}
-                </p>
-              </div>
+              {(() => {
+                const parsedAddress = typeof order.deliveryAddress === 'string'
+                  ? (() => { try { return JSON.parse(order.deliveryAddress); } catch { return {}; } })()
+                  : order.deliveryAddress || {};
+                const name = order.customerName || parsedAddress.fullName || parsedAddress.name || order.user?.name || 'N/A';
+                const phone = order.customerPhone || parsedAddress.phone || order.user?.phone || 'N/A';
+                const fullAddress = parsedAddress.address || [parsedAddress.street, parsedAddress.area].filter(Boolean).join(', ') || (typeof order.deliveryAddress === 'string' ? order.deliveryAddress : 'N/A');
+
+                return (
+                  <div className="space-y-3 font-bengali text-sm min-w-0">
+                    <p className="flex items-center gap-2 min-w-0">
+                      <User size={16} className="text-muted shrink-0" />
+                      <span className="font-semibold break-words min-w-0">{name}</span>
+                    </p>
+                    <p className="flex items-center gap-2 min-w-0">
+                      <Phone size={16} className="text-muted shrink-0" />
+                      <span className="font-latin break-words min-w-0">{phone}</span>
+                    </p>
+                    <div className="flex items-start gap-2 text-muted leading-relaxed min-w-0">
+                      <MapPin size={16} className="shrink-0 mt-1" />
+                      <span className="break-words [overflow-wrap:anywhere] flex-1 text-charcoal min-w-0">{fullAddress}</span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Order Summary */}

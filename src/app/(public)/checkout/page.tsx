@@ -26,7 +26,7 @@ const checkoutSchema = z.object({
   deliveryArea: z.enum(["inside_dhaka", "outside_dhaka"], {
     message: "ডেলিভারি এলাকা নির্বাচন করুন",
   }),
-  address: z.string().min(10, "বিস্তারিত ঠিকানা দিন"),
+  address: z.string().min(5, "কমপক্ষে ৫ অক্ষরের ঠিকানা দিন"),
   notes: z.string().optional(),
 });
 
@@ -131,9 +131,7 @@ export default function CheckoutPage() {
       paymentMethod: "COD",
       deliveryAddress: {
         area: data.deliveryArea === "inside_dhaka" ? "Dhaka" : "Outside Dhaka",
-        city: data.deliveryArea === "inside_dhaka" ? "dhaka" : "other",
-        street: data.address,
-        country: "Bangladesh",
+        address: data.address,
       },
       isInsideDhaka: data.deliveryArea === "inside_dhaka",
       customerName: data.customerName,

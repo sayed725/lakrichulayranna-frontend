@@ -127,9 +127,7 @@ export function CreateOrderModal({ isOpen, onClose, onSubmit, isSubmitting }: Cr
       paymentMethod: data.paymentMethod,
       deliveryAddress: {
         area: data.deliveryArea === "inside_dhaka" ? "Dhaka" : "Outside Dhaka",
-        city: data.deliveryArea === "inside_dhaka" ? "dhaka" : "other",
-        street: data.address,
-        country: "Bangladesh",
+        address: data.address,
       },
       isInsideDhaka: data.deliveryArea === "inside_dhaka",
       deliveryCharge,

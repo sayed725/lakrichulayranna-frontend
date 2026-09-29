@@ -222,11 +222,11 @@ export default function OrderDetailClient({ orderNumber, initialOrder }: OrderDe
                   <div className="flex items-start gap-2 text-muted justify-between">
                     <span className="shrink-0 mt-1"><MapPin size={16} /></span>
                     <span className="flex-1 text-charcoal">
-                      {parsedAddress.address || [parsedAddress.street, parsedAddress.area, parsedAddress.city].filter(Boolean).join(', ') || 'N/A'}
+                      {parsedAddress.address || [parsedAddress.street, parsedAddress.area, parsedAddress.city].filter(Boolean).join(', ') || (typeof order.deliveryAddress === 'string' ? order.deliveryAddress : 'N/A')}
                     </span>
-                    {(parsedAddress.address || parsedAddress.street) && (
+                    {(parsedAddress.address || parsedAddress.street || typeof order.deliveryAddress === 'string') && (
                       <button
-                        onClick={() => handleCopy(parsedAddress.address || [parsedAddress.street, parsedAddress.area, parsedAddress.city].filter(Boolean).join(', '), "address", "ঠিকানা")}
+                        onClick={() => handleCopy(parsedAddress.address || [parsedAddress.street, parsedAddress.area, parsedAddress.city].filter(Boolean).join(', ') || order.deliveryAddress, "address", "ঠিকানা")}
                         className="text-muted hover:text-fire transition-colors p-1 rounded hover:bg-cream-dark/50 shrink-0 cursor-pointer"
                         title="ঠিকানা কপি করুন"
                       >

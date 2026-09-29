@@ -9,10 +9,17 @@ import { format } from 'date-fns';
  */
 export const generateInvoicePDF = async (order: any) => {
   // ── Build invoice HTML ────────────────────────────────────────────────────
-  const street =
-    typeof order.deliveryAddress === 'string'
-      ? JSON.parse(order.deliveryAddress).street || 'N/A'
-      : order.deliveryAddress?.street || 'N/A';
+  let street = 'N/A';
+  if (typeof order.deliveryAddress === 'string') {
+    try {
+      const parsed = JSON.parse(order.deliveryAddress);
+      street = parsed?.address || parsed?.adress || parsed?.street || [parsed?.street, parsed?.area].filter(Boolean).join(', ') || order.deliveryAddress;
+    } catch {
+      street = order.deliveryAddress;
+    }
+  } else if (typeof order.deliveryAddress === 'object' && order.deliveryAddress !== null) {
+    street = order.deliveryAddress.address || order.deliveryAddress.adress || order.deliveryAddress.street || [order.deliveryAddress.street, order.deliveryAddress.area].filter(Boolean).join(', ') || 'N/A';
+  }
 
   const statusColor = order.status === 'CANCELLED' ? '#DC2626' : '#059669';
 
@@ -82,7 +89,7 @@ export const generateInvoicePDF = async (order: any) => {
           <div>
             <div style="font-size:10px; font-weight:700; color:#9CA3AF; letter-spacing:0.12em; margin-bottom:8px;">BILL TO</div>
             <div style="font-size:15px; font-weight:700; color:#111827;">${order.customerName || 'N/A'}</div>
-            <div style="font-size:13px; color:#4B5563; margin-top:3px;">${street}</div>
+            <div style="font-size:13px; color:#4B5563; margin-top:3px; max-width:320px; word-break:break-word; white-space:pre-wrap;">${street}</div>
             <div style="font-size:13px; color:#4B5563; margin-top:1px;">${order.customerPhone || 'N/A'}</div>
           </div>
           <div style="text-align:right;">

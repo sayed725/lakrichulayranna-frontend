@@ -36,7 +36,7 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
 
   const customerName = order.customerName || parsedAddress.fullName || order.user?.name || 'N/A';
   const customerPhone = order.customerPhone || parsedAddress.phone || order.user?.phone || 'N/A';
-  const fullAddress = parsedAddress.address || [parsedAddress.street, parsedAddress.area].filter(Boolean).join(', ') || 'N/A';
+  const fullAddress = parsedAddress.address || [parsedAddress.street, parsedAddress.area].filter(Boolean).join(', ') || (typeof order.deliveryAddress === 'string' ? order.deliveryAddress : 'N/A');
 
   const handleCopy = (text: string, key: string, label: string) => {
     if (!text || text === 'N/A') return;
@@ -95,15 +95,15 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Delivery Info */}
-            <div className="bg-card p-4 sm:p-6 rounded-2xl border border-border/70 shadow-xs space-y-4">
+            <div className="bg-card p-4 sm:p-6 rounded-2xl border border-border/70 shadow-xs space-y-4 min-w-0">
               <h3 className="font-bold font-bengali text-charcoal flex items-center gap-2 border-b border-border/40 pb-3">
                 <MapPin size={18} className="text-fire shrink-0" />
                 ডেলিভারি ঠিকানা
               </h3>
-              <div className="space-y-3 font-bengali text-sm">
-                <div className="flex items-center gap-1 group/name min-h-[28px]">
+              <div className="space-y-3 font-bengali text-sm min-w-0">
+                <div className="flex items-center gap-1 group/name min-h-[28px] min-w-0">
                   <User size={16} className="text-muted-foreground shrink-0 mr-1.5" />
-                  <span className="font-semibold text-charcoal break-all">{customerName}</span>
+                  <span className="font-semibold text-charcoal break-all min-w-0 flex-1">{customerName}</span>
                   {customerName !== 'N/A' && (
                     <button
                       onClick={() => handleCopy(customerName, 'name', 'Customer name')}
@@ -119,9 +119,9 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
                   )}
                 </div>
 
-                <div className="flex items-center gap-1 group/phone min-h-[28px]">
+                <div className="flex items-center gap-1 group/phone min-h-[28px] min-w-0">
                   <Phone size={16} className="text-muted-foreground shrink-0 mr-1.5" />
-                  <span className="font-latin text-charcoal font-medium break-all">{customerPhone}</span>
+                  <span className="font-latin text-charcoal font-medium break-all min-w-0 flex-1">{customerPhone}</span>
                   {customerPhone !== 'N/A' && (
                     <button
                       onClick={() => handleCopy(customerPhone, 'phone', 'Customer phone')}
@@ -137,9 +137,9 @@ export function ViewOrderModal({ isOpen, onClose, order }: ViewOrderModalProps) 
                   )}
                 </div>
 
-                <div className="flex items-start gap-1 group/address min-h-[28px] text-muted-foreground leading-relaxed">
+                <div className="flex items-start gap-1 group/address min-h-[28px] text-muted-foreground leading-relaxed min-w-0">
                   <MapPin size={16} className="shrink-0 mt-0.5 mr-1.5" />
-                  <span className="break-words flex-1">{fullAddress}</span>
+                  <span className="break-words break-all [overflow-wrap:anywhere] flex-1 text-charcoal min-w-0">{fullAddress}</span>
                   {fullAddress !== 'N/A' && (
                     <button
                       onClick={() => handleCopy(fullAddress, 'address', 'Delivery address')}
