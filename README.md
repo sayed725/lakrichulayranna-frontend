@@ -18,7 +18,7 @@
 [Backend Repository](https://github.com/sayed725/lakrichulayranna-backend)
 
 ## Live Page & Socials
-[Facebook Page](https://www.facebook.com/lakrichulayranna)
+[Facebook Page]([https://www.facebook.com/lakrichulayranna](https://www.facebook.com/profile.php?id=61571999831741))
 
 ---
 
